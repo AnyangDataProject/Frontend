@@ -1,0 +1,657 @@
+.admin-users-page {
+  min-height: 100vh;
+  background: #f6f8fb;
+  color: #20252d;
+}
+
+/* =========================
+   Main
+========================= */
+
+.admin-users-content {
+  width: 100%;
+  padding: 0 40px 70px;
+  box-sizing: border-box;
+}
+
+.admin-users-topbar {
+  min-height: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e7eaee;
+}
+
+.admin-users-topbar h1 {
+  margin: 0;
+  color: #20252d;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.7px;
+}
+
+.admin-users-topbar p {
+  margin: 8px 0 0;
+  color: #8a929d;
+  font-size: 13px;
+}
+
+.admin-users-date {
+  color: #8c949e;
+  font-size: 12px;
+}
+
+/* =========================
+   Stats
+========================= */
+
+.admin-users-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin: 25px 0;
+}
+
+.admin-users-stat-card {
+  min-height: 105px;
+  padding: 20px;
+  box-sizing: border-box;
+  border: 1px solid #e5e9ee;
+  border-radius: 12px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-users-stat-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-users-stat-icon.blue {
+  background: #eff5ff;
+  color: #2563eb;
+}
+
+.admin-users-stat-icon.green {
+  background: #eaf7f1;
+  color: #31815f;
+}
+
+.admin-users-stat-icon.red {
+  background: #fff0f0;
+  color: #d64545;
+}
+
+.admin-users-stat-icon.purple {
+  background: #f2efff;
+  color: #765bc9;
+}
+
+.admin-users-stat-card div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.admin-users-stat-card span {
+  color: #8b939e;
+  font-size: 11px;
+}
+
+.admin-users-stat-card strong {
+  color: #252b33;
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* =========================
+   User Card
+========================= */
+
+.admin-users-card {
+  overflow: hidden;
+  border: 1px solid #e5e9ee;
+  border-radius: 13px;
+  background: #ffffff;
+}
+
+.admin-users-card-header {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin-users-card-header h2 {
+  margin: 0;
+  color: #2e353e;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.admin-users-card-header p {
+  margin: 5px 0 0;
+  color: #969da6;
+  font-size: 11px;
+}
+
+.admin-users-search {
+  width: 280px;
+  height: 38px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 1px solid #dfe4e9;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9aa2ac;
+}
+
+.admin-users-search:focus-within {
+  border-color: #2563eb;
+}
+
+.admin-users-search input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #454d57;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.admin-users-search input::placeholder {
+  color: #adb3bb;
+}
+
+/* =========================
+   Filter
+========================= */
+
+.admin-users-filter {
+  padding: 0 24px 16px;
+  display: flex;
+  gap: 5px;
+}
+
+.admin-users-filter button {
+  padding: 7px 13px;
+  border: 1px solid #e2e6eb;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #808894;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-users-filter button:hover {
+  background: #f7f9fb;
+}
+
+.admin-users-filter button.active {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* =========================
+   Table
+========================= */
+
+.admin-users-table-wrap {
+  overflow-x: auto;
+  border-top: 1px solid #edf0f3;
+}
+
+.admin-users-table {
+  width: 100%;
+  min-width: 950px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.admin-users-table th {
+  height: 46px;
+  padding: 0 18px;
+  background: #fafbfd;
+  color: #9299a3;
+  font-size: 10px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-users-table td {
+  height: 67px;
+  padding: 0 18px;
+  border-top: 1px solid #edf0f3;
+  color: #69727e;
+  white-space: nowrap;
+}
+
+.admin-users-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.admin-users-table tbody tr:hover {
+  background: #fafcff;
+}
+
+/* 사용자 이름 */
+
+.admin-user-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #eef3fa;
+  color: #5d718b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.admin-user-name div:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-user-name strong {
+  color: #343b44;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-user-name span {
+  color: #a0a7af;
+  font-size: 9px;
+}
+
+/* 이메일 */
+
+.admin-user-email {
+  color: #5f6873;
+  font-size: 11px;
+}
+
+/* 신고 건수 */
+
+.admin-user-report-count {
+  color: #3e4650;
+  font-weight: 700;
+}
+
+/* 최근 로그인 */
+
+.admin-user-login {
+  color: #8b939d;
+  font-size: 10px;
+}
+
+/* 상태 */
+
+.admin-user-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.admin-user-status.active {
+  background: #eaf7f1;
+  color: #31815f;
+}
+
+.admin-user-status.suspended {
+  background: #fff0f0;
+  color: #d64545;
+}
+
+/* 더보기 */
+
+.admin-user-more {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #9ba2ab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin-user-more:hover {
+  background: #f0f3f7;
+  color: #2563eb;
+}
+
+/* Empty */
+
+.admin-users-empty {
+  height: 260px !important;
+  text-align: center;
+  color: #a1a8b0 !important;
+}
+
+.admin-users-empty svg {
+  display: block;
+  margin: 0 auto 12px;
+}
+
+.admin-users-empty strong,
+.admin-users-empty span {
+  display: block;
+}
+
+.admin-users-empty strong {
+  margin-bottom: 5px;
+  color: #6f7781;
+}
+
+.admin-users-empty span {
+  font-size: 11px;
+}
+
+/* =========================
+   Modal Overlay
+========================= */
+
+.admin-user-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(25, 31, 38, 0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Modal
+========================= */
+
+.admin-user-modal {
+  width: 100%;
+  max-width: 500px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(20, 30, 45, 0.18);
+}
+
+/* Modal Header */
+
+.admin-user-modal-header {
+  padding: 19px 22px;
+  border-bottom: 1px solid #edf0f3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-user-modal-header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.admin-user-modal-header span {
+  color: #3d4550;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.admin-user-modal-header strong {
+  color: #2563eb;
+  font-size: 12px;
+}
+
+.admin-user-modal-header button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 7px;
+  background: #f4f6f8;
+  color: #78818c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin-user-modal-header button:hover {
+  background: #eceff2;
+}
+
+/* Modal Profile */
+
+.admin-user-modal-profile {
+  padding: 25px 22px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.admin-user-modal-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 14px;
+  background: #eef3fa;
+  color: #5d718b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.admin-user-modal-profile > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.admin-user-modal-profile h2 {
+  margin: 0;
+  color: #282f38;
+  font-size: 19px;
+}
+
+.admin-user-modal-profile p {
+  margin: 0;
+  color: #858e99;
+  font-size: 11px;
+}
+
+/* Detail List */
+
+.admin-user-detail-list {
+  margin: 0 22px;
+  border-top: 1px solid #edf0f3;
+}
+
+.admin-user-detail-row {
+  min-height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.admin-user-detail-row > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #8d959f;
+  font-size: 11px;
+}
+
+.admin-user-detail-row > div svg {
+  color: #a0a7b0;
+}
+
+.admin-user-detail-row strong {
+  color: #414954;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* Status */
+
+.admin-user-modal-status {
+  margin: 22px;
+  padding-top: 19px;
+  border-top: 1px solid #edf0f3;
+}
+
+.admin-user-modal-status h3 {
+  margin: 0 0 11px;
+  color: #454d57;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.admin-user-status-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.admin-user-status-actions button {
+  height: 42px;
+  border: 1px solid #e1e5ea;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #7a838e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.admin-user-status-actions button:hover {
+  background: #f7f9fb;
+}
+
+.admin-user-status-actions button.active {
+  border-color: #9ed4bd;
+  background: #effaf5;
+  color: #31815f;
+}
+
+.admin-user-status-actions button.suspended-active {
+  border-color: #e7aaaa;
+  background: #fff3f3;
+  color: #d64545;
+}
+
+/* Modal Footer */
+
+.admin-user-modal-footer {
+  padding: 0 22px 22px;
+}
+
+.admin-user-modal-close {
+  width: 100%;
+  height: 42px;
+  border: none;
+  border-radius: 7px;
+  background: #f1f3f5;
+  color: #68717c;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.admin-user-modal-close:hover {
+  background: #e8ebee;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 1100px) {
+  .admin-users-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .admin-users-content {
+    width: 100%;
+    padding: 0 25px 60px;
+  }
+
+  .admin-users-card-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-users-search {
+    width: 100%;
+  }
+}
+
+@media (max-width: 620px) {
+  .admin-users-content {
+    width: 100%;
+    padding: 0 14px 50px;
+  }
+
+  .admin-users-topbar {
+    min-height: 120px;
+  }
+
+  .admin-users-date {
+    display: none;
+  }
+
+  .admin-users-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .admin-users-stat-card {
+    padding: 15px;
+  }
+
+  .admin-users-stat-card strong {
+    font-size: 20px;
+  }
+}

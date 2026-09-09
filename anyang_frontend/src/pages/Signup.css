@@ -1,0 +1,464 @@
+
+.signup-page {
+  min-height: 100vh;
+  background-color: #f6f8fb;
+}
+
+
+/* =========================
+   Main
+========================= */
+
+.signup-main {
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+
+  padding: 120px 20px 60px;
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   Container
+========================= */
+
+.signup-container {
+  width: 100%;
+  max-width: 500px;
+}
+
+
+/* =========================
+   Title
+========================= */
+
+.signup-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.signup-title h1 {
+  margin: 0 0 12px;
+
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+
+  color: #20252d;
+}
+
+.signup-title p {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1.7;
+
+  color: #737b87;
+}
+
+
+/* =========================
+   Card
+========================= */
+
+.signup-card {
+  width: 100%;
+
+  padding: 36px;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e7ebf0;
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 30px rgba(30, 50, 80, 0.06);
+
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   Input Group
+========================= */
+
+.signup-input-group {
+  margin-bottom: 20px;
+}
+
+.signup-input-group label {
+  display: block;
+
+  margin-bottom: 9px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #343a43;
+}
+
+.signup-input-group input {
+  width: 100%;
+  height: 50px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dce1e7;
+  border-radius: 8px;
+
+  outline: none;
+
+  background-color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  color: #252a31;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.signup-input-group input::placeholder {
+  color: #a8afb8;
+}
+
+.signup-input-group input:hover {
+  border-color: #c7cdd5;
+}
+
+.signup-input-group input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================
+   Email
+========================= */
+
+.email-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.email-input-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.duplicate-button {
+  width: 82px;
+  flex-shrink: 0;
+
+  border: 1px solid #cfd5dc;
+  border-radius: 8px;
+
+  background-color: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #4c5560;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.duplicate-button:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background-color: #f8faff;
+}
+
+
+/* =========================
+   Input Help
+========================= */
+
+.input-help {
+  margin: 7px 0 0;
+
+  font-size: 12px;
+  color: #8a929d;
+}
+
+.input-error {
+  margin: 7px 0 0;
+
+  font-size: 12px;
+  color: #e5484d;
+}
+
+.input-success {
+  margin: 7px 0 0;
+
+  font-size: 12px;
+  color: #16a34a;
+}
+
+
+/* =========================
+   Agreement
+========================= */
+
+.agreement-section {
+  margin-top: 28px;
+  margin-bottom: 24px;
+
+  padding: 20px;
+
+  border: 1px solid #e5e9ee;
+  border-radius: 10px;
+
+  background-color: #fafbfc;
+
+  box-sizing: border-box;
+}
+
+
+/* 전체 동의 */
+
+.agreement-all {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  cursor: pointer;
+
+  font-size: 14px;
+  color: #252a31;
+}
+
+.agreement-all input,
+.agreement-item input {
+  position: absolute;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+.agreement-checkbox {
+  width: 18px;
+  height: 18px;
+
+  flex-shrink: 0;
+
+  border: 1px solid #cbd2da;
+  border-radius: 4px;
+
+  background-color: #ffffff;
+
+  box-sizing: border-box;
+
+  transition: all 0.2s ease;
+}
+
+.agreement-all input:checked + .agreement-checkbox,
+.agreement-item input:checked + .agreement-checkbox {
+  border-color: #2563eb;
+  background-color: #2563eb;
+}
+
+.agreement-all input:checked + .agreement-checkbox::after,
+.agreement-item input:checked + .agreement-checkbox::after {
+  content: '';
+
+  display: block;
+
+  width: 5px;
+  height: 9px;
+
+  margin: 2px 0 0 5px;
+
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+
+  transform: rotate(45deg);
+}
+
+
+/* 구분선 */
+
+.agreement-divider {
+  height: 1px;
+
+  margin: 17px 0;
+
+  background-color: #e5e8ec;
+}
+
+
+/* 개별 약관 */
+
+.agreement-item {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 13px;
+
+  cursor: pointer;
+
+  font-size: 12px;
+  color: #737b87;
+}
+
+.agreement-item:first-of-type {
+  margin-top: 0;
+}
+
+.agreement-item b {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.agreement-detail {
+  margin-left: auto;
+  padding: 0;
+
+  border: none;
+  background: none;
+
+  font-family: inherit;
+  font-size: 11px;
+
+  color: #9299a2;
+
+  cursor: pointer;
+}
+
+.agreement-detail:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+
+/* =========================
+   Signup Button
+========================= */
+
+.signup-button {
+  width: 100%;
+  height: 54px;
+
+  border: none;
+  border-radius: 8px;
+
+  background-color: #2563eb;
+
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.signup-button:hover {
+  background-color: #1d4ed8;
+}
+
+.signup-button:active {
+  transform: translateY(1px);
+}
+
+
+/* =========================
+   Login Link
+========================= */
+
+.already-member {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+
+  margin-top: 24px;
+
+  font-size: 13px;
+  color: #8a929d;
+}
+
+.already-member button {
+  padding: 0;
+
+  border: none;
+  background: none;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+
+  color: #2563eb;
+
+  cursor: pointer;
+}
+
+.already-member button:hover {
+  text-decoration: underline;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+
+  .signup-main {
+    padding: 100px 16px 40px;
+  }
+
+  .signup-title h1 {
+    font-size: 28px;
+  }
+
+  .signup-card {
+    padding: 30px 24px;
+  }
+}
+
+
+@media (max-width: 400px) {
+
+  .signup-title h1 {
+    font-size: 26px;
+  }
+
+  .signup-card {
+    padding: 26px 20px;
+  }
+
+  .email-input-row {
+    gap: 6px;
+  }
+
+  .duplicate-button {
+    width: 75px;
+  }
+
+  .agreement-section {
+    padding: 16px;
+  }
+}
+
