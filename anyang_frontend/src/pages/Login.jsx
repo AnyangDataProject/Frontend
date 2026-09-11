@@ -144,18 +144,7 @@ function Login() {
                   <span>Google로 로그인</span>
                 </button>
 
-                {/* Kakao */}
-                <button
-                  type="button"
-                  className="social-button kakao"
-                  onClick={() => handleSocialLogin('kakao')}
-                >
-                  <span className="social-icon kakao-icon">
-                    K
-                  </span>
 
-                  <span>카카오로 로그인</span>
-                </button>
 
                 {/* Naver */}
                 <button
