@@ -15,8 +15,15 @@ import AdminUsers from './pages/admin/AdminUsers';
 import AdminReports from './pages/admin/AdminReports';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminRoadAnalysis from './pages/admin/AdminRoadAnalysis';
+import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
 function App() {
+
+  useKakaoLoader({
+    appkey: import.meta.env.VITE_KAKAO_MAP_KEY,
+    libraries: ['services'],
+  });
+  
   return (
     <BrowserRouter>
       <Header />

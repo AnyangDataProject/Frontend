@@ -1,148 +1,132 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
 
-.signup-page {
-  min-height: 100vh;
-  background-color: #f6f8fb;
-}
-
-
-/* =========================
-   Main
-========================= */
-
-.signup-main {
-  min-height: 100vh;
-
-  display: flex;
-  justify-content: center;
-
-  padding: 120px 20px 60px;
-
+* {
   box-sizing: border-box;
 }
 
+.signup-page {
+  /* 통일된 디자인 시스템 변수 */
+  --signup-bg: #F7F8FA;
+  --signup-surface: #ffffff;
+  --signup-ink: #15191d;
+  --signup-soft: #69727c;
+  --signup-muted: #9aa19d;
+  --signup-line: #E5E7EB;
 
-/* =========================
-   Container
-========================= */
+  --signup-brand: #2563EB;
+  --signup-brand-dark: #1D4ED8;
+  --signup-green: #3a8f6d;
+  --signup-red: #d64545;
+
+  min-height: 100vh;
+  background-color: var(--signup-bg);
+  color: var(--signup-ink);
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+  text-align: left;
+}
+
+/* =========================================
+   Main Layout
+========================================= */
+
+.signup-main {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding-top: 120px;
+  box-sizing: border-box;
+}
 
 .signup-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 480px;
 }
 
-
-/* =========================
-   Title
-========================= */
+/* =========================================
+   Title Section
+========================================= */
 
 .signup-title {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 .signup-title h1 {
-  margin: 0 0 12px;
-
-  font-size: 32px;
+  margin: 0 0 8px;
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: -1px;
-
-  color: #20252d;
+  letter-spacing: -0.03em;
+  color: var(--signup-ink);
 }
 
 .signup-title p {
   margin: 0;
-
-  font-size: 15px;
-  line-height: 1.7;
-
-  color: #737b87;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--signup-soft);
 }
 
-
-/* =========================
-   Card
-========================= */
+/* =========================================
+   Card Component
+========================================= */
 
 .signup-card {
   width: 100%;
-
-  padding: 36px;
-
-  background-color: #ffffff;
-
-  border: 1px solid #e7ebf0;
-  border-radius: 16px;
-
-  box-shadow:
-    0 8px 30px rgba(30, 50, 80, 0.06);
-
+  padding: 32px 28px;
+  background-color: var(--signup-surface);
+  border: 1px solid var(--signup-line);
+  border-radius: 14px;
   box-sizing: border-box;
 }
 
-
-/* =========================
-   Input Group
-========================= */
+/* =========================================
+   Input Fields
+========================================= */
 
 .signup-input-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
+  text-align: left;
 }
 
 .signup-input-group label {
   display: block;
-
-  margin-bottom: 9px;
-
-  font-size: 14px;
-  font-weight: 600;
-
-  color: #343a43;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--signup-ink);
 }
 
 .signup-input-group input {
   width: 100%;
-  height: 50px;
-
+  height: 48px;
   padding: 0 14px;
-
-  border: 1px solid #dce1e7;
-  border-radius: 8px;
-
+  border: 1px solid var(--signup-line);
+  border-radius: 10px;
   outline: none;
-
-  background-color: #ffffff;
-
   font-family: inherit;
   font-size: 14px;
-  color: #252a31;
-
+  color: var(--signup-ink);
+  background-color: var(--signup-surface);
   box-sizing: border-box;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .signup-input-group input::placeholder {
-  color: #a8afb8;
+  color: var(--signup-muted);
 }
 
 .signup-input-group input:hover {
-  border-color: #c7cdd5;
+  border-color: #cbd5e1;
 }
 
 .signup-input-group input:focus {
-  border-color: #2563eb;
-
-  box-shadow:
-    0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--signup-brand);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-
-/* =========================
-   Email
-========================= */
+/* =========================================
+   Email Input Row
+========================================= */
 
 .email-input-row {
   display: flex;
@@ -155,96 +139,78 @@
 }
 
 .duplicate-button {
-  width: 82px;
+  width: 88px;
+  height: 48px;
   flex-shrink: 0;
-
-  border: 1px solid #cfd5dc;
-  border-radius: 8px;
-
-  background-color: #ffffff;
-
+  border: 1px solid var(--signup-line);
+  border-radius: 10px;
+  background-color: var(--signup-surface);
   font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
-
-  color: #4c5560;
-
+  font-weight: 700;
+  color: var(--signup-soft);
   cursor: pointer;
-
-  transition: all 0.2s ease;
+  transition: 0.2s;
 }
 
 .duplicate-button:hover {
-  border-color: #2563eb;
-  color: #2563eb;
-  background-color: #f8faff;
+  border-color: var(--signup-brand);
+  color: var(--signup-brand);
+  background-color: #EFF4FF;
 }
 
-
-/* =========================
-   Input Help
-========================= */
+/* =========================================
+   Input Status Messages
+========================================= */
 
 .input-help {
-  margin: 7px 0 0;
-
-  font-size: 12px;
-  color: #8a929d;
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--signup-muted);
 }
 
 .input-error {
-  margin: 7px 0 0;
-
-  font-size: 12px;
-  color: #e5484d;
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--signup-red);
 }
 
 .input-success {
-  margin: 7px 0 0;
-
-  font-size: 12px;
-  color: #16a34a;
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--signup-green);
 }
 
-
-/* =========================
-   Agreement
-========================= */
+/* =========================================
+   Agreement Section
+========================================= */
 
 .agreement-section {
-  margin-top: 28px;
+  margin-top: 24px;
   margin-bottom: 24px;
-
-  padding: 20px;
-
-  border: 1px solid #e5e9ee;
+  padding: 18px;
+  border: 1px solid var(--signup-line);
   border-radius: 10px;
-
-  background-color: #fafbfc;
-
+  background-color: var(--signup-bg);
   box-sizing: border-box;
 }
-
 
 /* 전체 동의 */
 
 .agreement-all {
   position: relative;
-
   display: flex;
   align-items: center;
-  gap: 9px;
-
+  gap: 10px;
   cursor: pointer;
-
   font-size: 14px;
-  color: #252a31;
+  font-weight: 700;
+  color: var(--signup-ink);
 }
 
 .agreement-all input,
 .agreement-item input {
   position: absolute;
-
   opacity: 0;
   pointer-events: none;
 }
@@ -252,70 +218,53 @@
 .agreement-checkbox {
   width: 18px;
   height: 18px;
-
   flex-shrink: 0;
-
-  border: 1px solid #cbd2da;
+  border: 1px solid var(--signup-line);
   border-radius: 4px;
-
-  background-color: #ffffff;
-
+  background-color: var(--signup-surface);
   box-sizing: border-box;
-
-  transition: all 0.2s ease;
+  transition: 0.2s;
+  position: relative;
 }
 
 .agreement-all input:checked + .agreement-checkbox,
 .agreement-item input:checked + .agreement-checkbox {
-  border-color: #2563eb;
-  background-color: #2563eb;
+  border-color: var(--signup-brand);
+  background-color: var(--signup-brand);
 }
 
 .agreement-all input:checked + .agreement-checkbox::after,
 .agreement-item input:checked + .agreement-checkbox::after {
   content: '';
-
-  display: block;
-
-  width: 5px;
-  height: 9px;
-
-  margin: 2px 0 0 5px;
-
-  border-right: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
-
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
-
 
 /* 구분선 */
 
 .agreement-divider {
   height: 1px;
-
-  margin: 17px 0;
-
-  background-color: #e5e8ec;
+  margin: 14px 0;
+  background-color: var(--signup-line);
 }
-
 
 /* 개별 약관 */
 
 .agreement-item {
   position: relative;
-
   display: flex;
   align-items: center;
-
   gap: 8px;
-
-  margin-top: 13px;
-
+  margin-top: 10px;
   cursor: pointer;
-
   font-size: 12px;
-  color: #737b87;
+  color: var(--signup-soft);
 }
 
 .agreement-item:first-of-type {
@@ -323,94 +272,75 @@
 }
 
 .agreement-item b {
-  color: #2563eb;
-  font-weight: 600;
+  color: var(--signup-brand);
+  font-weight: 700;
 }
 
 .agreement-detail {
   margin-left: auto;
   padding: 0;
-
   border: none;
   background: none;
-
   font-family: inherit;
   font-size: 11px;
-
-  color: #9299a2;
-
+  color: var(--signup-muted);
   cursor: pointer;
+  transition: color 0.2s;
 }
 
 .agreement-detail:hover {
-  color: #2563eb;
+  color: var(--signup-brand);
   text-decoration: underline;
 }
 
-
-/* =========================
+/* =========================================
    Signup Button
-========================= */
+========================================= */
 
 .signup-button {
   width: 100%;
-  height: 54px;
-
+  height: 48px;
   border: none;
-  border-radius: 8px;
-
-  background-color: #2563eb;
-
+  border-radius: 10px;
+  background-color: var(--signup-brand);
   color: #ffffff;
-
   font-family: inherit;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
-
   cursor: pointer;
-
-  transition:
-    background-color 0.2s ease,
-    transform 0.1s ease;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .signup-button:hover {
-  background-color: #1d4ed8;
+  background-color: var(--find-brand-dark, #1D4ED8);
 }
 
 .signup-button:active {
   transform: translateY(1px);
 }
 
-
-/* =========================
-   Login Link
-========================= */
+/* =========================================
+   Login Link Section
+========================================= */
 
 .already-member {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 7px;
-
-  margin-top: 24px;
-
+  gap: 6px;
+  margin-top: 22px;
   font-size: 13px;
-  color: #8a929d;
+  color: var(--signup-soft);
 }
 
 .already-member button {
   padding: 0;
-
   border: none;
   background: none;
-
   font-family: inherit;
   font-size: 13px;
-  font-weight: 600;
-
-  color: #2563eb;
-
+  font-weight: 700;
+  color: var(--signup-brand);
   cursor: pointer;
 }
 
@@ -418,28 +348,14 @@
   text-decoration: underline;
 }
 
-
-/* =========================
-   Responsive
-========================= */
+/* =========================================
+   Responsive Breakpoints
+========================================= */
 
 @media (max-width: 768px) {
-
   .signup-main {
-    padding: 100px 16px 40px;
+    padding: 80px 16px 40px;
   }
-
-  .signup-title h1 {
-    font-size: 28px;
-  }
-
-  .signup-card {
-    padding: 30px 24px;
-  }
-}
-
-
-@media (max-width: 400px) {
 
   .signup-title h1 {
     font-size: 26px;
@@ -448,17 +364,34 @@
   .signup-card {
     padding: 26px 20px;
   }
+}
+
+@media (max-width: 480px) {
+  .signup-main {
+    padding: 60px 16px 40px;
+  }
+
+  .signup-title h1 {
+    font-size: 24px;
+  }
+
+  .signup-title p {
+    font-size: 13px;
+  }
+
+  .signup-card {
+    padding: 22px 16px;
+  }
 
   .email-input-row {
     gap: 6px;
   }
 
   .duplicate-button {
-    width: 75px;
+    width: 80px;
   }
 
   .agreement-section {
-    padding: 16px;
+    padding: 14px;
   }
 }
-
