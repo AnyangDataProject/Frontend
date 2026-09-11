@@ -1,667 +1,412 @@
-import React, { useState, useMemo } from "react";
-import {
-  Camera,
-  AlertTriangle,
-  Clock,
-  CheckCircle2,
-  Wrench,
-  X,
-  ChevronRight,
-  Construction,
-  CircleDot,
-  Signpost,
-  User,
-} from "lucide-react";
+import React, { useMemo, useState } from "react";
+import { Camera, X, Search, LocateFixed, Map as MapGlyph, List as ListIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Map, CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
 import "./MainMap.css";
 
-// ---------------------------------------------------------------------------
-// Mock data
-// ---------------------------------------------------------------------------
-
-const TYPE_META = {
-  pothole: { label: "포트홀", icon: CircleDot },
-  crack: { label: "노면 균열", icon: Construction },
-  sign: { label: "표지판 파손", icon: Signpost },
-  manhole: { label: "맨홀/시설물", icon: AlertTriangle },
+const TYPE_LABEL = {
+  pothole: "포트홀",
+  crack: "노면 균열",
+  sign: "표지판 파손",
+  manhole: "맨홀/시설물",
 };
 
 const SEVERITY_META = {
-  low: { label: "낮음", color: "#3A8F6D" },
-  mid: { label: "보통", color: "#E8A33D" },
-  high: { label: "높음", color: "#D64545" },
+  low: { label: "낮음", color: "var(--sev-low)" },
+  mid: { label: "보통", color: "var(--sev-mid)" },
+  high: { label: "심각", color: "var(--sev-high)" },
 };
 
 const STATUS_META = {
-  received: {
-    label: "접수됨",
-    icon: Clock,
-    color: "#6B7280",
-  },
-  progress: {
-    label: "처리중",
-    icon: Wrench,
-    color: "#D97B22",
-  },
-  done: {
-    label: "처리완료",
-    icon: CheckCircle2,
-    color: "#3A8F6D",
-  },
+  received: { label: "접수됨", color: "var(--ink-soft)" },
+  progress: { label: "처리중", color: "var(--sev-mid)" },
+  done: { label: "처리완료", color: "var(--sev-low)" },
 };
 
 const PINS = [
+  { id: 1, lat: 37.3928, lng: 126.9516, type: "pothole", severity: "high", status: "received", address: "동안구 평촌대로 123", reportedAt: "2026-09-08", photoUrl: null },
+  { id: 2, lat: 37.4014, lng: 126.9527, type: "crack", severity: "mid", status: "progress", address: "동안구 시민대로 45", reportedAt: "2026-09-07", photoUrl: null },
+  { id: 3, lat: 37.3945, lng: 126.9226, type: "sign", severity: "low", status: "done", address: "만안구 안양로 210", reportedAt: "2026-09-05", photoUrl: null },
+  { id: 4, lat: 37.3902, lng: 126.9241, type: "pothole", severity: "mid", status: "received", address: "만안구 삼덕로 8", reportedAt: "2026-09-08", photoUrl: null },
+  { id: 5, lat: 37.3843, lng: 126.9556, type: "manhole", severity: "high", status: "progress", address: "동안구 관악대로 77", reportedAt: "2026-09-06", photoUrl: null },
+  { id: 6, lat: 37.3798, lng: 126.9298, type: "crack", severity: "low", status: "done", address: "만안구 병목안로 19", reportedAt: "2026-09-03", photoUrl: null },
+  { id: 7, lat: 37.3861, lng: 126.9613, type: "pothole", severity: "low", status: "received", address: "동안구 흥안대로 33", reportedAt: "2026-09-08", photoUrl: null },
+  { id: 8, lat: 37.3971, lng: 126.9605, type: "sign", severity: "mid", status: "received", address: "동안구 평촌대로 301", reportedAt: "2026-09-07", photoUrl: null },
+];
+
+// 위험 예측 레이어용 임시 구간 데이터 (실제로는 백엔드 위험도 예측 API 값으로 교체)
+const RISK_SEGMENTS = [
   {
-    id: 1,
-    x: 32,
-    y: 28,
-    type: "pothole",
-    severity: "high",
-    status: "received",
-    address: "동안구 평촌대로 123",
-    reportedAt: "2026-09-08",
-    reporter: "김민준",
+    id: "seg1",
+    risk: "high",
+    path: [{ lat: 37.3960, lng: 126.9480 }, { lat: 37.3958, lng: 126.9560 }],
+    mid: { lat: 37.3959, lng: 126.9520 },
+    causes: [
+      { label: "교통량", value: "높음" },
+      { label: "최근 강수량", value: "많음" },
+      { label: "사고 이력", value: "3건" },
+    ],
   },
   {
-    id: 2,
-    x: 55,
-    y: 22,
-    type: "crack",
-    severity: "mid",
-    status: "progress",
-    address: "동안구 시민대로 45",
-    reportedAt: "2026-09-07",
-    reporter: "이서연",
+    id: "seg2",
+    risk: "mid",
+    path: [{ lat: 37.3900, lng: 126.9500 }, { lat: 37.3862, lng: 126.9520 }],
+    mid: { lat: 37.3881, lng: 126.9510 },
+    causes: [
+      { label: "교통량", value: "보통" },
+      { label: "노후 도로", value: "8년 경과" },
+      { label: "사고 이력", value: "1건" },
+    ],
   },
   {
-    id: 3,
-    x: 68,
-    y: 45,
-    type: "sign",
-    severity: "low",
-    status: "done",
-    address: "만안구 안양로 210",
-    reportedAt: "2026-09-05",
-    reporter: "박지훈",
-  },
-  {
-    id: 4,
-    x: 41,
-    y: 58,
-    type: "pothole",
-    severity: "mid",
-    status: "received",
-    address: "만안구 삼덕로 8",
-    reportedAt: "2026-09-08",
-    reporter: "최유리",
-  },
-  {
-    id: 5,
-    x: 22,
-    y: 63,
-    type: "manhole",
-    severity: "high",
-    status: "progress",
-    address: "동안구 관악대로 77",
-    reportedAt: "2026-09-06",
-    reporter: "정도윤",
-  },
-  {
-    id: 6,
-    x: 77,
-    y: 66,
-    type: "crack",
-    severity: "low",
-    status: "done",
-    address: "만안구 병목안로 19",
-    reportedAt: "2026-09-03",
-    reporter: "한소율",
-  },
-  {
-    id: 7,
-    x: 48,
-    y: 78,
-    type: "pothole",
-    severity: "low",
-    status: "received",
-    address: "동안구 흥안대로 33",
-    reportedAt: "2026-09-08",
-    reporter: "오준서",
-  },
-  {
-    id: 8,
-    x: 60,
-    y: 35,
-    type: "sign",
-    severity: "mid",
-    status: "received",
-    address: "동안구 평촌대로 301",
-    reportedAt: "2026-09-07",
-    reporter: "임하은",
+    id: "seg3",
+    risk: "low",
+    path: [{ lat: 37.3820, lng: 126.9350 }, { lat: 37.3822, lng: 126.9450 }],
+    mid: { lat: 37.3821, lng: 126.9400 },
+    causes: [
+      { label: "교통량", value: "낮음" },
+      { label: "사고 이력", value: "0건" },
+    ],
   },
 ];
 
-const ROADS = [
-  "M 5 30 H 95",
-  "M 5 55 H 95",
-  "M 5 75 H 95",
-  "M 20 5 V 95",
-  "M 45 5 V 95",
-  "M 70 5 V 95",
-  "M 5 10 H 95",
-];
+const RISK_COLOR = { low: "#3B6D11", mid: "#E8B923", high: "#C1432D" };
+const RISK_LABEL = { low: "LOW", mid: "MID", high: "HIGH" };
+
+const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
 export default function MainMap() {
   const navigate = useNavigate();
-
-  const [typeFilter, setTypeFilter] = useState("all");
-  const [severityFilter, setSeverityFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [listOpen, setListOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [listOpenMobile, setListOpenMobile] = useState(false);
+  const [selectedRisk, setSelectedRisk] = useState(null);
+  const [layer, setLayer] = useState("current"); // current | prediction
+  const [statusFilter, setStatusFilter] = useState("all"); // all | open | done
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [center, setCenter] = useState(DEFAULT_CENTER);
+  const [searchText, setSearchText] = useState("");
+  const [searchError, setSearchError] = useState("");
 
-  const filtered = useMemo(() => {
-    return PINS.filter(
-      (p) =>
-        (typeFilter === "all" || p.type === typeFilter) &&
-        (severityFilter === "all" || p.severity === severityFilter) &&
-        (statusFilter === "all" || p.status === statusFilter)
-    );
-  }, [typeFilter, severityFilter, statusFilter]);
-
-  const counts = useMemo(() => {
-    return {
-      total: PINS.length,
-      received: PINS.filter((p) => p.status === "received").length,
-      progress: PINS.filter((p) => p.status === "progress").length,
+  const counts = useMemo(
+    () => ({
+      all: PINS.length,
+      open: PINS.filter((p) => p.status !== "done").length,
       done: PINS.filter((p) => p.status === "done").length,
-    };
-  }, []);
+    }),
+    []
+  );
+
+  const filteredPins = useMemo(() => {
+    let list = PINS;
+    if (statusFilter === "open") list = list.filter((p) => p.status !== "done");
+    if (statusFilter === "done") list = list.filter((p) => p.status === "done");
+    if (typeFilter !== "all") list = list.filter((p) => p.type === typeFilter);
+    return list;
+  }, [statusFilter, typeFilter]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearchError("");
+    if (!searchText.trim()) return;
+
+    if (!window.kakao?.maps?.services) {
+      setSearchError("지도 서비스를 불러오는 중이에요. 잠시 후 다시 시도해주세요.");
+      return;
+    }
+
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    geocoder.addressSearch(searchText.trim(), (result, status) => {
+      if (status === window.kakao.maps.services.Status.OK && result[0]) {
+        setCenter({ lat: parseFloat(result[0].y), lng: parseFloat(result[0].x) });
+      } else {
+        setSearchError("주소를 찾을 수 없어요. 다르게 입력해보세요.");
+      }
+    });
+  };
+
+  const handleLocate = () => {
+    if (!navigator.geolocation) {
+      setSearchError("이 브라우저에서는 위치 확인을 지원하지 않아요.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setSearchError("");
+        setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => setSearchError("위치 권한을 확인해주세요.")
+    );
+  };
 
   return (
-    <div className="rs-app">
-
-      {/* Header */}
-      <header className="rs-header">
-        <div className="rs-brand">
-          <span className="rs-brand-mark" />
-
-          <div>
-            <div className="rs-brand-name">
-              로드센스
+    <div className="tv-page">
+      <div className="tv-body">
+        <div className="tv-map-view">
+          <header className="tv-header">
+            <div className="tv-tabs">
+              <button
+                className={!listOpen ? "is-active" : ""}
+                onClick={() => setListOpen(false)}
+              >
+                <MapGlyph size={14} />
+                지도
+              </button>
+              <button
+                className={listOpen ? "is-active" : ""}
+                onClick={() => setListOpen(true)}
+              >
+                <ListIcon size={14} />
+                신고 목록
+              </button>
             </div>
 
-            <div className="rs-brand-sub">
-              안양시 AI 도로파손 탐지 서비스
+            <form className="tv-search" onSubmit={handleSearch}>
+              <Search size={13} />
+              <input
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                placeholder="도로명 주소 검색"
+                aria-label="도로명 주소 검색"
+              />
+            </form>
+
+            <div className="tv-layer-switch">
+              <button
+                className={layer === "current" ? "is-active" : ""}
+                onClick={() => setLayer("current")}
+              >
+                현재
+              </button>
+              <button
+                className={layer === "prediction" ? "is-active" : ""}
+                onClick={() => setLayer("prediction")}
+              >
+                예측
+              </button>
             </div>
-          </div>
+
+            <button className="tv-report-btn" onClick={() => navigate("/report")}>
+              <Camera size={14} />
+              신고하기
+            </button>
+          </header>
+
+          {searchError && <div className="tv-search-error">{searchError}</div>}
+
+          <Map
+            center={center}
+            style={{ width: "100%", height: "100%" }}
+            level={7}
+            onClick={() => {
+              setSelected(null);
+              setSelectedRisk(null);
+            }}
+          >
+            {layer === "current" &&
+              PINS.map((pin) => {
+                const sev = SEVERITY_META[pin.severity];
+                return (
+                  <CustomOverlayMap
+                    key={pin.id}
+                    position={{ lat: pin.lat, lng: pin.lng }}
+                    xAnchor={0.5}
+                    yAnchor={0.5}
+                  >
+                    <button
+                      className={`tv-marker ${pin.severity === "high" ? "tv-marker--lg" : ""} ${
+                        selected?.id === pin.id ? "is-selected" : ""
+                      }`}
+                      style={{ background: sev.color }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelected(pin);
+                      }}
+                      aria-label={`${TYPE_LABEL[pin.type]} - ${sev.label} - ${pin.address}`}
+                    />
+                  </CustomOverlayMap>
+                );
+              })}
+
+            {layer === "prediction" &&
+              RISK_SEGMENTS.map((seg) => (
+                <React.Fragment key={seg.id}>
+                  <Polyline
+                    path={seg.path}
+                    strokeWeight={6}
+                    strokeColor={RISK_COLOR[seg.risk]}
+                    strokeOpacity={0.85}
+                    strokeStyle="solid"
+                    onClick={() => setSelectedRisk(seg)}
+                  />
+                  <CustomOverlayMap position={seg.mid} xAnchor={0.5} yAnchor={1.4}>
+                    <button
+                      className="tv-risk-hit"
+                      style={{ "--risk-color": RISK_COLOR[seg.risk] }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedRisk(seg);
+                      }}
+                      aria-label={`위험도 ${RISK_LABEL[seg.risk]} 구간 상세`}
+                    >
+                      {RISK_LABEL[seg.risk]}
+                    </button>
+                  </CustomOverlayMap>
+                </React.Fragment>
+              ))}
+
+            {selectedRisk && (
+              <CustomOverlayMap position={selectedRisk.mid} xAnchor={0.5} yAnchor={2.4}>
+                <div className="tv-risk-popup" onClick={(e) => e.stopPropagation()}>
+                  <div className="tv-risk-popup-head">
+                    <span style={{ color: RISK_COLOR[selectedRisk.risk] }}>
+                      {RISK_LABEL[selectedRisk.risk]}
+                    </span>
+                    <button onClick={() => setSelectedRisk(null)} aria-label="닫기">
+                      <X size={13} />
+                    </button>
+                  </div>
+                  {selectedRisk.causes.map((c) => (
+                    <div key={c.label} className="tv-risk-popup-row">
+                      <span>{c.label}</span>
+                      <span>{c.value}</span>
+                    </div>
+                  ))}
+                </div>
+              </CustomOverlayMap>
+            )}
+          </Map>
+
+          <button className="tv-locate-btn" onClick={handleLocate} aria-label="내 위치로 이동">
+            <LocateFixed size={16} />
+          </button>
+
+          {layer === "current" ? (
+            <div className="tv-legend">
+              <span><span className="tv-dot" style={{ background: "var(--sev-low)" }} />낮음</span>
+              <span><span className="tv-dot" style={{ background: "var(--sev-mid)" }} />보통</span>
+              <span><span className="tv-dot tv-dot--lg" style={{ background: "var(--sev-high)" }} />심각</span>
+            </div>
+          ) : (
+            <div className="tv-legend">
+              <span><span className="tv-bar" style={{ background: RISK_COLOR.low }} />LOW</span>
+              <span><span className="tv-bar" style={{ background: RISK_COLOR.mid }} />MID</span>
+              <span><span className="tv-bar" style={{ background: RISK_COLOR.high }} />HIGH</span>
+            </div>
+          )}
         </div>
 
-        <nav className="rs-nav">
-          <button className="rs-nav-item is-active">
-            지도
-          </button>
-
-          <button
-            className="rs-nav-item"
-            onClick={() => navigate("/my-reports")}
-          >
-            내 신고
-          </button>
-
-          <button
-            className="rs-nav-item"
-            onClick={() => navigate("/inquiry")}
-          >
-            민원/문의
-          </button>
-        </nav>
-
-        <button
-          className="rs-login"
-          onClick={() => navigate("/login")}
-        >
-          <User size={16} />
-          로그인
-        </button>
-      </header>
-
-      {/* Stats */}
-      <div className="rs-stats">
-        <Stat
-          label="전체 신고"
-          value={counts.total}
-        />
-
-        <Stat
-          label="접수됨"
-          value={counts.received}
-          color={STATUS_META.received.color}
-        />
-
-        <Stat
-          label="처리중"
-          value={counts.progress}
-          color={STATUS_META.progress.color}
-        />
-
-        <Stat
-          label="처리완료"
-          value={counts.done}
-          color={STATUS_META.done.color}
-        />
-      </div>
-
-      {/* Filters */}
-      <div className="rs-filters">
-
-        <FilterGroup
-          label="파손 유형"
-          value={typeFilter}
-          onChange={setTypeFilter}
-          options={[
-            { value: "all", label: "전체" },
-            ...Object.entries(TYPE_META).map(
-              ([key, value]) => ({
-                value: key,
-                label: value.label,
-              })
-            ),
-          ]}
-        />
-
-        <FilterGroup
-          label="심각도"
-          value={severityFilter}
-          onChange={setSeverityFilter}
-          options={[
-            { value: "all", label: "전체" },
-            ...Object.entries(SEVERITY_META).map(
-              ([key, value]) => ({
-                value: key,
-                label: value.label,
-              })
-            ),
-          ]}
-        />
-
-        <FilterGroup
-          label="처리 상태"
-          value={statusFilter}
-          onChange={setStatusFilter}
-          options={[
-            { value: "all", label: "전체" },
-            ...Object.entries(STATUS_META).map(
-              ([key, value]) => ({
-                value: key,
-                label: value.label,
-              })
-            ),
-          ]}
-        />
-
-      </div>
-
-      {/* Body */}
-      <div className="rs-body">
-
-        {/* Map */}
-        <div className="rs-map-wrap">
-
-          <div className="rs-map">
-
-            <svg
-              className="rs-map-roads"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
+        {/* 리스트 패널 (지도 옆에서 슬라이드로 열림/닫힘) */}
+        <div className={`tv-list-panel ${listOpen ? "is-open" : ""}`}>
+          <div className="tv-list-tabs">
+            <button
+              className={statusFilter === "all" ? "is-active" : ""}
+              onClick={() => setStatusFilter("all")}
             >
-              {ROADS.map((d, i) => (
-                <path
-                  key={i}
-                  d={d}
-                  className="rs-road"
-                />
-              ))}
-            </svg>
+              전체 신고 <b>{counts.all}</b>
+            </button>
+            <button
+              className={statusFilter === "open" ? "is-active" : ""}
+              onClick={() => setStatusFilter("open")}
+            >
+              미처리 <b>{counts.open}</b>
+            </button>
+            <button
+              className={statusFilter === "done" ? "is-active" : ""}
+              onClick={() => setStatusFilter("done")}
+            >
+              처리완료 <b>{counts.done}</b>
+            </button>
+          </div>
 
-            {filtered.map((pin) => {
-              const Icon = TYPE_META[pin.type].icon;
-              const color =
-                SEVERITY_META[pin.severity].color;
+          <div className="tv-type-filter">
+            {[
+              { value: "all", label: "전체 유형" },
+              ...Object.entries(TYPE_LABEL).map(([value, label]) => ({ value, label })),
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                className={typeFilter === opt.value ? "is-active" : ""}
+                onClick={() => setTypeFilter(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
 
+          <div className="tv-cards">
+            {filteredPins.length === 0 && (
+              <div className="tv-cards-empty">해당하는 신고가 없어요.</div>
+            )}
+
+            {filteredPins.map((pin) => {
+              const sev = SEVERITY_META[pin.severity];
+              const st = STATUS_META[pin.status];
               return (
-                <button
-                  key={pin.id}
-                  className={`rs-pin ${
-                    selected?.id === pin.id
-                      ? "is-selected"
-                      : ""
-                  }`}
-                  style={{
-                    left: `${pin.x}%`,
-                    top: `${pin.y}%`,
-                    "--pin-color": color,
-                  }}
-                  onClick={() => setSelected(pin)}
-                  aria-label={`${TYPE_META[pin.type].label} - ${pin.address}`}
-                >
-                  <Icon
-                    size={13}
-                    strokeWidth={2.4}
-                  />
+                <button key={pin.id} className="tv-card" onClick={() => setSelected(pin)}>
+                  <span className="tv-card-dot" style={{ background: sev.color }} />
+                  <div className="tv-card-body">
+                    <div className="tv-card-top">
+                      <span className="tv-card-type">{TYPE_LABEL[pin.type]}</span>
+                      <span style={{ color: sev.color, fontWeight: 700 }}>{sev.label}</span>
+                    </div>
+                    <div className="tv-card-addr">{pin.address}</div>
+                    <div className="tv-card-meta">
+                      <span>{pin.reportedAt}</span>
+                      <span style={{ color: st.color, fontWeight: 600 }}>{st.label}</span>
+                    </div>
+                  </div>
                 </button>
               );
             })}
-
           </div>
-
-          {/* Legend */}
-          <div className="rs-legend">
-            {Object.entries(SEVERITY_META).map(
-              ([key, value]) => (
-                <div
-                  key={key}
-                  className="rs-legend-item"
-                >
-                  <span
-                    className="rs-legend-dot"
-                    style={{
-                      background: value.color,
-                    }}
-                  />
-
-                  {value.label}
-                </div>
-              )
-            )}
-          </div>
-
-          {/* Report button */}
-          <button
-            className="rs-fab"
-            onClick={() => navigate("/report")}
-          >
-            <Camera size={18} />
-            파손 신고하기
-          </button>
-
-          {/* Mobile list */}
-          <button
-            className="rs-mobile-list-toggle"
-            onClick={() => setListOpenMobile(true)}
-          >
-            목록 보기 ({filtered.length})
-          </button>
-
         </div>
+      </div>
 
-        {/* Sidebar */}
-        <aside
-          className={`rs-sidebar ${
-            listOpenMobile ? "is-open" : ""
-          }`}
-        >
-
-          <div className="rs-sidebar-head">
-            <span>
-              신고 목록 ({filtered.length})
-            </span>
-
-            <button
-              className="rs-sidebar-close"
-              onClick={() => setListOpenMobile(false)}
-            >
+      {/* 상세 모달 */}
+      {selected && (
+        <div className="tv-modal-backdrop" onClick={() => setSelected(null)}>
+          <div className="tv-detail-card" onClick={(e) => e.stopPropagation()}>
+            <button className="tv-detail-close" onClick={() => setSelected(null)} aria-label="닫기">
               <X size={16} />
             </button>
-          </div>
 
-          <div className="rs-list">
-
-            {filtered.length === 0 && (
-              <div className="rs-empty">
-                조건에 맞는 신고가 없어요.
-              </div>
-            )}
-
-            {filtered.map((pin) => {
-              const Icon =
-                TYPE_META[pin.type].icon;
-
-              const sev =
-                SEVERITY_META[pin.severity];
-
-              const st =
-                STATUS_META[pin.status];
-
-              const StIcon = st.icon;
-
-              return (
-                <button
-                  key={pin.id}
-                  className={`rs-list-item ${
-                    selected?.id === pin.id
-                      ? "is-selected"
-                      : ""
-                  }`}
-                  style={{
-                    "--sev-color": sev.color,
-                  }}
-                  onClick={() => {
-                    setSelected(pin);
-                    setListOpenMobile(false);
-                  }}
-                >
-
-                  <div className="rs-list-icon">
-                    <Icon size={16} />
-                  </div>
-
-                  <div className="rs-list-body">
-
-                    <div className="rs-list-top">
-
-                      <span className="rs-list-type">
-                        {TYPE_META[pin.type].label}
-                      </span>
-
-                      <span
-                        className="rs-list-status"
-                        style={{
-                          color: st.color,
-                        }}
-                      >
-                        <StIcon size={12} />
-                        {st.label}
-                      </span>
-
-                    </div>
-
-                    <div className="rs-list-addr">
-                      {pin.address}
-                    </div>
-
-                    <div className="rs-list-meta">
-                      {pin.reportedAt} · 심각도 {sev.label}
-                    </div>
-
-                  </div>
-
-                  <ChevronRight
-                    size={16}
-                    className="rs-list-chevron"
-                  />
-
-                </button>
-              );
-            })}
-
-          </div>
-
-        </aside>
-
-      </div>
-
-      {/* Detail */}
-      {selected && (
-        <div
-          className="rs-detail-overlay"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="rs-detail"
-            onClick={(e) => e.stopPropagation()}
-          >
-
-            <button
-              className="rs-detail-close"
-              onClick={() => setSelected(null)}
-            >
-              <X size={18} />
-            </button>
-
-            <div className="rs-detail-thumb">
-              {React.createElement(
-                TYPE_META[selected.type].icon,
-                {
-                  size: 36,
-                  strokeWidth: 1.6,
-                }
+            <div className="tv-detail-photo">
+              {selected.photoUrl ? (
+                <img src={selected.photoUrl} alt={`${TYPE_LABEL[selected.type]} 현장 사진`} />
+              ) : (
+                <span className="tv-detail-photo-empty">사진 없음</span>
               )}
             </div>
 
-            <div className="rs-detail-type">
-              {TYPE_META[selected.type].label}
-            </div>
+            <div className="tv-detail-type">{TYPE_LABEL[selected.type]}</div>
+            <div className="tv-detail-addr">{selected.address}</div>
 
-            <div className="rs-detail-addr">
-              {selected.address}
-            </div>
-
-            <div className="rs-detail-row">
+            <div className="tv-detail-row">
               <span>심각도</span>
-
-              <span
-                className="rs-badge"
-                style={{
-                  background:
-                    SEVERITY_META[
-                      selected.severity
-                    ].color,
-                }}
-              >
-                {
-                  SEVERITY_META[
-                    selected.severity
-                  ].label
-                }
+              <span style={{ color: SEVERITY_META[selected.severity].color, fontWeight: 700 }}>
+                {SEVERITY_META[selected.severity].label}
               </span>
             </div>
-
-            <div className="rs-detail-row">
+            <div className="tv-detail-row">
               <span>처리 상태</span>
-
-              <span
-                className="rs-badge rs-badge-outline"
-                style={{
-                  borderColor:
-                    STATUS_META[
-                      selected.status
-                    ].color,
-                  color:
-                    STATUS_META[
-                      selected.status
-                    ].color,
-                }}
-              >
-                {
-                  STATUS_META[
-                    selected.status
-                  ].label
-                }
+              <span style={{ color: STATUS_META[selected.status].color, fontWeight: 700 }}>
+                {STATUS_META[selected.status].label}
               </span>
             </div>
-
-            <div className="rs-detail-row">
+            <div className="tv-detail-row">
               <span>신고일</span>
               <span>{selected.reportedAt}</span>
             </div>
 
-            <div className="rs-detail-row">
-              <span>신고자</span>
-              <span>{selected.reporter}</span>
-            </div>
-
             <button
-            className="rs-detail-cta"
-            onClick={() =>
-                navigate("/ai-analysis", {
-                state: {
-                    report: selected,
-                },
-                })
-            }
+              className="tv-detail-cta"
+              onClick={() => navigate("/ai-analysis", { state: { report: selected } })}
             >
-            AI 분석 결과 자세히 보기
+              AI 분석 결과 자세히 보기
             </button>
-
           </div>
         </div>
       )}
-
-    </div>
-  );
-}
-
-function Stat({ label, value, color }) {
-  return (
-    <div className="rs-stat">
-
-      <div
-        className="rs-stat-value"
-        style={color ? { color } : undefined}
-      >
-        {value}
-      </div>
-
-      <div className="rs-stat-label">
-        {label}
-      </div>
-
-    </div>
-  );
-}
-
-function FilterGroup({
-  label,
-  value,
-  onChange,
-  options,
-}) {
-  return (
-    <div className="rs-filter-group">
-
-      <span className="rs-filter-label">
-        {label}
-      </span>
-
-      <div className="rs-chip-row">
-
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            className={`rs-chip ${
-              value === opt.value
-                ? "is-active"
-                : ""
-            }`}
-            onClick={() => onChange(opt.value)}
-          >
-            {opt.label}
-          </button>
-        ))}
-
-      </div>
-
     </div>
   );
 }

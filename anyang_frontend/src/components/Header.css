@@ -1,9 +1,17 @@
 .header {
+  --bg: #DCE1E8;
+  --surface: #FFFFFF;
+  --ink: #23262B;
+  --ink-soft: #5B6472;
+  --line: #C9D0D9;
+  --brand: #2563EB;
+  --sev-high: #C1432D;
+
   width: 100%;
   height: 72px;
 
-  background-color: #ffffff;
-  border-bottom: 1px solid #e9edf2;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--line);
 
   position: fixed;
   top: 0;
@@ -48,18 +56,18 @@
   font-weight: 800;
   letter-spacing: -0.5px;
 
-  color: #2563eb;
+  color: var(--brand);
 }
 
 .logo-service {
   padding-left: 10px;
 
-  border-left: 1px solid #dfe3e8;
+  border-left: 1px solid var(--line);
 
   font-size: 16px;
   font-weight: 600;
 
-  color: #333842;
+  color: var(--ink);
 }
 
 
@@ -97,11 +105,11 @@
 .header-menu {
   padding: 10px 12px;
 
-  color: #444b55;
+  color: var(--ink-soft);
 }
 
 .header-menu:hover {
-  color: #2563eb;
+  color: var(--brand);
 }
 
 
@@ -110,12 +118,12 @@
 ========================= */
 
 .header-report {
-  color: #2563eb;
+  color: var(--brand);
   font-weight: 700 !important;
 }
 
 .header-report:hover {
-  color: #1d4ed8;
+  color: #1D4ED8;
 }
 
 
@@ -128,11 +136,11 @@
 
   padding: 10px 14px;
 
-  color: #444b55;
+  color: var(--ink-soft);
 }
 
 .header-login:hover {
-  color: #2563eb;
+  color: var(--brand);
 }
 
 
@@ -146,11 +154,70 @@
   border-radius: 8px !important;
 
   color: #ffffff !important;
-  background-color: #2563eb !important;
+  background-image: linear-gradient(160deg, #5B8DEF, var(--brand)) !important;
 }
 
 .header-signup:hover {
-  background-color: #1d4ed8 !important;
+  filter: brightness(1.05);
+}
+
+
+/* =========================================
+   관리자 Header
+========================================= */
+
+.header-admin {
+  border-bottom: 1px solid var(--line);
+}
+
+.header-admin-nav {
+  gap: 4px;
+}
+
+.header-admin-nav .header-menu {
+  position: relative;
+}
+
+.header-admin-nav .header-menu.active {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.header-admin-nav .header-menu.active::after {
+  content: '';
+
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+
+  height: 2px;
+
+  background-color: var(--brand);
+}
+
+.header-logout {
+  height: 36px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--line);
+  border-radius: 6px;
+
+  background-color: var(--surface);
+
+  color: var(--ink-soft);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.header-logout:hover {
+  border-color: var(--sev-high);
+  color: var(--sev-high);
 }
 
 
@@ -254,63 +321,5 @@
   .header-signup {
     padding: 7px 9px;
   }
-
-  /* =========================================
-   관리자 Header
-========================================= */
-
-.header-admin {
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.header-admin-nav {
-  gap: 4px;
-}
-
-.header-admin-nav .header-menu {
-  position: relative;
-}
-
-.header-admin-nav .header-menu.active {
-  color: #2563eb;
-  font-weight: 700;
-}
-
-.header-admin-nav .header-menu.active::after {
-  content: '';
-
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: -1px;
-
-  height: 2px;
-
-  background-color: #2563eb;
-}
-
-.header-logout {
-  height: 36px;
-
-  padding: 0 13px;
-
-  border: 1px solid #e1e5ea;
-  border-radius: 6px;
-
-  background-color: #ffffff;
-
-  color: #6b7280;
-
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-
-  cursor: pointer;
-}
-
-.header-logout:hover {
-  border-color: #d64545;
-  color: #d64545;
-}
 
 }
