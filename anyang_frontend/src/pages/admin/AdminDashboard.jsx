@@ -65,7 +65,7 @@ export default function AdminDashboard() {
           <KakaoMap
             points={summary.mapPoints}
             selectedId={selectedRoadId}
-            onSelectPoint={(p) => setSelectedRoadId(p.id)}
+            onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
             height={380}
             level={8}
           />
