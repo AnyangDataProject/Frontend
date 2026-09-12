@@ -14,6 +14,7 @@ import PageHeader from "../../components/citizen/PageHeader";
 import StepSection from "../../components/citizen/StepSection";
 import InfoNotice from "../../components/citizen/InfoNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
+import Checkbox from "../../components/citizen/Checkbox";
 import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
 
 function Inquiry() {
@@ -308,25 +309,17 @@ function Inquiry() {
 
               {/* 개인정보 */}
               <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <label className="relative flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-900">
-                  <input
-                    type="checkbox"
-                    checked={agree}
-                    onChange={(e) => setAgree(e.target.checked)}
-                    className="pointer-events-none absolute opacity-0"
-                  />
-                  <span
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border-[1.5px] text-xs font-semibold text-white transition-colors ${
-                      agree ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-white"
-                    }`}
-                  >
-                    {agree && "✓"}
-                  </span>
-                  <span>
-                    개인정보 수집 및 이용에 동의합니다.
-                    <em className="not-italic text-red-600"> *</em>
-                  </span>
-                </label>
+                <Checkbox
+                  checked={agree}
+                  onChange={(e) => setAgree(e.target.checked)}
+                  label={
+                    <>
+                      개인정보 수집 및 이용에 동의합니다.
+                      <em className="not-italic text-red-600"> *</em>
+                    </>
+                  }
+                  emphasized
+                />
                 <p className="ml-6 mt-1.5 text-xs leading-[1.6] text-slate-500">
                   문의 접수 및 답변을 위해 이메일 등의 정보를 수집하며, 목적 달성 후 관련 법령에
                   따라 안전하게 관리됩니다.
