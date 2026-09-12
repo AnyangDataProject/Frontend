@@ -94,7 +94,7 @@ function MyReports() {
             }`}
             onClick={() => setStatusFilter("received")}
           >
-            <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 max-[520px]:h-9 max-[520px]:w-9">
+            <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 max-[520px]:h-9 max-[520px]:w-9">
               <Clock size={20} />
             </div>
             <div className="flex flex-col gap-1 text-left">
