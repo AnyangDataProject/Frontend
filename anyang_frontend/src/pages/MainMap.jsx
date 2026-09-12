@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import { Camera, X, Search, LocateFixed, Map as MapGlyph, List as ListIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map, CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
-import "./MainMap.css";
 
 const TYPE_LABEL = {
   pothole: "포트홀",
@@ -12,15 +11,15 @@ const TYPE_LABEL = {
 };
 
 const SEVERITY_META = {
-  low: { label: "낮음", color: "var(--sev-low)" },
-  mid: { label: "보통", color: "var(--sev-mid)" },
-  high: { label: "심각", color: "var(--sev-high)" },
+  low: { label: "낮음", color: "#10b981" },
+  mid: { label: "보통", color: "#f59e0b" },
+  high: { label: "심각", color: "#ef4444" },
 };
 
 const STATUS_META = {
-  received: { label: "접수됨", color: "var(--ink-soft)" },
-  progress: { label: "처리중", color: "var(--sev-mid)" },
-  done: { label: "처리완료", color: "var(--sev-low)" },
+  received: { label: "접수됨", color: "#64748b" },
+  progress: { label: "처리중", color: "#f59e0b" },
+  done: { label: "처리완료", color: "#10b981" },
 };
 
 const PINS = [
@@ -70,7 +69,7 @@ const RISK_SEGMENTS = [
   },
 ];
 
-const RISK_COLOR = { low: "#3B6D11", mid: "#E8B923", high: "#C1432D" };
+const RISK_COLOR = { low: "#10b981", mid: "#f59e0b", high: "#ef4444" };
 const RISK_LABEL = { low: "LOW", mid: "MID", high: "HIGH" };
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
@@ -139,20 +138,29 @@ export default function MainMap() {
   };
 
   return (
-    <div className="tv-page">
-      <div className="tv-body">
-        <div className="tv-map-view">
-          <header className="tv-header">
-            <div className="tv-tabs">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-white pt-[72px] max-[768px]:pt-16">
+      <style>{`
+        @keyframes tvFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes tvScaleUp { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+      `}</style>
+
+      <div className="flex-1 min-h-0 flex relative">
+        <div className="relative flex-1 min-w-0 bg-[#EAEAEA]">
+          <header className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2.5 pointer-events-none">
+            <div className="pointer-events-auto flex gap-1 bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
               <button
-                className={!listOpen ? "is-active" : ""}
+                className={`flex items-center gap-1.5 border-none bg-transparent px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  !listOpen ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"
+                }`}
                 onClick={() => setListOpen(false)}
               >
                 <MapGlyph size={14} />
                 지도
               </button>
               <button
-                className={listOpen ? "is-active" : ""}
+                className={`flex items-center gap-1.5 border-none bg-transparent px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  listOpen ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"
+                }`}
                 onClick={() => setListOpen(true)}
               >
                 <ListIcon size={14} />
@@ -160,9 +168,13 @@ export default function MainMap() {
               </button>
             </div>
 
-            <form className="tv-search" onSubmit={handleSearch}>
+            <form
+              className="pointer-events-auto flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] text-slate-500 flex-1 basis-[200px] max-w-[280px] min-w-0 border border-transparent transition-all duration-200 focus-within:border-slate-900 focus-within:shadow-[0_4px_20px_rgba(15,23,42,0.12)] max-[900px]:order-4 max-[900px]:basis-full max-[900px]:max-w-none"
+              onSubmit={handleSearch}
+            >
               <Search size={13} />
               <input
+                className="border-none outline-none bg-transparent text-sm text-slate-900 flex-1 min-w-0 placeholder:text-slate-500 placeholder:opacity-70"
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 placeholder="도로명 주소 검색"
@@ -170,28 +182,39 @@ export default function MainMap() {
               />
             </form>
 
-            <div className="tv-layer-switch">
+            <div className="pointer-events-auto flex bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
               <button
-                className={layer === "current" ? "is-active" : ""}
+                className={`border-none bg-transparent px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  layer === "current" ? "bg-slate-900 text-white" : "text-slate-500"
+                }`}
                 onClick={() => setLayer("current")}
               >
                 현재
               </button>
               <button
-                className={layer === "prediction" ? "is-active" : ""}
+                className={`border-none bg-transparent px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  layer === "prediction" ? "bg-slate-900 text-white" : "text-slate-500"
+                }`}
                 onClick={() => setLayer("prediction")}
               >
                 예측
               </button>
             </div>
 
-            <button className="tv-report-btn" onClick={() => navigate("/report")}>
+            <button
+              className="pointer-events-auto ml-auto flex items-center gap-1.5 bg-blue-600 text-white border-none px-[18px] py-[9px] rounded-full text-sm font-semibold cursor-pointer shadow-[0_4px_14px_rgba(37,99,235,0.3)] shrink-0 whitespace-nowrap transition-all duration-200 hover:bg-blue-700 hover:-translate-y-px hover:shadow-[0_6px_18px_rgba(37,99,235,0.38)]"
+              onClick={() => navigate("/report")}
+            >
               <Camera size={14} />
               신고하기
             </button>
           </header>
 
-          {searchError && <div className="tv-search-error">{searchError}</div>}
+          {searchError && (
+            <div className="absolute top-[66px] left-4 z-20 bg-red-600 text-white text-xs font-semibold px-3.5 py-2 rounded-lg shadow-[0_4px_12px_rgba(220,38,38,0.25)] animate-[tvFadeIn_0.2s_ease]">
+              {searchError}
+            </div>
+          )}
 
           <Map
             center={center}
@@ -213,9 +236,9 @@ export default function MainMap() {
                     yAnchor={0.5}
                   >
                     <button
-                      className={`tv-marker ${pin.severity === "high" ? "tv-marker--lg" : ""} ${
-                        selected?.id === pin.id ? "is-selected" : ""
-                      }`}
+                      className={`p-0 rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] cursor-pointer transition-transform duration-150 hover:scale-[1.2] ${
+                        pin.severity === "high" ? "w-[26px] h-[26px] border-[3px]" : "w-[18px] h-[18px]"
+                      } ${selected?.id === pin.id ? "outline outline-[3px] outline-slate-900 outline-offset-2" : ""}`}
                       style={{ background: sev.color }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -240,7 +263,7 @@ export default function MainMap() {
                   />
                   <CustomOverlayMap position={seg.mid} xAnchor={0.5} yAnchor={1.4}>
                     <button
-                      className="tv-risk-hit"
+                      className="border-none text-white text-[10.5px] font-extrabold px-[9px] py-1 rounded-xl cursor-pointer shadow-[0_3px_10px_rgba(0,0,0,0.2)] transition-transform duration-150 hover:scale-[1.08] bg-[var(--risk-color)]"
                       style={{ "--risk-color": RISK_COLOR[seg.risk] }}
                       onClick={(e) => {
                         e.stopPropagation();
@@ -256,19 +279,26 @@ export default function MainMap() {
 
             {selectedRisk && (
               <CustomOverlayMap position={selectedRisk.mid} xAnchor={0.5} yAnchor={2.4}>
-                <div className="tv-risk-popup" onClick={(e) => e.stopPropagation()}>
-                  <div className="tv-risk-popup-head">
+                <div
+                  className="bg-white rounded-xl px-3.5 py-3 min-w-[180px] shadow-[0_12px_32px_rgba(0,0,0,0.18)] border border-slate-200"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between text-sm font-semibold mb-2 pb-2 border-b border-slate-200">
                     <span style={{ color: RISK_COLOR[selectedRisk.risk] }}>
                       {RISK_LABEL[selectedRisk.risk]}
                     </span>
-                    <button onClick={() => setSelectedRisk(null)} aria-label="닫기">
+                    <button
+                      className="border-none bg-transparent text-slate-500 cursor-pointer"
+                      onClick={() => setSelectedRisk(null)}
+                      aria-label="닫기"
+                    >
                       <X size={13} />
                     </button>
                   </div>
                   {selectedRisk.causes.map((c) => (
-                    <div key={c.label} className="tv-risk-popup-row">
+                    <div key={c.label} className="flex justify-between text-xs text-slate-500 py-[3px]">
                       <span>{c.label}</span>
-                      <span>{c.value}</span>
+                      <span className="text-slate-900 font-semibold">{c.value}</span>
                     </div>
                   ))}
                 </div>
@@ -276,56 +306,92 @@ export default function MainMap() {
             )}
           </Map>
 
-          <button className="tv-locate-btn" onClick={handleLocate} aria-label="내 위치로 이동">
+          <button
+            className="absolute right-4 bottom-[54px] z-10 w-10 h-10 rounded-full border-none bg-white text-slate-900 flex items-center justify-center shadow-[0_4px_16px_rgba(15,23,42,0.15)] cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-[0_6px_20px_rgba(15,23,42,0.2)]"
+            onClick={handleLocate}
+            aria-label="내 위치로 이동"
+          >
             <LocateFixed size={16} />
           </button>
 
           {layer === "current" ? (
-            <div className="tv-legend">
-              <span><span className="tv-dot" style={{ background: "var(--sev-low)" }} />낮음</span>
-              <span><span className="tv-dot" style={{ background: "var(--sev-mid)" }} />보통</span>
-              <span><span className="tv-dot tv-dot--lg" style={{ background: "var(--sev-high)" }} />심각</span>
+            <div className="absolute left-4 bottom-4 z-10 bg-white rounded-xl px-3.5 py-2 flex gap-3 text-xs font-semibold text-slate-500 shadow-[0_4px_16px_rgba(15,23,42,0.1)] border border-slate-200">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ background: "#10b981" }} />
+                낮음
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-2 h-2 rounded-full" style={{ background: "#f59e0b" }} />
+                보통
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-[11px] h-[11px] rounded-full" style={{ background: "#ef4444" }} />
+                심각
+              </span>
             </div>
           ) : (
-            <div className="tv-legend">
-              <span><span className="tv-bar" style={{ background: RISK_COLOR.low }} />LOW</span>
-              <span><span className="tv-bar" style={{ background: RISK_COLOR.mid }} />MID</span>
-              <span><span className="tv-bar" style={{ background: RISK_COLOR.high }} />HIGH</span>
+            <div className="absolute left-4 bottom-4 z-10 bg-white rounded-xl px-3.5 py-2 flex gap-3 text-xs font-semibold text-slate-500 shadow-[0_4px_16px_rgba(15,23,42,0.1)] border border-slate-200">
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.low }} />
+                LOW
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.mid }} />
+                MID
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.high }} />
+                HIGH
+              </span>
             </div>
           )}
         </div>
 
         {/* 리스트 패널 (지도 옆에서 슬라이드로 열림/닫힘) */}
-        <div className={`tv-list-panel ${listOpen ? "is-open" : ""}`}>
-          <div className="tv-list-tabs">
+        <div
+          className={`shrink-0 overflow-hidden bg-white border-l border-slate-200 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col *:w-[380px] max-[480px]:*:w-full max-[480px]:absolute max-[480px]:inset-0 max-[480px]:z-[15] ${
+            listOpen ? "w-[380px]" : "w-0"
+          }`}
+        >
+          <div className="flex gap-1.5 px-4 pt-4">
             <button
-              className={statusFilter === "all" ? "is-active" : ""}
+              className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                statusFilter === "all" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
+              }`}
               onClick={() => setStatusFilter("all")}
             >
-              전체 신고 <b>{counts.all}</b>
+              전체 신고 <b className="font-extrabold ml-1">{counts.all}</b>
             </button>
             <button
-              className={statusFilter === "open" ? "is-active" : ""}
+              className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                statusFilter === "open" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
+              }`}
               onClick={() => setStatusFilter("open")}
             >
-              미처리 <b>{counts.open}</b>
+              미처리 <b className="font-extrabold ml-1">{counts.open}</b>
             </button>
             <button
-              className={statusFilter === "done" ? "is-active" : ""}
+              className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                statusFilter === "done" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
+              }`}
               onClick={() => setStatusFilter("done")}
             >
-              처리완료 <b>{counts.done}</b>
+              처리완료 <b className="font-extrabold ml-1">{counts.done}</b>
             </button>
           </div>
 
-          <div className="tv-type-filter">
+          <div className="flex gap-1.5 overflow-x-auto px-4 py-3 border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
               { value: "all", label: "전체 유형" },
               ...Object.entries(TYPE_LABEL).map(([value, label]) => ({ value, label })),
             ].map((opt) => (
               <button
                 key={opt.value}
-                className={typeFilter === opt.value ? "is-active" : ""}
+                className={`shrink-0 border px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 ${
+                  typeFilter === opt.value
+                    ? "border-blue-600 bg-blue-50 text-blue-600"
+                    : "border-slate-200 bg-white text-slate-500 hover:border-slate-500"
+                }`}
                 onClick={() => setTypeFilter(opt.value)}
               >
                 {opt.label}
@@ -333,24 +399,28 @@ export default function MainMap() {
             ))}
           </div>
 
-          <div className="tv-cards">
+          <div className="flex flex-col gap-3 p-4 flex-1 min-h-0 overflow-y-auto [&::-webkit-scrollbar]:w-[5px] [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded">
             {filteredPins.length === 0 && (
-              <div className="tv-cards-empty">해당하는 신고가 없어요.</div>
+              <div className="py-[60px] px-2.5 text-center text-sm text-slate-500">해당하는 신고가 없어요.</div>
             )}
 
             {filteredPins.map((pin) => {
               const sev = SEVERITY_META[pin.severity];
               const st = STATUS_META[pin.status];
               return (
-                <button key={pin.id} className="tv-card" onClick={() => setSelected(pin)}>
-                  <span className="tv-card-dot" style={{ background: sev.color }} />
-                  <div className="tv-card-body">
-                    <div className="tv-card-top">
-                      <span className="tv-card-type">{TYPE_LABEL[pin.type]}</span>
+                <button
+                  key={pin.id}
+                  className="flex items-start gap-3 bg-slate-50 border border-transparent rounded-xl px-4 py-3.5 text-left cursor-pointer transition-all duration-200 hover:bg-white hover:border-slate-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
+                  onClick={() => setSelected(pin)}
+                >
+                  <span className="w-2.5 h-2.5 rounded-full mt-[5px] shrink-0" style={{ background: sev.color }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="font-semibold text-slate-900">{TYPE_LABEL[pin.type]}</span>
                       <span style={{ color: sev.color, fontWeight: 700 }}>{sev.label}</span>
                     </div>
-                    <div className="tv-card-addr">{pin.address}</div>
-                    <div className="tv-card-meta">
+                    <div className="text-xs text-slate-500 mt-1">{pin.address}</div>
+                    <div className="flex justify-between text-xs text-slate-400 mt-2.5 pt-2 border-t border-dashed border-slate-200">
                       <span>{pin.reportedAt}</span>
                       <span style={{ color: st.color, fontWeight: 600 }}>{st.label}</span>
                     </div>
@@ -364,42 +434,56 @@ export default function MainMap() {
 
       {/* 상세 모달 */}
       {selected && (
-        <div className="tv-modal-backdrop" onClick={() => setSelected(null)}>
-          <div className="tv-detail-card" onClick={(e) => e.stopPropagation()}>
-            <button className="tv-detail-close" onClick={() => setSelected(null)} aria-label="닫기">
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-5 animate-[tvFadeIn_0.2s_ease] max-[480px]:p-0 max-[480px]:items-end"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="relative w-full max-w-[420px] bg-white rounded-xl px-[22px] pt-6 pb-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-[tvScaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)] max-[480px]:max-w-full max-[480px]:rounded-b-none"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="absolute top-4 right-4 border-none bg-slate-50 w-[30px] h-[30px] rounded-full text-slate-500 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-slate-200 hover:text-slate-900"
+              onClick={() => setSelected(null)}
+              aria-label="닫기"
+            >
               <X size={16} />
             </button>
 
-            <div className="tv-detail-photo">
+            <div className="w-full h-40 rounded-xl bg-slate-50 mb-3.5 overflow-hidden flex items-center justify-center border border-slate-200">
               {selected.photoUrl ? (
-                <img src={selected.photoUrl} alt={`${TYPE_LABEL[selected.type]} 현장 사진`} />
+                <img
+                  className="w-full h-full object-cover"
+                  src={selected.photoUrl}
+                  alt={`${TYPE_LABEL[selected.type]} 현장 사진`}
+                />
               ) : (
-                <span className="tv-detail-photo-empty">사진 없음</span>
+                <span className="text-xs text-slate-500">사진 없음</span>
               )}
             </div>
 
-            <div className="tv-detail-type">{TYPE_LABEL[selected.type]}</div>
-            <div className="tv-detail-addr">{selected.address}</div>
+            <div className="text-lg font-semibold text-slate-900 mt-0.5">{TYPE_LABEL[selected.type]}</div>
+            <div className="text-sm text-slate-500 mb-3.5">{selected.address}</div>
 
-            <div className="tv-detail-row">
-              <span>심각도</span>
+            <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+              <span className="text-slate-500">심각도</span>
               <span style={{ color: SEVERITY_META[selected.severity].color, fontWeight: 700 }}>
                 {SEVERITY_META[selected.severity].label}
               </span>
             </div>
-            <div className="tv-detail-row">
-              <span>처리 상태</span>
+            <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+              <span className="text-slate-500">처리 상태</span>
               <span style={{ color: STATUS_META[selected.status].color, fontWeight: 700 }}>
                 {STATUS_META[selected.status].label}
               </span>
             </div>
-            <div className="tv-detail-row">
-              <span>신고일</span>
+            <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+              <span className="text-slate-500">신고일</span>
               <span>{selected.reportedAt}</span>
             </div>
 
             <button
-              className="tv-detail-cta"
+              className="w-full mt-[18px] bg-blue-600 text-white border-none py-[13px] rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 hover:bg-blue-700"
               onClick={() => navigate("/ai-analysis", { state: { report: selected } })}
             >
               AI 분석 결과 자세히 보기
