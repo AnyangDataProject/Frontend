@@ -1,23 +1,20 @@
 import { useRef, useState } from "react";
 import {
-  ArrowLeft,
   MessageSquareText,
   Send,
   Paperclip,
   X,
-  CheckCircle2,
   Info,
   Mail,
   Clock3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-const INQUIRY_TYPES = [
-  { value: "report", label: "신고 관련 문의", description: "접수한 신고에 대해 문의합니다." },
-  { value: "result", label: "처리 결과 문의", description: "처리 결과 또는 진행 상황을 문의합니다." },
-  { value: "service", label: "서비스 이용 문의", description: "로드센스 이용 방법을 문의합니다." },
-  { value: "other", label: "기타 민원", description: "기타 의견이나 민원을 접수합니다." },
-];
+import BackButton from "../components/citizen/BackButton";
+import PageHeader from "../components/citizen/PageHeader";
+import StepSection from "../components/citizen/StepSection";
+import InfoNotice from "../components/citizen/InfoNotice";
+import SuccessScreen from "../components/citizen/SuccessScreen";
+import { INQUIRY_TYPES } from "../mocks/citizen/inquiryData";
 
 function Inquiry() {
   const navigate = useNavigate();
@@ -82,66 +79,62 @@ function Inquiry() {
       <div className="min-h-screen bg-slate-50 pt-[72px]">
         <main className="min-h-[calc(100vh-72px)] flex items-center justify-center px-5 pb-20">
           <div className="relative w-[min(580px,100%)] rounded-xl border border-slate-200 bg-white p-9 max-[650px]:px-5 max-[650px]:py-[38px] text-center shadow-sm">
-            <button
-              className="absolute left-[22px] top-[22px] flex items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeft size={17} />
-              지도 돌아가기
-            </button>
-
-            <div className="mx-auto mb-[23px] flex h-[82px] w-[82px] items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-              <CheckCircle2 size={42} />
+            <div className="absolute left-[22px] top-[22px]">
+              <BackButton to="/" />
             </div>
 
-            <p className="mb-2.5 text-xs font-semibold tracking-[0.13em] text-blue-600">
-              SUBMISSION COMPLETE
-            </p>
+            <SuccessScreen
+              eyebrow="SUBMISSION COMPLETE"
+              title={
+                <>
+                  민원·문의가
+                  <br />
+                  접수되었습니다.
+                </>
+              }
+              description={
+                <>
+                  보내주신 내용을 담당자가 확인한 후 답변드리겠습니다.
+                  <br />
+                  답변은 입력하신 이메일로 전달됩니다.
+                </>
+              }
+              summary={
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-left">
+                  <div className="flex min-h-[32px] items-center gap-2">
+                    <Mail size={17} className="text-blue-600" />
+                    <span className="w-20 text-xs text-slate-400">답변 이메일</span>
+                    <strong className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-900">
+                      {email}
+                    </strong>
+                  </div>
 
-            <h1 className="text-xl font-semibold leading-[1.3] text-slate-900">
-              민원·문의가
-              <br />
-              접수되었습니다.
-            </h1>
-
-            <p className="mt-3 text-sm leading-[1.7] text-slate-500">
-              보내주신 내용을 담당자가 확인한 후 답변드리겠습니다.
-              <br />
-              답변은 입력하신 이메일로 전달됩니다.
-            </p>
-
-            <div className="my-7 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left">
-              <div className="flex min-h-[32px] items-center gap-2">
-                <Mail size={17} className="text-blue-600" />
-                <span className="w-20 text-xs text-slate-400">답변 이메일</span>
-                <strong className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-900">
-                  {email}
-                </strong>
-              </div>
-
-              <div className="flex min-h-[32px] items-center gap-2">
-                <Clock3 size={17} className="text-blue-600" />
-                <span className="w-20 text-xs text-slate-400">답변 안내</span>
-                <strong className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-900">
-                  담당자 확인 후 순차적으로 답변
-                </strong>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-2 max-[650px]:flex-col">
-              <button
-                className="h-[45px] flex-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
-                onClick={() => navigate("/")}
-              >
-                지도 돌아가기
-              </button>
-              <button
-                className="h-[45px] flex-1 rounded-lg border-0 bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                onClick={resetForm}
-              >
-                문의 하나 더 접수
-              </button>
-            </div>
+                  <div className="flex min-h-[32px] items-center gap-2">
+                    <Clock3 size={17} className="text-blue-600" />
+                    <span className="w-20 text-xs text-slate-400">답변 안내</span>
+                    <strong className="overflow-hidden text-ellipsis whitespace-nowrap text-sm text-slate-900">
+                      담당자 확인 후 순차적으로 답변
+                    </strong>
+                  </div>
+                </div>
+              }
+              secondaryAction={
+                <button
+                  className="h-[45px] flex-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
+                  onClick={() => navigate("/")}
+                >
+                  지도 돌아가기
+                </button>
+              }
+              primaryAction={
+                <button
+                  className="h-[45px] flex-1 rounded-lg border-0 bg-blue-600 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  onClick={resetForm}
+                >
+                  문의 하나 더 접수
+                </button>
+              }
+            />
           </div>
         </main>
       </div>
@@ -151,41 +144,21 @@ function Inquiry() {
   return (
     <div className="min-h-screen bg-slate-50 pt-[72px]">
       <main className="mx-auto max-w-[1440px] px-6 py-8 lg:px-10">
-        <button
-          className="mb-6 flex items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
-          onClick={() => navigate("/")}
-        >
-          <ArrowLeft size={17} />
-          지도 돌아가기
-        </button>
+        <div className="mb-6">
+          <BackButton to="/" />
+        </div>
 
-        <section className="mb-[30px] text-left">
-          <div>
-            <p className="mb-2 text-xs font-semibold tracking-[0.13em] text-blue-600">CIVIL SERVICE</p>
-            <h1 className="text-xl font-semibold text-slate-900">
-              민원 · 문의 접수
-            </h1>
-            <p className="mt-[9px] text-sm text-slate-500">
-              로드센스 이용 중 궁금한 점이나 개선 의견을 남겨주세요.
-            </p>
-          </div>
-        </section>
+        <PageHeader
+          eyebrow="CIVIL SERVICE"
+          title="민원 · 문의 접수"
+          description="로드센스 이용 중 궁금한 점이나 개선 의견을 남겨주세요."
+        />
 
         <div className="grid grid-cols-[minmax(0,1fr)_300px] max-[850px]:grid-cols-1 items-start gap-[18px]">
           <section className="rounded-xl border border-slate-200 bg-white p-7 max-[650px]:p-5 shadow-sm">
             <form onSubmit={handleSubmit}>
               {/* 문의 유형 */}
-              <div className="mb-[30px] border-b border-slate-200 pb-[30px]">
-                <div className="mb-5 flex items-start gap-3 text-left">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-semibold text-blue-600">
-                    01
-                  </span>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h2 className="mb-[3px] text-sm font-semibold text-slate-900">문의 유형</h2>
-                    <p className="text-xs text-slate-400">문의하실 내용을 선택해주세요.</p>
-                  </div>
-                </div>
-
+              <StepSection number="01" title="문의 유형" description="문의하실 내용을 선택해주세요." card={false}>
                 <div className="grid grid-cols-2 max-[650px]:grid-cols-1 gap-[9px]">
                   {INQUIRY_TYPES.map((type) => {
                     const isSelected = inquiryType === type.value;
@@ -217,20 +190,10 @@ function Inquiry() {
                     );
                   })}
                 </div>
-              </div>
+              </StepSection>
 
               {/* 제목 / 내용 */}
-              <div className="mb-[30px] border-b border-slate-200 pb-[30px]">
-                <div className="mb-5 flex items-start gap-3 text-left">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-semibold text-blue-600">
-                    02
-                  </span>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h2 className="mb-[3px] text-sm font-semibold text-slate-900">문의 내용</h2>
-                    <p className="text-xs text-slate-400">문의 내용을 자세하게 작성해주세요.</p>
-                  </div>
-                </div>
-
+              <StepSection number="02" title="문의 내용" description="문의 내용을 자세하게 작성해주세요." card={false}>
                 <div className="relative mb-4 text-left">
                   <label htmlFor="inq-title" className="mb-[7px] block text-xs font-medium text-slate-700">
                     제목
@@ -267,22 +230,15 @@ function Inquiry() {
                     {content.length}/1000
                   </div>
                 </div>
-              </div>
+              </StepSection>
 
               {/* 첨부파일 */}
-              <div className="mb-[30px] border-b border-slate-200 pb-[30px]">
-                <div className="mb-5 flex items-start gap-3 text-left">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xs font-semibold text-blue-600">
-                    03
-                  </span>
-                  <div className="min-w-0 flex-1 text-left">
-                    <h2 className="mb-[3px] text-sm font-semibold text-slate-900">첨부파일</h2>
-                    <p className="text-xs text-slate-400">
-                      문의 내용을 설명하는 사진이나 파일을 첨부할 수 있습니다.
-                    </p>
-                  </div>
-                </div>
-
+              <StepSection
+                number="03"
+                title="첨부파일"
+                description="문의 내용을 설명하는 사진이나 파일을 첨부할 수 있습니다."
+                card={false}
+              >
                 <input ref={fileInputRef} type="file" multiple hidden onChange={handleFileChange} />
 
                 <button
@@ -317,7 +273,7 @@ function Inquiry() {
                     ))}
                   </div>
                 )}
-              </div>
+              </StepSection>
 
               {/* 이메일 */}
               <div>
@@ -399,11 +355,7 @@ function Inquiry() {
 
           {/* 안내 사이드바 */}
           <aside className="sticky top-[90px] max-[850px]:static flex flex-col max-[850px]:grid max-[850px]:grid-cols-2 max-[650px]:!grid-cols-1 gap-[15px]">
-            <div className="flex flex-col items-center rounded-xl border border-slate-200 bg-white p-[22px] text-center shadow-sm">
-              <div className="mx-auto mb-3.5 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                <Info size={20} />
-              </div>
-
+            <InfoNotice variant="panel" icon={<Info size={20} />}>
               <h3 className="text-sm font-semibold text-slate-900">
                 민원 · 문의 접수 안내
               </h3>
@@ -427,7 +379,7 @@ function Inquiry() {
                   파손 신고하기
                 </button>
               </div>
-            </div>
+            </InfoNotice>
 
             <div className="rounded-xl border border-slate-200 bg-white p-[22px] text-left shadow-sm">
               <div className="mb-[18px] flex items-center gap-2 text-left text-sm font-semibold text-slate-900">
