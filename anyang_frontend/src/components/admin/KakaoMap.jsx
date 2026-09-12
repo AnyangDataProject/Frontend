@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { ANYANG_BOUNDS } from '../../mocks/admin/constants';
 
@@ -20,10 +20,22 @@ const TONE_BG = {
   neutral: 'bg-slate-400',
 };
 
+const TONE_LABEL = {
+  danger: '위험',
+  warning: '점검필요',
+  success: '안전',
+  info: '정보',
+  neutral: '기타',
+};
+
 const ANYANG_CENTER = {
   lat: (ANYANG_BOUNDS.minLat + ANYANG_BOUNDS.maxLat) / 2,
   lng: (ANYANG_BOUNDS.minLng + ANYANG_BOUNDS.maxLng) / 2,
 };
+
+function hasValidCoordinate(point) {
+  return Number.isFinite(point.lat) && Number.isFinite(point.lng);
+}
 
 /**
  * 관리자 화면 공용 카카오맵 컴포넌트.
@@ -39,24 +51,39 @@ export default function KakaoMap({
   showLegend = true,
 }) {
   const [hoveredId, setHoveredId] = useState(null);
+  const mapRef = useRef(null);
+
+  // 좌표가 없거나 숫자가 아닌 포인트가 하나 섞여 있어도 전체 지도가 깨지지 않도록 걸러낸다
+  // (좌표가 아직 지오코딩되지 않은 실제 API 데이터가 들어올 가능성을 대비).
+  const validPoints = useMemo(() => points.filter(hasValidCoordinate), [points]);
 
   const center = useMemo(() => {
-    if (points.length === 0) return ANYANG_CENTER;
-    const lat = points.reduce((sum, p) => sum + p.lat, 0) / points.length;
-    const lng = points.reduce((sum, p) => sum + p.lng, 0) / points.length;
+    if (validPoints.length === 0) return ANYANG_CENTER;
+    const lat = validPoints.reduce((sum, p) => sum + p.lat, 0) / validPoints.length;
+    const lng = validPoints.reduce((sum, p) => sum + p.lng, 0) / validPoints.length;
     return { lat, lng };
-  }, [points]);
+  }, [validPoints]);
+
+  // 포인트가 여러 개면 지정된 level 대신 모든 마커가 화면 안에 들어오도록 자동으로 맞춘다.
+  // (포인트가 1개뿐인 도로 상세 페이지 등에서는 호출부가 지정한 level을 그대로 존중한다.)
+  useEffect(() => {
+    if (!mapRef.current || validPoints.length < 2 || !window.kakao?.maps) return;
+    const bounds = new window.kakao.maps.LatLngBounds();
+    validPoints.forEach((p) => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
+    mapRef.current.setBounds(bounds);
+  }, [validPoints]);
 
   return (
     <div className="relative w-full overflow-hidden rounded-lg border border-slate-200" style={{ height }}>
-      <Map center={center} level={level} style={{ width: '100%', height: '100%' }}>
-        {points.map((point) => {
+      <Map ref={mapRef} center={center} level={level} style={{ width: '100%', height: '100%' }}>
+        {validPoints.map((point) => {
           const isActive = selectedId === point.id;
           const isHovered = hoveredId === point.id;
           return (
             <CustomOverlayMap key={point.id} position={{ lat: point.lat, lng: point.lng }} xAnchor={0.5} yAnchor={0.5}>
               <button
                 type="button"
+                aria-label={`${point.label ?? '구간'} - 위험도 ${TONE_LABEL[point.tone] ?? TONE_LABEL.neutral}`}
                 className="group relative flex cursor-pointer items-center justify-center border-none bg-transparent p-0"
                 onClick={() => onSelectPoint?.(point)}
                 onMouseEnter={() => setHoveredId(point.id)}
@@ -80,7 +107,7 @@ export default function KakaoMap({
         })}
       </Map>
 
-      {points.length === 0 && (
+      {validPoints.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white/70 text-sm text-slate-400">
           표시할 위치 정보가 없습니다.
         </div>
