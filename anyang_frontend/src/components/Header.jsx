@@ -106,26 +106,27 @@ function Header() {
 
             <button
               className={
-                location.pathname.startsWith('/admin/road-analysis')
+                location.pathname.startsWith('/admin/priority') ||
+                location.pathname.startsWith('/admin/roads')
                   ? 'header-menu active'
                   : 'header-menu'
               }
               onClick={() =>
-                navigate('/admin/road-analysis')
+                navigate('/admin/priority')
               }
             >
-              도로 분석
+              점검 우선순위
             </button>
 
             <button
               className={
-                location.pathname.startsWith('/admin/users')
+                location.pathname.startsWith('/admin/members')
                   ? 'header-menu active'
                   : 'header-menu'
               }
-              onClick={() => navigate('/admin/users')}
+              onClick={() => navigate('/admin/members')}
             >
-              시민 계정 관리
+              회원 관리
             </button>
 
             <button

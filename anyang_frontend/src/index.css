@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -66,46 +68,69 @@ body {
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+/* 관리자 화면은 데이터 밀도가 높은 대시보드 레이아웃이라 전체 너비를 사용 */
+body.admin-mode #root {
+  width: 100%;
+  max-width: 100%;
+  text-align: left;
+  border-inline: none;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+/* 시민 화면용 h1/h2 마진(32px, 24px)은 히어로 타이틀을 위한 값이라
+   관리자 화면 제목에는 불필요한 여백을 만든다. Tailwind 유틸리티로는
+   상쇄되지 않는 속성이라 admin-mode 범위에서만 명시적으로 초기화한다. */
+body.admin-mode h1,
+body.admin-mode h2 {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
+/*
+ * Tailwind은 이 규칙들을 cascade layer(@layer)로 감싸서 출력하기 때문에,
+ * 아래 전역 태그 스타일도 같은 layer 안에 둬야 유틸리티 클래스(text-xl 등)로
+ * 정상적으로 덮어쓸 수 있다. (layer 밖 규칙은 명시도와 무관하게 항상 우선 적용됨)
+ */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--heading);
+    font-weight: 500;
+    color: var(--text-h);
+  }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  h1 {
+    font-size: 56px;
+    letter-spacing: -1.68px;
+    margin: 32px 0;
+    @media (max-width: 1024px) {
+      font-size: 36px;
+      margin: 20px 0;
+    }
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 118%;
+    letter-spacing: -0.24px;
+    margin: 0 0 8px;
+    @media (max-width: 1024px) {
+      font-size: 20px;
+    }
+  }
+  p {
+    margin: 0;
+  }
+
+  code,
+  .counter {
+    font-family: var(--mono);
+    display: inline-flex;
+    border-radius: 4px;
+    color: var(--text-h);
+  }
+
+  code {
+    font-size: 15px;
+    line-height: 135%;
+    padding: 4px 8px;
+    background: var(--code-bg);
+  }
 }

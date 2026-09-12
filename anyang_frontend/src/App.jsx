@@ -10,11 +10,12 @@ import Inquiry from "./pages/Inquiry";
 import FindId from './pages/FindId';
 import FindPassword from './pages/FindPassword';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminPriority from './pages/admin/AdminPriority';
 import AdminReportDetail from './pages/admin/AdminReportDetail';
-import AdminUsers from './pages/admin/AdminUsers';
+import AdminMembers from './pages/admin/AdminMembers';
 import AdminReports from './pages/admin/AdminReports';
 import AdminInquiries from './pages/admin/AdminInquiries';
-import AdminRoadAnalysis from './pages/admin/AdminRoadAnalysis';
+import AdminRoadDetail from './pages/admin/AdminRoadDetail';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
 function App() {
@@ -40,11 +41,12 @@ function App() {
 
 
         <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/reports/detail" element={<AdminReportDetail />} />
-        <Route path="/admin/users" element={<AdminUsers />} />
         <Route path="/admin/reports" element={<AdminReports />} />
+        <Route path="/admin/reports/:id" element={<AdminReportDetail />} />
+        <Route path="/admin/priority" element={<AdminPriority />} />
+        <Route path="/admin/roads/:id" element={<AdminRoadDetail />} />
+        <Route path="/admin/members" element={<AdminMembers />} />
         <Route path="/admin/inquiries" element={<AdminInquiries />} />
-        <Route path="/admin/road-analysis" element={<AdminRoadAnalysis />} />
       </Routes>
     </BrowserRouter>
   );
