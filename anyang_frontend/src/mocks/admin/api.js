@@ -16,6 +16,7 @@ function delay(value, ms = NETWORK_DELAY) {
 
 function rebuildTimeline(status, previousTimeline) {
   const stageIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === status);
+  const isFinalStage = stageIndex === REPORT_STATUS_STEPS.length - 1;
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   const nowStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(
@@ -26,7 +27,10 @@ function rebuildTimeline(status, previousTimeline) {
     const prev = previousTimeline.find((t) => t.key === step.key);
     if (i > stageIndex) return { key: step.key, label: step.label, at: null, done: false };
     if (prev?.done) return prev;
-    return { key: step.key, label: step.label, at: nowStr, done: true };
+    // 현재 진행 중인 단계(마지막 단계 제외)는 완료 처리하지 않아야
+    // StatusTimeline이 체크 표시가 아닌 진행 중 링으로 구분해서 보여준다.
+    const done = i < stageIndex || isFinalStage;
+    return { key: step.key, label: step.label, at: nowStr, done };
   });
 }
 
