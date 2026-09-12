@@ -5,7 +5,7 @@ import { ArrowLeft, Car, Gauge, TrafficCone, FileWarning, Wrench, TrendingUp } f
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
-import MockMap from '../../components/admin/MockMap';
+import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import { fetchRoadById } from '../../mocks/admin/api';
@@ -88,7 +88,7 @@ export default function AdminRoadDetail() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2" title="구간 위치">
-          <MockMap
+          <KakaoMap
             points={[
               {
                 id: road.id,
@@ -100,6 +100,7 @@ export default function AdminRoadDetail() {
             ]}
             selectedId={road.id}
             height={320}
+            level={4}
           />
         </Card>
 
