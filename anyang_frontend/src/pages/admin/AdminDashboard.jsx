@@ -89,6 +89,7 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => navigate(`/admin/roads/${road.id}`)}
                   onMouseEnter={() => setSelectedRoadId(road.id)}
+                  onMouseLeave={() => setSelectedRoadId(null)}
                   className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-slate-50"
                 >
                   <span
