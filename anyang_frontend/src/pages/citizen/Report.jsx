@@ -14,6 +14,7 @@ import PageHeader from "../../components/citizen/PageHeader";
 import StepSection from "../../components/citizen/StepSection";
 import SelectableCard from "../../components/citizen/SelectableCard";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
+import Checkbox from "../../components/citizen/Checkbox";
 import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
@@ -324,26 +325,18 @@ export default function Report() {
           {/* 04. Severity */}
           <StepSection number="04" title="파손 심각도" description="현재 도로 이용에 미치는 영향을 선택해주세요.">
             <div className="grid grid-cols-3 gap-[9px] max-[700px]:grid-cols-1">
-              {SEVERITY_OPTIONS.map((option) => {
-                const isSelected = severity === option.value;
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`flex items-center gap-2.5 p-[15px] rounded-lg bg-white text-left cursor-pointer transition-colors border ${
-                      isSelected ? "bg-slate-50" : "border-slate-200 hover:bg-slate-50"
-                    }`}
-                    style={isSelected ? { borderColor: option.color } : undefined}
-                    onClick={() => setSeverity(option.value)}
-                  >
-                    <div className="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: option.dotColor }} />
-                    <div className="flex flex-col gap-[3px] text-left">
-                      <strong className="text-xs text-slate-900 text-left">{option.label}</strong>
-                      <span className="text-slate-400 text-xs text-left">{option.description}</span>
-                    </div>
-                  </button>
-                );
-              })}
+              {SEVERITY_OPTIONS.map((option) => (
+                <SelectableCard
+                  key={option.value}
+                  selected={severity === option.value}
+                  onClick={() => setSeverity(option.value)}
+                  icon={<span className="w-2.5 h-2.5 shrink-0 rounded-full" style={{ backgroundColor: option.dotColor }} />}
+                  label={option.label}
+                  description={option.description}
+                  radio={false}
+                  activeColor={option.color}
+                />
+              ))}
             </div>
           </StepSection>
 
@@ -383,15 +376,14 @@ export default function Report() {
                 <li>AI 분석 결과는 참고용이며 최종 처리는 담당 부서의 현장 확인을 기준으로 합니다.</li>
               </ul>
 
-              <label className="flex items-center gap-[7px] mt-[13px] text-slate-700 text-xs font-medium cursor-pointer text-left">
-                <input
-                  type="checkbox"
+              <div className="mt-[13px]">
+                <Checkbox
                   checked={agree}
                   onChange={(e) => setAgree(e.target.checked)}
-                  className="accent-blue-600 w-[15px] h-[15px] shrink-0"
+                  label="신고 안내사항을 확인했으며 신고 내용 제공에 동의합니다."
+                  emphasized
                 />
-                <span>신고 안내사항을 확인했으며 신고 내용 제공에 동의합니다.</span>
-              </label>
+              </div>
             </div>
           </section>
 

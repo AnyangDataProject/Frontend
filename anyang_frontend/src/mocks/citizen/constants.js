@@ -12,6 +12,7 @@ export const DAMAGE_TYPE_META = {
 export const SEVERITY_META = {
   low: {
     label: "낮음",
+    description: "경미한 파손",
     color: "#059669", // emerald-600 (텍스트/뱃지용)
     dotColor: "#10b981", // emerald-500 (지도 마커 등 solid dot용)
     textClass: "text-emerald-600",
@@ -20,6 +21,7 @@ export const SEVERITY_META = {
   },
   mid: {
     label: "보통",
+    description: "통행에 불편이 있는 파손",
     color: "#d97706",
     dotColor: "#f59e0b",
     textClass: "text-amber-600",
@@ -28,6 +30,7 @@ export const SEVERITY_META = {
   },
   high: {
     label: "높음",
+    description: "사고 위험이 높은 파손",
     color: "#dc2626",
     dotColor: "#ef4444",
     textClass: "text-red-600",
