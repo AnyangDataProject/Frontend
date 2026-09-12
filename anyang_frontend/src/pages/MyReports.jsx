@@ -1,107 +1,21 @@
 import { useMemo, useState } from "react";
 import {
-  ArrowLeft,
   Camera,
   CheckCircle2,
   Clock,
   Wrench,
   MapPin,
   ChevronRight,
-  AlertTriangle,
-  CircleDot,
-  Construction,
-  Signpost,
   X,
   Sparkles,
   CalendarDays,
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-const TYPE_META = {
-  pothole: { label: "포트홀", icon: CircleDot },
-  crack: { label: "노면 균열", icon: Construction },
-  sign: { label: "표지판 파손", icon: Signpost },
-  manhole: { label: "맨홀/시설물", icon: AlertTriangle },
-};
-
-const SEVERITY_META = {
-  low: { label: "낮음", color: "#059669" },
-  mid: { label: "보통", color: "#d97706" },
-  high: { label: "높음", color: "#dc2626" },
-};
-
-const STATUS_META = {
-  received: { label: "접수됨", icon: Clock, color: "#2563eb" },
-  progress: { label: "처리중", icon: Wrench, color: "#d97706" },
-  done: { label: "처리완료", icon: CheckCircle2, color: "#059669" },
-};
-
-// ---------------------------------------
-// 임시 신고 데이터 (실제로는 Spring Boot API로 대체)
-// ---------------------------------------
-const MY_REPORTS = [
-  {
-    id: 1,
-    type: "pothole",
-    severity: "high",
-    status: "received",
-    address: "안양시 동안구 평촌대로 123",
-    reportedAt: "2026-09-08",
-    description: "차량 통행이 많은 도로에 큰 포트홀이 발생해 차량 주행 시 위험해 보입니다.",
-    aiConfidence: 94.2,
-    aiRisk: "높음",
-    image: "https://images.unsplash.com/photo-1516972810927-80185027ca84?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 2,
-    type: "crack",
-    severity: "mid",
-    status: "progress",
-    address: "안양시 동안구 시민대로 45",
-    reportedAt: "2026-09-06",
-    description: "도로 중앙 부분에 길게 균열이 발생했습니다. 균열이 점점 넓어지는 것 같습니다.",
-    aiConfidence: 91.8,
-    aiRisk: "보통",
-    image: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 3,
-    type: "sign",
-    severity: "low",
-    status: "done",
-    address: "안양시 만안구 안양로 210",
-    reportedAt: "2026-09-03",
-    description: "도로 옆 안내 표지판이 기울어져 있어 정비가 필요해 보입니다.",
-    aiConfidence: 88.5,
-    aiRisk: "낮음",
-    image: "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 4,
-    type: "manhole",
-    severity: "high",
-    status: "progress",
-    address: "안양시 동안구 관악대로 77",
-    reportedAt: "2026-09-01",
-    description: "맨홀 주변 도로가 내려앉아 차량이 지나갈 때 충격이 발생합니다.",
-    aiConfidence: 96.1,
-    aiRisk: "높음",
-    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    id: 5,
-    type: "pothole",
-    severity: "mid",
-    status: "done",
-    address: "안양시 만안구 삼덕로 8",
-    reportedAt: "2026-08-27",
-    description: "도로 우측에 작은 포트홀이 발생했습니다.",
-    aiConfidence: 90.4,
-    aiRisk: "보통",
-    image: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=900&q=80",
-  },
-];
+import BackButton from "../components/citizen/BackButton";
+import PageHeader from "../components/citizen/PageHeader";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../mocks/citizen/constants";
+import { MY_REPORTS } from "../mocks/citizen/reportsData";
 
 function MyReports() {
   const navigate = useNavigate();
@@ -133,35 +47,24 @@ function MyReports() {
       `}</style>
 
       <main className="mx-auto max-w-[1440px] px-6 py-8 lg:px-10 max-[800px]:w-[calc(100%-32px)] max-[800px]:px-0 max-[800px]:pt-6 max-[800px]:pb-[60px]">
-        <button
-          className="mb-6 inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900"
-          onClick={() => navigate("/")}
-        >
-          <ArrowLeft size={17} />
-          지도 돌아가기
-        </button>
+        <div className="mb-6">
+          <BackButton to="/" />
+        </div>
 
-        <section className="mb-[30px] flex items-end justify-between text-left max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-4">
-          <div className="min-w-0 flex-1 text-left">
-            <p className="mb-[7px] text-left text-xs font-semibold tracking-[0.13em] text-blue-600">
-              MY REPORTS
-            </p>
-            <h1 className="text-left text-xl font-semibold text-slate-900">
-              내 신고현황
-            </h1>
-            <p className="mt-2 text-left text-sm text-slate-500">
-              내가 접수한 도로 파손 신고의 처리 현황을 확인할 수 있습니다.
-            </p>
-          </div>
-
-          <button
-            className="flex shrink-0 items-center gap-2 rounded-lg border-0 bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 max-[800px]:w-full max-[800px]:justify-center"
-            onClick={() => navigate("/report")}
-          >
-            <Camera size={18} />
-            파손 신고하기
-          </button>
-        </section>
+        <PageHeader
+          eyebrow="MY REPORTS"
+          title="내 신고현황"
+          description="내가 접수한 도로 파손 신고의 처리 현황을 확인할 수 있습니다."
+          action={
+            <button
+              className="flex shrink-0 items-center gap-2 rounded-lg border-0 bg-blue-600 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700 max-[800px]:w-full max-[800px]:justify-center"
+              onClick={() => navigate("/report")}
+            >
+              <Camera size={18} />
+              파손 신고하기
+            </button>
+          }
+        />
 
         <section className="mb-9 grid grid-cols-4 gap-3 max-[800px]:grid-cols-2">
           <button
@@ -297,9 +200,9 @@ function MyReports() {
               </div>
             ) : (
               filteredReports.map((report) => {
-                const type = TYPE_META[report.type];
+                const type = DAMAGE_TYPE_META[report.type];
                 const severity = SEVERITY_META[report.severity];
-                const status = STATUS_META[report.status];
+                const status = REPORT_STATUS_META[report.status];
                 const TypeIcon = type.icon;
                 const StatusIcon = status.icon;
 
@@ -487,7 +390,7 @@ function MyReports() {
                 <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-b">
                   <span className="text-xs font-medium text-slate-500">파손 유형</span>
                   <strong className="text-sm font-medium text-slate-900">
-                    {TYPE_META[selectedReport.type].label}
+                    {DAMAGE_TYPE_META[selectedReport.type].label}
                   </strong>
                 </div>
                 <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-r-0 max-[800px]:border-b">
@@ -535,7 +438,7 @@ function MyReports() {
                   <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
                     <span className="text-xs font-medium text-slate-500">파손 유형</span>
                     <strong className="text-sm font-semibold text-slate-900">
-                      {TYPE_META[selectedReport.type].label}
+                      {DAMAGE_TYPE_META[selectedReport.type].label}
                     </strong>
                   </div>
                   <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
