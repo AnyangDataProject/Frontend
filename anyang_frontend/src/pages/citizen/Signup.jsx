@@ -14,11 +14,11 @@ function Signup() {
     phone: '',
   });
 
-  const [agreeAll, setAgreeAll] = useState(false);
   const [agreements, setAgreements] = useState({
     service: false,
     privacy: false,
   });
+  const agreeAll = agreements.service && agreements.privacy;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,8 +38,6 @@ function Signup() {
 
   const handleAgreeAll = (e) => {
     const checked = e.target.checked;
-
-    setAgreeAll(checked);
 
     setAgreements({
       service: checked,
