@@ -9,12 +9,12 @@ import {
   Clock3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import BackButton from "../components/citizen/BackButton";
-import PageHeader from "../components/citizen/PageHeader";
-import StepSection from "../components/citizen/StepSection";
-import InfoNotice from "../components/citizen/InfoNotice";
-import SuccessScreen from "../components/citizen/SuccessScreen";
-import { INQUIRY_TYPES } from "../mocks/citizen/inquiryData";
+import BackButton from "../../components/citizen/BackButton";
+import PageHeader from "../../components/citizen/PageHeader";
+import StepSection from "../../components/citizen/StepSection";
+import InfoNotice from "../../components/citizen/InfoNotice";
+import SuccessScreen from "../../components/citizen/SuccessScreen";
+import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
 
 function Inquiry() {
   const navigate = useNavigate();

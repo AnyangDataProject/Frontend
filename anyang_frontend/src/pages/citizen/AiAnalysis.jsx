@@ -12,7 +12,7 @@ import {
   Wrench,
   ChevronRight,
 } from "lucide-react";
-import { fallbackReport, getMockAnalysis } from "../mocks/citizen/aiAnalysisData";
+import { fallbackReport, getMockAnalysis } from "../../mocks/citizen/aiAnalysisData";
 
 const TYPE_META = {
   pothole: {

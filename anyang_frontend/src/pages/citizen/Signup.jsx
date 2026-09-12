@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthCardShell from '../components/citizen/AuthCardShell';
-import Checkbox from '../components/citizen/Checkbox';
+import AuthCardShell from '../../components/citizen/AuthCardShell';
+import Checkbox from '../../components/citizen/Checkbox';
 
 function Signup() {
   const navigate = useNavigate();

@@ -2,10 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Camera, X, Search, LocateFixed, Map as MapGlyph, List as ListIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map, CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
-import SegmentedToggle from "../components/citizen/SegmentedToggle";
-import Modal from "../components/citizen/Modal";
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META, ROAD_RISK_META } from "../mocks/citizen/constants";
-import { MAP_PINS, RISK_SEGMENTS } from "../mocks/citizen/reportsData";
+import SegmentedToggle from "../../components/citizen/SegmentedToggle";
+import Modal from "../../components/citizen/Modal";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META, ROAD_RISK_META } from "../../mocks/citizen/constants";
+import { MAP_PINS, RISK_SEGMENTS } from "../../mocks/citizen/reportsData";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 

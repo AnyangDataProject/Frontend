@@ -9,12 +9,12 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map, CustomOverlayMap } from "react-kakao-maps-sdk";
-import BackButton from "../components/citizen/BackButton";
-import PageHeader from "../components/citizen/PageHeader";
-import StepSection from "../components/citizen/StepSection";
-import SelectableCard from "../components/citizen/SelectableCard";
-import SuccessScreen from "../components/citizen/SuccessScreen";
-import { DAMAGE_TYPE_META, SEVERITY_META } from "../mocks/citizen/constants";
+import BackButton from "../../components/citizen/BackButton";
+import PageHeader from "../../components/citizen/PageHeader";
+import StepSection from "../../components/citizen/StepSection";
+import SelectableCard from "../../components/citizen/SelectableCard";
+import SuccessScreen from "../../components/citizen/SuccessScreen";
+import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
 

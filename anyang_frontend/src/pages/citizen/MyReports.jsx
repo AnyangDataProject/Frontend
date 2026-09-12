@@ -12,10 +12,10 @@ import {
   FileText,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import BackButton from "../components/citizen/BackButton";
-import PageHeader from "../components/citizen/PageHeader";
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../mocks/citizen/constants";
-import { MY_REPORTS } from "../mocks/citizen/reportsData";
+import BackButton from "../../components/citizen/BackButton";
+import PageHeader from "../../components/citizen/PageHeader";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
+import { MY_REPORTS } from "../../mocks/citizen/reportsData";
 
 function MyReports() {
   const navigate = useNavigate();
