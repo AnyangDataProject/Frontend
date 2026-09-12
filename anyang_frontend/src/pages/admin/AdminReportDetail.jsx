@@ -36,25 +36,28 @@ export default function AdminReportDetail() {
   const [form, setForm] = useState({ type: '', severity: '', note: '' });
   const [saving, setSaving] = useState(false);
 
-  const load = () => {
+  useEffect(() => {
+    let active = true;
     fetchReportById(id).then((data) => {
+      if (!active) return;
       if (!data) {
         setNotFound(true);
         return;
       }
+      setNotFound(false);
       setReport(data);
       setForm({
         type: data.manualOverride?.type ?? data.type,
         severity: data.manualOverride?.severity ?? data.severity,
         note: data.manualOverride?.note ?? '',
       });
-      fetchRoadById(data.roadId).then(setRoad);
+      fetchRoadById(data.roadId).then((roadData) => {
+        if (active) setRoad(roadData);
+      });
     });
-  };
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   if (notFound) {
