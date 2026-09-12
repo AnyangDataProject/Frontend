@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Car, Gauge, TrafficCone, FileWarning, Wrench, TrendingUp } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
-import MockMap from '../../components/admin/MockMap';
+import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import { fetchRoadById } from '../../mocks/admin/api';
@@ -42,6 +42,19 @@ export default function AdminRoadDetail() {
       active = false;
     };
   }, [id]);
+
+  const mapPoints = useMemo(() => {
+    if (!road) return [];
+    return [
+      {
+        id: road.id,
+        lat: road.coordinate.lat,
+        lng: road.coordinate.lng,
+        label: road.name,
+        tone: RISK_LEVEL_META[road.riskLevel].tone,
+      },
+    ];
+  }, [road]);
 
   if (notFound) {
     return (
@@ -88,19 +101,7 @@ export default function AdminRoadDetail() {
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2" title="구간 위치">
-          <MockMap
-            points={[
-              {
-                id: road.id,
-                lat: road.coordinate.lat,
-                lng: road.coordinate.lng,
-                label: road.name,
-                tone: RISK_LEVEL_META[road.riskLevel].tone,
-              },
-            ]}
-            selectedId={road.id}
-            height={320}
-          />
+          <KakaoMap points={mapPoints} selectedId={road.id} height={320} level={4} />
         </Card>
 
         <Card title="현재 상태 요약">

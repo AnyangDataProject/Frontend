@@ -5,7 +5,7 @@ import { FileWarning, Clock3, TriangleAlert, CheckCircle2, ChevronRight, Trophy 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import StatCard from '../../components/admin/StatCard';
-import MockMap from '../../components/admin/MockMap';
+import KakaoMap from '../../components/admin/KakaoMap';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import { fetchDashboardSummary } from '../../mocks/admin/api';
@@ -62,11 +62,12 @@ export default function AdminDashboard() {
           title="위험 구간 지도"
           description="파손 위험도에 따라 구간을 빨강(위험)·주황(점검필요)·초록(안전)으로 표시합니다."
         >
-          <MockMap
+          <KakaoMap
             points={summary.mapPoints}
             selectedId={selectedRoadId}
-            onSelectPoint={(p) => setSelectedRoadId(p.id)}
+            onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
             height={380}
+            level={8}
           />
         </Card>
 
@@ -88,6 +89,7 @@ export default function AdminDashboard() {
                 <button
                   onClick={() => navigate(`/admin/roads/${road.id}`)}
                   onMouseEnter={() => setSelectedRoadId(road.id)}
+                  onMouseLeave={() => setSelectedRoadId(null)}
                   className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-slate-50"
                 >
                   <span
