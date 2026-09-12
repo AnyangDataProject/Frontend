@@ -23,7 +23,8 @@ export default function AdminMembers() {
     if (!members) return [];
     const kw = keyword.trim().toLowerCase();
     return members.filter((m) => {
-      const matchesKeyword = !kw || m.id.toLowerCase().includes(kw) || m.name.includes(kw) || m.email.includes(kw);
+      const matchesKeyword =
+        !kw || m.id.toLowerCase().includes(kw) || m.name.toLowerCase().includes(kw) || m.email.toLowerCase().includes(kw);
       const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
       return matchesKeyword && matchesStatus;
     });
