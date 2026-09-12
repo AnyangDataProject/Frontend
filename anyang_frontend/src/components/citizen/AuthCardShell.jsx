@@ -1,4 +1,4 @@
-export default function AuthCardShell({ title, description, maxWidth = 440, children }) {
+export default function AuthCardShell({ title, description, maxWidth = 440, children, footer }) {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 text-left">
       <main className="min-h-screen flex justify-center items-start pt-[72px] max-[768px]:pt-16 box-border">
@@ -16,6 +16,8 @@ export default function AuthCardShell({ title, description, maxWidth = 440, chil
           <div className="w-full box-border px-7 pt-8 pb-7 max-[480px]:px-[18px] max-[480px]:pt-6 max-[480px]:pb-5 bg-white border border-slate-200 rounded-xl shadow-sm">
             {children}
           </div>
+
+          {footer}
         </section>
       </main>
     </div>
