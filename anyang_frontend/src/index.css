@@ -1,3 +1,4 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
 @import "tailwindcss";
 
 :root {
@@ -20,8 +21,9 @@
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   /* 이 앱은 다크모드 토글/디자인이 없다. color-scheme:dark를 켜두면 OS가 다크모드일 때
-     --text-h/--bg 등 변수가 어두운 값으로 뒤집혀서, 문서 끝을 넘어가는 영역이나 색상
-     클래스를 안 준 텍스트가 예상과 다르게 렌더링되는 버그가 생긴다 (실제로 겪음). 라이트로 고정. */
+     --text-h/--bg 등 변수가 어두운/밝은 값으로 뒤집혀서, 별도 색상 클래스를 안 준
+     제목 텍스트가 안 보이거나 문서 끝을 넘어가는 영역이 검게 보이는 버그가 생긴다
+     (둘 다 실제로 겪음). 라이트로 고정. */
   color-scheme: light;
   color: var(--text);
   background: var(--bg);
@@ -39,24 +41,19 @@ body {
   margin: 0;
 }
 
+/*
+ * 예전에는 MainMap.css에 스코프 없는 `html, body, #root { width:100% }` 규칙이 있어서
+ * 이 페이지가 번들에 포함되는 한(=항상) 사실상 모든 페이지가 전체 너비로 보였다.
+ * Tailwind 전환 과정에서 그 페이지 전용 CSS가 삭제되며 숨어있던 전역 규칙도 함께 사라졌는데,
+ * 그게 사실상 실제로 사용자들이 봐온 레이아웃이었으므로 여기서 정식으로 전체 너비를 기본값으로 둔다.
+ * (로그인/회원가입 등 좁은 카드가 필요한 페이지는 각자 내부에서 자체 max-width로 중앙 정렬한다.)
+ */
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  width: 100%;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-}
-
-/* 관리자 화면은 데이터 밀도가 높은 대시보드 레이아웃이라 전체 너비를 사용 */
-body.admin-mode #root {
-  width: 100%;
-  max-width: 100%;
-  text-align: left;
-  border-inline: none;
 }
 
 /* 시민 화면용 h1/h2 마진(32px, 24px)은 히어로 타이틀을 위한 값이라
@@ -116,4 +113,15 @@ body.admin-mode h2 {
     padding: 4px 8px;
     background: var(--code-bg);
   }
+}
+
+/* 시민 화면 공용 Modal 컴포넌트용 애니메이션.
+   모달을 열 때마다 <style> 태그로 재선언하지 않도록 전역에 한 번만 둔다. */
+@keyframes citizenModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes citizenModalScaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
