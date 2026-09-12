@@ -8,11 +8,6 @@ export default function Modal({ open, onClose, children, className = "" }) {
       className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-5 animate-[citizenModalFadeIn_0.2s_ease] max-[480px]:p-0 max-[480px]:items-end"
       onClick={onClose}
     >
-      <style>{`
-        @keyframes citizenModalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes citizenModalScaleUp { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-      `}</style>
-
       <div
         className={`relative w-full max-w-[420px] bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-[citizenModalScaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)] max-[480px]:max-w-full max-[480px]:rounded-b-none ${className}`}
         onClick={(e) => e.stopPropagation()}
