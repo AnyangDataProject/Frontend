@@ -6,7 +6,7 @@ import { REPORTS, getReportStats } from './reportsData';
 import { ROADS, getPriorityRoads, getRoadById as findRoadById, HIGH_RISK_ROAD_COUNT } from './roadsData';
 import { MEMBERS } from './membersData';
 import { INQUIRIES } from './inquiriesData';
-import { REPORT_STATUS_STEPS } from './constants';
+import { REPORT_STATUS_STEPS, RISK_LEVEL_META } from './constants';
 
 const NETWORK_DELAY = 300;
 
@@ -45,7 +45,7 @@ export async function fetchDashboardSummary() {
     lat: road.coordinate.lat,
     lng: road.coordinate.lng,
     label: road.name,
-    tone: road.riskLevel === 'high' ? 'danger' : road.riskLevel === 'mid' ? 'warning' : 'success',
+    tone: RISK_LEVEL_META[road.riskLevel].tone,
   }));
 
   return delay({
