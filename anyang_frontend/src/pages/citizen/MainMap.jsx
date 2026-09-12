@@ -38,6 +38,57 @@ export default function MainMap() {
     return list;
   }, [statusFilter, typeFilter]);
 
+  const currentMarkers = useMemo(() => {
+    if (layer !== "current") return null;
+    return MAP_PINS.map((pin) => {
+      const sev = SEVERITY_META[pin.severity];
+      return (
+        <CustomOverlayMap key={pin.id} position={{ lat: pin.lat, lng: pin.lng }} xAnchor={0.5} yAnchor={0.5}>
+          <button
+            className={`p-0 rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] cursor-pointer transition-transform duration-150 hover:scale-[1.2] ${
+              pin.severity === "high" ? "w-[26px] h-[26px] border-[3px]" : "w-[18px] h-[18px]"
+            } ${selected?.id === pin.id ? "outline outline-[3px] outline-slate-900 outline-offset-2" : ""}`}
+            style={{ background: sev.dotColor }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelected(pin);
+            }}
+            aria-label={`${DAMAGE_TYPE_META[pin.type].label} - ${sev.label} - ${pin.address}`}
+          />
+        </CustomOverlayMap>
+      );
+    });
+  }, [layer, selected]);
+
+  const predictionOverlays = useMemo(() => {
+    if (layer !== "prediction") return null;
+    return RISK_SEGMENTS.map((seg) => (
+      <React.Fragment key={seg.id}>
+        <Polyline
+          path={seg.path}
+          strokeWeight={6}
+          strokeColor={ROAD_RISK_META[seg.risk].color}
+          strokeOpacity={0.85}
+          strokeStyle="solid"
+          onClick={() => setSelectedRisk(seg)}
+        />
+        <CustomOverlayMap position={seg.mid} xAnchor={0.5} yAnchor={1.4}>
+          <button
+            className="border-none text-white text-[10.5px] font-extrabold px-[9px] py-1 rounded-xl cursor-pointer shadow-[0_3px_10px_rgba(0,0,0,0.2)] transition-transform duration-150 hover:scale-[1.08] bg-[var(--risk-color)]"
+            style={{ "--risk-color": ROAD_RISK_META[seg.risk].color }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedRisk(seg);
+            }}
+            aria-label={`위험도 ${ROAD_RISK_META[seg.risk].label} 구간 상세`}
+          >
+            {ROAD_RISK_META[seg.risk].label}
+          </button>
+        </CustomOverlayMap>
+      </React.Fragment>
+    ));
+  }, [layer]);
+
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchError("");
@@ -146,57 +197,8 @@ export default function MainMap() {
               setSelectedRisk(null);
             }}
           >
-            {layer === "current" &&
-              MAP_PINS.map((pin) => {
-                const sev = SEVERITY_META[pin.severity];
-                return (
-                  <CustomOverlayMap
-                    key={pin.id}
-                    position={{ lat: pin.lat, lng: pin.lng }}
-                    xAnchor={0.5}
-                    yAnchor={0.5}
-                  >
-                    <button
-                      className={`p-0 rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] cursor-pointer transition-transform duration-150 hover:scale-[1.2] ${
-                        pin.severity === "high" ? "w-[26px] h-[26px] border-[3px]" : "w-[18px] h-[18px]"
-                      } ${selected?.id === pin.id ? "outline outline-[3px] outline-slate-900 outline-offset-2" : ""}`}
-                      style={{ background: sev.dotColor }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelected(pin);
-                      }}
-                      aria-label={`${DAMAGE_TYPE_META[pin.type].label} - ${sev.label} - ${pin.address}`}
-                    />
-                  </CustomOverlayMap>
-                );
-              })}
-
-            {layer === "prediction" &&
-              RISK_SEGMENTS.map((seg) => (
-                <React.Fragment key={seg.id}>
-                  <Polyline
-                    path={seg.path}
-                    strokeWeight={6}
-                    strokeColor={ROAD_RISK_META[seg.risk].color}
-                    strokeOpacity={0.85}
-                    strokeStyle="solid"
-                    onClick={() => setSelectedRisk(seg)}
-                  />
-                  <CustomOverlayMap position={seg.mid} xAnchor={0.5} yAnchor={1.4}>
-                    <button
-                      className="border-none text-white text-[10.5px] font-extrabold px-[9px] py-1 rounded-xl cursor-pointer shadow-[0_3px_10px_rgba(0,0,0,0.2)] transition-transform duration-150 hover:scale-[1.08] bg-[var(--risk-color)]"
-                      style={{ "--risk-color": ROAD_RISK_META[seg.risk].color }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRisk(seg);
-                      }}
-                      aria-label={`위험도 ${ROAD_RISK_META[seg.risk].label} 구간 상세`}
-                    >
-                      {ROAD_RISK_META[seg.risk].label}
-                    </button>
-                  </CustomOverlayMap>
-                </React.Fragment>
-              ))}
+            {currentMarkers}
+            {predictionOverlays}
 
             {selectedRisk && (
               <CustomOverlayMap position={selectedRisk.mid} xAnchor={0.5} yAnchor={2.4}>
