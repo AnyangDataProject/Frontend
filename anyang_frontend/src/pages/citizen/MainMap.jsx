@@ -113,7 +113,11 @@ export default function MainMap() {
                   { value: "prediction", label: "예측" },
                 ]}
                 value={layer}
-                onChange={setLayer}
+                onChange={(v) => {
+                  setLayer(v);
+                  setSelected(null);
+                  setSelectedRisk(null);
+                }}
                 size="sm"
               />
             </div>
