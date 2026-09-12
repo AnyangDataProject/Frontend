@@ -2,75 +2,10 @@ import React, { useMemo, useState } from "react";
 import { Camera, X, Search, LocateFixed, Map as MapGlyph, List as ListIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map, CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
-
-const TYPE_LABEL = {
-  pothole: "포트홀",
-  crack: "노면 균열",
-  sign: "표지판 파손",
-  manhole: "맨홀/시설물",
-};
-
-const SEVERITY_META = {
-  low: { label: "낮음", color: "#10b981" },
-  mid: { label: "보통", color: "#f59e0b" },
-  high: { label: "심각", color: "#ef4444" },
-};
-
-const STATUS_META = {
-  received: { label: "접수됨", color: "#64748b" },
-  progress: { label: "처리중", color: "#f59e0b" },
-  done: { label: "처리완료", color: "#10b981" },
-};
-
-const PINS = [
-  { id: 1, lat: 37.3928, lng: 126.9516, type: "pothole", severity: "high", status: "received", address: "동안구 평촌대로 123", reportedAt: "2026-09-08", photoUrl: null },
-  { id: 2, lat: 37.4014, lng: 126.9527, type: "crack", severity: "mid", status: "progress", address: "동안구 시민대로 45", reportedAt: "2026-09-07", photoUrl: null },
-  { id: 3, lat: 37.3945, lng: 126.9226, type: "sign", severity: "low", status: "done", address: "만안구 안양로 210", reportedAt: "2026-09-05", photoUrl: null },
-  { id: 4, lat: 37.3902, lng: 126.9241, type: "pothole", severity: "mid", status: "received", address: "만안구 삼덕로 8", reportedAt: "2026-09-08", photoUrl: null },
-  { id: 5, lat: 37.3843, lng: 126.9556, type: "manhole", severity: "high", status: "progress", address: "동안구 관악대로 77", reportedAt: "2026-09-06", photoUrl: null },
-  { id: 6, lat: 37.3798, lng: 126.9298, type: "crack", severity: "low", status: "done", address: "만안구 병목안로 19", reportedAt: "2026-09-03", photoUrl: null },
-  { id: 7, lat: 37.3861, lng: 126.9613, type: "pothole", severity: "low", status: "received", address: "동안구 흥안대로 33", reportedAt: "2026-09-08", photoUrl: null },
-  { id: 8, lat: 37.3971, lng: 126.9605, type: "sign", severity: "mid", status: "received", address: "동안구 평촌대로 301", reportedAt: "2026-09-07", photoUrl: null },
-];
-
-// 위험 예측 레이어용 임시 구간 데이터 (실제로는 백엔드 위험도 예측 API 값으로 교체)
-const RISK_SEGMENTS = [
-  {
-    id: "seg1",
-    risk: "high",
-    path: [{ lat: 37.3960, lng: 126.9480 }, { lat: 37.3958, lng: 126.9560 }],
-    mid: { lat: 37.3959, lng: 126.9520 },
-    causes: [
-      { label: "교통량", value: "높음" },
-      { label: "최근 강수량", value: "많음" },
-      { label: "사고 이력", value: "3건" },
-    ],
-  },
-  {
-    id: "seg2",
-    risk: "mid",
-    path: [{ lat: 37.3900, lng: 126.9500 }, { lat: 37.3862, lng: 126.9520 }],
-    mid: { lat: 37.3881, lng: 126.9510 },
-    causes: [
-      { label: "교통량", value: "보통" },
-      { label: "노후 도로", value: "8년 경과" },
-      { label: "사고 이력", value: "1건" },
-    ],
-  },
-  {
-    id: "seg3",
-    risk: "low",
-    path: [{ lat: 37.3820, lng: 126.9350 }, { lat: 37.3822, lng: 126.9450 }],
-    mid: { lat: 37.3821, lng: 126.9400 },
-    causes: [
-      { label: "교통량", value: "낮음" },
-      { label: "사고 이력", value: "0건" },
-    ],
-  },
-];
-
-const RISK_COLOR = { low: "#10b981", mid: "#f59e0b", high: "#ef4444" };
-const RISK_LABEL = { low: "LOW", mid: "MID", high: "HIGH" };
+import SegmentedToggle from "../components/citizen/SegmentedToggle";
+import Modal from "../components/citizen/Modal";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META, ROAD_RISK_META } from "../mocks/citizen/constants";
+import { MAP_PINS, RISK_SEGMENTS } from "../mocks/citizen/reportsData";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
@@ -88,15 +23,15 @@ export default function MainMap() {
 
   const counts = useMemo(
     () => ({
-      all: PINS.length,
-      open: PINS.filter((p) => p.status !== "done").length,
-      done: PINS.filter((p) => p.status === "done").length,
+      all: MAP_PINS.length,
+      open: MAP_PINS.filter((p) => p.status !== "done").length,
+      done: MAP_PINS.filter((p) => p.status === "done").length,
     }),
     []
   );
 
   const filteredPins = useMemo(() => {
-    let list = PINS;
+    let list = MAP_PINS;
     if (statusFilter === "open") list = list.filter((p) => p.status !== "done");
     if (statusFilter === "done") list = list.filter((p) => p.status === "done");
     if (typeFilter !== "all") list = list.filter((p) => p.type === typeFilter);
@@ -141,31 +76,20 @@ export default function MainMap() {
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-white pt-[72px] max-[768px]:pt-16">
       <style>{`
         @keyframes tvFadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes tvScaleUp { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
       `}</style>
 
       <div className="flex-1 min-h-0 flex relative">
         <div className="relative flex-1 min-w-0 bg-[#EAEAEA]">
           <header className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2.5 pointer-events-none">
-            <div className="pointer-events-auto flex gap-1 bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
-              <button
-                className={`flex items-center gap-1.5 border-none px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  !listOpen ? "bg-slate-900 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
-                }`}
-                onClick={() => setListOpen(false)}
-              >
-                <MapGlyph size={14} />
-                지도
-              </button>
-              <button
-                className={`flex items-center gap-1.5 border-none px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  listOpen ? "bg-slate-900 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
-                }`}
-                onClick={() => setListOpen(true)}
-              >
-                <ListIcon size={14} />
-                신고 목록
-              </button>
+            <div className="pointer-events-auto shrink-0">
+              <SegmentedToggle
+                options={[
+                  { value: "map", label: "지도", icon: MapGlyph },
+                  { value: "list", label: "신고 목록", icon: ListIcon },
+                ]}
+                value={listOpen ? "list" : "map"}
+                onChange={(v) => setListOpen(v === "list")}
+              />
             </div>
 
             <form
@@ -182,23 +106,16 @@ export default function MainMap() {
               />
             </form>
 
-            <div className="pointer-events-auto flex bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
-              <button
-                className={`border-none px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  layer === "current" ? "bg-slate-900 text-white" : "bg-transparent text-slate-500"
-                }`}
-                onClick={() => setLayer("current")}
-              >
-                현재
-              </button>
-              <button
-                className={`border-none px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  layer === "prediction" ? "bg-slate-900 text-white" : "bg-transparent text-slate-500"
-                }`}
-                onClick={() => setLayer("prediction")}
-              >
-                예측
-              </button>
+            <div className="pointer-events-auto shrink-0">
+              <SegmentedToggle
+                options={[
+                  { value: "current", label: "현재" },
+                  { value: "prediction", label: "예측" },
+                ]}
+                value={layer}
+                onChange={setLayer}
+                size="sm"
+              />
             </div>
 
             <button
@@ -226,7 +143,7 @@ export default function MainMap() {
             }}
           >
             {layer === "current" &&
-              PINS.map((pin) => {
+              MAP_PINS.map((pin) => {
                 const sev = SEVERITY_META[pin.severity];
                 return (
                   <CustomOverlayMap
@@ -239,12 +156,12 @@ export default function MainMap() {
                       className={`p-0 rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] cursor-pointer transition-transform duration-150 hover:scale-[1.2] ${
                         pin.severity === "high" ? "w-[26px] h-[26px] border-[3px]" : "w-[18px] h-[18px]"
                       } ${selected?.id === pin.id ? "outline outline-[3px] outline-slate-900 outline-offset-2" : ""}`}
-                      style={{ background: sev.color }}
+                      style={{ background: sev.dotColor }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelected(pin);
                       }}
-                      aria-label={`${TYPE_LABEL[pin.type]} - ${sev.label} - ${pin.address}`}
+                      aria-label={`${DAMAGE_TYPE_META[pin.type].label} - ${sev.label} - ${pin.address}`}
                     />
                   </CustomOverlayMap>
                 );
@@ -256,7 +173,7 @@ export default function MainMap() {
                   <Polyline
                     path={seg.path}
                     strokeWeight={6}
-                    strokeColor={RISK_COLOR[seg.risk]}
+                    strokeColor={ROAD_RISK_META[seg.risk].color}
                     strokeOpacity={0.85}
                     strokeStyle="solid"
                     onClick={() => setSelectedRisk(seg)}
@@ -264,14 +181,14 @@ export default function MainMap() {
                   <CustomOverlayMap position={seg.mid} xAnchor={0.5} yAnchor={1.4}>
                     <button
                       className="border-none text-white text-[10.5px] font-extrabold px-[9px] py-1 rounded-xl cursor-pointer shadow-[0_3px_10px_rgba(0,0,0,0.2)] transition-transform duration-150 hover:scale-[1.08] bg-[var(--risk-color)]"
-                      style={{ "--risk-color": RISK_COLOR[seg.risk] }}
+                      style={{ "--risk-color": ROAD_RISK_META[seg.risk].color }}
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedRisk(seg);
                       }}
-                      aria-label={`위험도 ${RISK_LABEL[seg.risk]} 구간 상세`}
+                      aria-label={`위험도 ${ROAD_RISK_META[seg.risk].label} 구간 상세`}
                     >
-                      {RISK_LABEL[seg.risk]}
+                      {ROAD_RISK_META[seg.risk].label}
                     </button>
                   </CustomOverlayMap>
                 </React.Fragment>
@@ -284,8 +201,8 @@ export default function MainMap() {
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between text-sm font-semibold mb-2 pb-2 border-b border-slate-200">
-                    <span style={{ color: RISK_COLOR[selectedRisk.risk] }}>
-                      {RISK_LABEL[selectedRisk.risk]}
+                    <span style={{ color: ROAD_RISK_META[selectedRisk.risk].color }}>
+                      {ROAD_RISK_META[selectedRisk.risk].label}
                     </span>
                     <button
                       className="border-none bg-transparent text-slate-500 cursor-pointer"
@@ -317,31 +234,31 @@ export default function MainMap() {
           {layer === "current" ? (
             <div className="absolute left-4 bottom-4 z-10 bg-white rounded-xl px-3.5 py-2 flex gap-3 text-xs font-semibold text-slate-500 shadow-[0_4px_16px_rgba(15,23,42,0.1)] border border-slate-200">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full" style={{ background: "#10b981" }} />
-                낮음
+                <span className="inline-block w-2 h-2 rounded-full" style={{ background: SEVERITY_META.low.dotColor }} />
+                {SEVERITY_META.low.label}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-2 h-2 rounded-full" style={{ background: "#f59e0b" }} />
-                보통
+                <span className="inline-block w-2 h-2 rounded-full" style={{ background: SEVERITY_META.mid.dotColor }} />
+                {SEVERITY_META.mid.label}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-[11px] h-[11px] rounded-full" style={{ background: "#ef4444" }} />
-                심각
+                <span className="inline-block w-[11px] h-[11px] rounded-full" style={{ background: SEVERITY_META.high.dotColor }} />
+                {SEVERITY_META.high.label}
               </span>
             </div>
           ) : (
             <div className="absolute left-4 bottom-4 z-10 bg-white rounded-xl px-3.5 py-2 flex gap-3 text-xs font-semibold text-slate-500 shadow-[0_4px_16px_rgba(15,23,42,0.1)] border border-slate-200">
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.low }} />
-                LOW
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: ROAD_RISK_META.low.color }} />
+                {ROAD_RISK_META.low.label}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.mid }} />
-                MID
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: ROAD_RISK_META.mid.color }} />
+                {ROAD_RISK_META.mid.label}
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: RISK_COLOR.high }} />
-                HIGH
+                <span className="inline-block w-3.5 h-1.5 rounded-sm" style={{ background: ROAD_RISK_META.high.color }} />
+                {ROAD_RISK_META.high.label}
               </span>
             </div>
           )}
@@ -383,7 +300,7 @@ export default function MainMap() {
           <div className="flex gap-1.5 overflow-x-auto px-4 py-3 border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {[
               { value: "all", label: "전체 유형" },
-              ...Object.entries(TYPE_LABEL).map(([value, label]) => ({ value, label })),
+              ...Object.entries(DAMAGE_TYPE_META).map(([value, meta]) => ({ value, label: meta.label })),
             ].map((opt) => (
               <button
                 key={opt.value}
@@ -406,18 +323,18 @@ export default function MainMap() {
 
             {filteredPins.map((pin) => {
               const sev = SEVERITY_META[pin.severity];
-              const st = STATUS_META[pin.status];
+              const st = REPORT_STATUS_META[pin.status];
               return (
                 <button
                   key={pin.id}
                   className="flex items-start gap-3 bg-slate-50 border border-transparent rounded-xl px-4 py-3.5 text-left cursor-pointer transition-all duration-200 hover:bg-white hover:border-slate-200 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)]"
                   onClick={() => setSelected(pin)}
                 >
-                  <span className="w-2.5 h-2.5 rounded-full mt-[5px] shrink-0" style={{ background: sev.color }} />
+                  <span className="w-2.5 h-2.5 rounded-full mt-[5px] shrink-0" style={{ background: sev.dotColor }} />
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center text-sm">
-                      <span className="font-semibold text-slate-900">{TYPE_LABEL[pin.type]}</span>
-                      <span style={{ color: sev.color, fontWeight: 700 }}>{sev.label}</span>
+                      <span className="font-semibold text-slate-900">{DAMAGE_TYPE_META[pin.type].label}</span>
+                      <span style={{ color: sev.dotColor, fontWeight: 700 }}>{sev.label}</span>
                     </div>
                     <div className="text-xs text-slate-500 mt-1">{pin.address}</div>
                     <div className="flex justify-between text-xs text-slate-400 mt-2.5 pt-2 border-t border-dashed border-slate-200">
@@ -433,48 +350,34 @@ export default function MainMap() {
       </div>
 
       {/* 상세 모달 */}
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-5 animate-[tvFadeIn_0.2s_ease] max-[480px]:p-0 max-[480px]:items-end"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="relative w-full max-w-[420px] bg-white rounded-xl px-[22px] pt-6 pb-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-[tvScaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)] max-[480px]:max-w-full max-[480px]:rounded-b-none"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="absolute top-4 right-4 border-none bg-slate-50 w-[30px] h-[30px] rounded-full text-slate-500 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-slate-200 hover:text-slate-900"
-              onClick={() => setSelected(null)}
-              aria-label="닫기"
-            >
-              <X size={16} />
-            </button>
-
+      <Modal open={!!selected} onClose={() => setSelected(null)} className="px-[22px] pt-6 pb-5">
+        {selected && (
+          <>
             <div className="w-full h-40 rounded-xl bg-slate-50 mb-3.5 overflow-hidden flex items-center justify-center border border-slate-200">
               {selected.photoUrl ? (
                 <img
                   className="w-full h-full object-cover"
                   src={selected.photoUrl}
-                  alt={`${TYPE_LABEL[selected.type]} 현장 사진`}
+                  alt={`${DAMAGE_TYPE_META[selected.type].label} 현장 사진`}
                 />
               ) : (
                 <span className="text-xs text-slate-500">사진 없음</span>
               )}
             </div>
 
-            <div className="text-lg font-semibold text-slate-900 mt-0.5">{TYPE_LABEL[selected.type]}</div>
+            <div className="text-lg font-semibold text-slate-900 mt-0.5">{DAMAGE_TYPE_META[selected.type].label}</div>
             <div className="text-sm text-slate-500 mb-3.5">{selected.address}</div>
 
             <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
               <span className="text-slate-500">심각도</span>
-              <span style={{ color: SEVERITY_META[selected.severity].color, fontWeight: 700 }}>
+              <span style={{ color: SEVERITY_META[selected.severity].dotColor, fontWeight: 700 }}>
                 {SEVERITY_META[selected.severity].label}
               </span>
             </div>
             <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
               <span className="text-slate-500">처리 상태</span>
-              <span style={{ color: STATUS_META[selected.status].color, fontWeight: 700 }}>
-                {STATUS_META[selected.status].label}
+              <span style={{ color: REPORT_STATUS_META[selected.status].color, fontWeight: 700 }}>
+                {REPORT_STATUS_META[selected.status].label}
               </span>
             </div>
             <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
@@ -488,9 +391,9 @@ export default function MainMap() {
             >
               AI 분석 결과 자세히 보기
             </button>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
     </div>
   );
 }
