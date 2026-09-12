@@ -149,8 +149,8 @@ export default function MainMap() {
           <header className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2.5 pointer-events-none">
             <div className="pointer-events-auto flex gap-1 bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
               <button
-                className={`flex items-center gap-1.5 border-none bg-transparent px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  !listOpen ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"
+                className={`flex items-center gap-1.5 border-none px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  !listOpen ? "bg-slate-900 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
                 }`}
                 onClick={() => setListOpen(false)}
               >
@@ -158,8 +158,8 @@ export default function MainMap() {
                 지도
               </button>
               <button
-                className={`flex items-center gap-1.5 border-none bg-transparent px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  listOpen ? "bg-slate-900 text-white" : "text-slate-500 hover:text-slate-900"
+                className={`flex items-center gap-1.5 border-none px-4 py-2 rounded-full text-sm font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  listOpen ? "bg-slate-900 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
                 }`}
                 onClick={() => setListOpen(true)}
               >
@@ -184,16 +184,16 @@ export default function MainMap() {
 
             <div className="pointer-events-auto flex bg-white rounded-full p-1 shadow-[0_4px_16px_rgba(15,23,42,0.08),0_1px_3px_rgba(0,0,0,0.05)] shrink-0">
               <button
-                className={`border-none bg-transparent px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  layer === "current" ? "bg-slate-900 text-white" : "text-slate-500"
+                className={`border-none px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  layer === "current" ? "bg-slate-900 text-white" : "bg-transparent text-slate-500"
                 }`}
                 onClick={() => setLayer("current")}
               >
                 현재
               </button>
               <button
-                className={`border-none bg-transparent px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
-                  layer === "prediction" ? "bg-slate-900 text-white" : "text-slate-500"
+                className={`border-none px-4 py-[7px] rounded-full text-xs font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${
+                  layer === "prediction" ? "bg-slate-900 text-white" : "bg-transparent text-slate-500"
                 }`}
                 onClick={() => setLayer("prediction")}
               >
