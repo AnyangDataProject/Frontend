@@ -1,10 +1,4 @@
-const TONE_CLASSES = {
-  neutral: 'bg-slate-100 text-slate-600',
-  danger: 'bg-red-50 text-red-600',
-  warning: 'bg-amber-50 text-amber-600',
-  success: 'bg-emerald-50 text-emerald-600',
-  info: 'bg-blue-50 text-blue-600',
-};
+import { TONE_CLASSES } from './toneClasses';
 
 export default function StatCard({ icon: Icon, label, value, suffix, tone = 'info', hint }) {
   return (
