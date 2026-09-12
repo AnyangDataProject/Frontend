@@ -150,7 +150,10 @@ export default function AdminReports() {
                           onChange={(e) => handleStatusChange(r.id, e.target.value)}
                           className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium text-slate-700 outline-none focus:border-blue-500"
                         >
-                          {REPORT_STATUS_STEPS.map((step) => (
+                          {REPORT_STATUS_STEPS.filter((step, i) => {
+                            const currentIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === r.status);
+                            return i === currentIndex || i === currentIndex + 1;
+                          }).map((step) => (
                             <option key={step.key} value={step.key}>
                               {step.label}
                             </option>
