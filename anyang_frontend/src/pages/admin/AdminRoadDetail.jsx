@@ -35,8 +35,12 @@ export default function AdminRoadDetail() {
     let active = true;
     fetchRoadById(id).then((data) => {
       if (!active) return;
-      if (!data) setNotFound(true);
-      else setRoad(data);
+      if (!data) {
+        setNotFound(true);
+      } else {
+        setNotFound(false);
+        setRoad(data);
+      }
     });
     return () => {
       active = false;

@@ -71,6 +71,7 @@ function formatDateTime(date) {
 
 function buildTimeline(status, createdAt) {
   const stageIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === status);
+  const isFinalStage = stageIndex === REPORT_STATUS_STEPS.length - 1;
   let cursor = new Date(createdAt);
 
   return REPORT_STATUS_STEPS.map((step, i) => {
@@ -80,7 +81,10 @@ function buildTimeline(status, createdAt) {
     if (i > 0) {
       cursor = new Date(cursor.getTime() + randInt(3, 30) * 60 * 60 * 1000);
     }
-    return { key: step.key, label: step.label, at: formatDateTime(cursor), done: true };
+    // 현재 진행 중인 단계(마지막 단계 제외)는 완료 처리하지 않아야
+    // StatusTimeline이 체크 표시가 아닌 진행 중 링으로 구분해서 보여준다.
+    const done = i < stageIndex || isFinalStage;
+    return { key: step.key, label: step.label, at: formatDateTime(cursor), done };
   });
 }
 
