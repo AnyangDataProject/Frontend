@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
-import { MapPin } from 'lucide-react';
 import { ANYANG_BOUNDS } from '../../mocks/admin/constants';
 
 const TONE_DOT = {
@@ -11,12 +10,14 @@ const TONE_DOT = {
   neutral: 'bg-slate-400 ring-slate-200',
 };
 
-const TONE_TEXT = {
-  danger: 'text-red-600',
-  warning: 'text-amber-600',
-  success: 'text-emerald-600',
-  info: 'text-blue-600',
-  neutral: 'text-slate-500',
+// 마커 채우기 색상. 시민 화면 지도(MainMap)와 동일한 원형 점 마커 컨벤션을 쓴다 —
+// 색상으로 위험도 구분, 위험(danger)만 한 단계 크게 그려서 강조.
+const TONE_BG = {
+  danger: 'bg-red-500',
+  warning: 'bg-amber-500',
+  success: 'bg-emerald-500',
+  info: 'bg-blue-500',
+  neutral: 'bg-slate-400',
 };
 
 const ANYANG_CENTER = {
@@ -53,26 +54,26 @@ export default function KakaoMap({
           const isActive = selectedId === point.id;
           const isHovered = hoveredId === point.id;
           return (
-            <CustomOverlayMap key={point.id} position={{ lat: point.lat, lng: point.lng }} xAnchor={0.5} yAnchor={1}>
+            <CustomOverlayMap key={point.id} position={{ lat: point.lat, lng: point.lng }} xAnchor={0.5} yAnchor={0.5}>
               <button
                 type="button"
-                className="group flex flex-col items-center border-none bg-transparent p-0 cursor-pointer"
+                className="group relative flex cursor-pointer items-center justify-center border-none bg-transparent p-0"
                 onClick={() => onSelectPoint?.(point)}
                 onMouseEnter={() => setHoveredId(point.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
+                <span
+                  className={`block rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] transition-transform duration-150 group-hover:scale-[1.2] ${
+                    TONE_BG[point.tone] ?? TONE_BG.neutral
+                  } ${point.tone === 'danger' ? 'h-[26px] w-[26px] border-[3px]' : 'h-[18px] w-[18px]'} ${
+                    isActive ? 'outline outline-[3px] outline-slate-900 outline-offset-2' : ''
+                  }`}
+                />
                 {(isActive || isHovered) && point.label && (
-                  <span className="pointer-events-none mb-1 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white shadow">
+                  <span className="pointer-events-none absolute bottom-full left-1/2 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-[11px] font-medium text-white shadow">
                     {point.label}
                   </span>
                 )}
-                <MapPin
-                  size={isActive ? 30 : 24}
-                  className={`${TONE_TEXT[point.tone] ?? TONE_TEXT.neutral} drop-shadow-sm transition-transform group-hover:scale-110`}
-                  fill="currentColor"
-                  fillOpacity={0.15}
-                  strokeWidth={2}
-                />
               </button>
             </CustomOverlayMap>
           );
