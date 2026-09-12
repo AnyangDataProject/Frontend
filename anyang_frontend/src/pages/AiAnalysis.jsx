@@ -1,4 +1,3 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -13,7 +12,6 @@ import {
   Wrench,
   ChevronRight,
 } from "lucide-react";
-import "./AiAnalysis.css";
 
 const TYPE_META = {
   pothole: {
@@ -38,14 +36,17 @@ const SEVERITY_META = {
   low: {
     label: "낮음",
     description: "현재 즉각적인 사고 위험은 낮은 상태입니다.",
+    textClass: "text-emerald-600",
   },
   mid: {
     label: "보통",
     description: "통행 시 주의가 필요하며 정비가 권장됩니다.",
+    textClass: "text-amber-600",
   },
   high: {
     label: "높음",
     description: "사고 위험이 높아 신속한 정비가 필요한 상태입니다.",
+    textClass: "text-red-600",
   },
 };
 
@@ -54,18 +55,27 @@ const STATUS_META = {
     label: "접수됨",
     description: "시민 신고가 접수되어 담당 부서의 확인을 기다리고 있습니다.",
     icon: Activity,
+    textClass: "text-slate-500",
   },
   progress: {
     label: "처리중",
     description: "담당 부서에서 현장 확인 및 보수 작업을 진행하고 있습니다.",
     icon: Wrench,
+    textClass: "text-amber-600",
   },
   done: {
     label: "처리완료",
     description: "도로파손에 대한 조치가 완료되었습니다.",
     icon: CheckCircle2,
+    textClass: "text-emerald-600",
   },
 };
+
+const SECTION_LABEL = "text-blue-600 text-xs font-bold tracking-[0.13em] text-left";
+const CARD = "p-7 mb-[15px] bg-white border border-slate-200 rounded-xl shadow-sm text-left max-[700px]:p-5 max-[430px]:p-[17px]";
+const CARD_HEADER = "flex items-start justify-between gap-3 mb-[23px] text-left";
+const CARD_HEADER_TITLE_WRAP = "flex-1 min-w-0 text-left";
+const CARD_HEADER_H2 = "mt-1 text-sm font-semibold tracking-[-0.03em] text-left text-slate-900";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();
@@ -97,25 +107,25 @@ export default function AiAnalysis() {
   const analysisResult = getMockAnalysis(selectedReport);
 
   return (
-    <div className="ai-page">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left">
 
       {/* Header */}
-      <header className="ai-header">
-        <div className="ai-header-inner">
+      <header className="h-[72px] bg-white/[0.94] border-b border-slate-200 fixed top-0 left-0 right-0 z-[100] backdrop-blur-[10px]">
+        <div className="max-w-[1440px] h-full mx-auto px-6 lg:px-10 flex items-center">
 
           <button
-            className="ai-back-button"
+            className="border-0 bg-transparent inline-flex items-center gap-1.5 p-0 text-slate-500 text-sm font-semibold cursor-pointer transition-colors hover:text-slate-900"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft size={20} />
             <span>이전</span>
           </button>
 
-          <div className="ai-header-title">
+          <div className="ml-4 pl-4 border-l border-slate-200 flex items-center gap-2.5 text-blue-600">
             <BrainCircuit size={20} />
-            <div>
-              <strong>AI 분석 결과</strong>
-              <span>로드센스 도로파손 분석 시스템</span>
+            <div className="flex flex-col gap-px text-left">
+              <strong className="text-slate-900 text-sm font-bold">AI 분석 결과</strong>
+              <span className="text-slate-400 text-xs">로드센스 도로파손 분석 시스템</span>
             </div>
           </div>
 
@@ -123,77 +133,85 @@ export default function AiAnalysis() {
       </header>
 
       {/* Main */}
-      <main className="ai-main">
+      <main className="max-w-[1440px] mx-auto px-6 lg:px-10 pt-10 pb-20 max-[700px]:w-[calc(100%-28px)] max-[700px]:mx-auto max-[700px]:pt-8 max-[430px]:w-[calc(100%-24px)] max-[430px]:mx-auto">
 
         {/* Page title */}
-        <section className="ai-page-title">
-          <div>
-            <span className="ai-eyebrow">
+        <section className="flex items-end justify-between mb-[30px] text-left max-[700px]:block">
+          <div className="flex-1 min-w-0 text-left">
+            <span className={SECTION_LABEL}>
               ROAD DAMAGE ANALYSIS
             </span>
 
-            <h1>도로파손 AI 분석 결과</h1>
+            <h1 className="mt-2 mb-[9px] text-xl font-semibold tracking-[-0.04em] text-left text-slate-900">
+              도로파손 AI 분석 결과
+            </h1>
 
-            <p>
+            <p className="m-0 text-slate-500 text-sm text-left">
               신고된 도로 사진과 위치 정보를 기반으로
               AI가 도로파손 유형과 위험도를 분석했습니다.
             </p>
           </div>
 
-          <div className="ai-analysis-badge">
+          <div className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium max-[700px]:mt-3">
             <BrainCircuit size={17} />
             AI 분석 완료
           </div>
         </section>
 
         {/* Report information */}
-        <section className="ai-report-card">
+        <section className={`${CARD} overflow-hidden`}>
 
-          <div className="ai-card-header">
-            <div>
-              <span className="ai-section-label">
+          <div className={CARD_HEADER}>
+            <div className={CARD_HEADER_TITLE_WRAP}>
+              <span className={SECTION_LABEL}>
                 REPORT INFORMATION
               </span>
 
-              <h2>신고 정보</h2>
+              <h2 className={CARD_HEADER_H2}>신고 정보</h2>
             </div>
 
-            <span className="ai-report-number">
+            <span className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 text-xs font-medium">
               신고 #{String(selectedReport.id).padStart(4, "0")}
             </span>
           </div>
 
-          <div className="ai-report-grid">
+          <div className="grid grid-cols-4 gap-[9px] mt-[15px] max-[700px]:grid-cols-1">
 
-            <div className="ai-info-item">
-              <MapPin size={17} />
-              <div>
-                <span>신고 위치</span>
-                <strong>{selectedReport.address}</strong>
+            <div className="flex items-center gap-3 min-h-[76px] p-[13px] border border-slate-200 rounded-lg bg-white text-left">
+              <MapPin size={17} className="shrink-0 text-blue-600" />
+              <div className="flex flex-col gap-[3px] min-w-0">
+                <span className="text-slate-400 text-xs">신고 위치</span>
+                <strong className="text-sm font-medium text-slate-900 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {selectedReport.address}
+                </strong>
               </div>
             </div>
 
-            <div className="ai-info-item">
-              <CalendarDays size={17} />
-              <div>
-                <span>신고일</span>
-                <strong>{selectedReport.reportedAt}</strong>
+            <div className="flex items-center gap-3 min-h-[76px] p-[13px] border border-slate-200 rounded-lg bg-white text-left">
+              <CalendarDays size={17} className="shrink-0 text-blue-600" />
+              <div className="flex flex-col gap-[3px] min-w-0">
+                <span className="text-slate-400 text-xs">신고일</span>
+                <strong className="text-sm font-medium text-slate-900 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {selectedReport.reportedAt}
+                </strong>
               </div>
             </div>
 
-            <div className="ai-info-item">
-              <User size={17} />
-              <div>
-                <span>신고자</span>
-                <strong>{selectedReport.reporter}</strong>
+            <div className="flex items-center gap-3 min-h-[76px] p-[13px] border border-slate-200 rounded-lg bg-white text-left">
+              <User size={17} className="shrink-0 text-blue-600" />
+              <div className="flex flex-col gap-[3px] min-w-0">
+                <span className="text-slate-400 text-xs">신고자</span>
+                <strong className="text-sm font-medium text-slate-900 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {selectedReport.reporter}
+                </strong>
               </div>
             </div>
 
-            <div className="ai-info-item">
-              <StatusIcon size={17} />
-              <div>
-                <span>처리 상태</span>
-                <strong className={`status-${selectedReport.status}`}>
+            <div className="flex items-center gap-3 min-h-[76px] p-[13px] border border-slate-200 rounded-lg bg-white text-left">
+              <StatusIcon size={17} className="shrink-0 text-blue-600" />
+              <div className="flex flex-col gap-[3px] min-w-0">
+                <span className="text-slate-400 text-xs">처리 상태</span>
+                <strong className={`text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap ${status.textClass}`}>
                   {status.label}
                 </strong>
               </div>
@@ -204,53 +222,52 @@ export default function AiAnalysis() {
         </section>
 
         {/* AI Analysis */}
-        <section className="ai-analysis-grid">
+        <section className="grid grid-cols-2 gap-[15px] mb-[15px] max-[700px]:grid-cols-1">
 
           {/* Image */}
-          <div className="ai-image-card">
+          <div className={CARD}>
 
-            <div className="ai-card-header">
-              <div>
-                <span className="ai-section-label">
+            <div className={CARD_HEADER}>
+              <div className={CARD_HEADER_TITLE_WRAP}>
+                <span className={SECTION_LABEL}>
                   AI VISION
                 </span>
 
-                <h2>파손 이미지 분석</h2>
+                <h2 className={CARD_HEADER_H2}>파손 이미지 분석</h2>
               </div>
             </div>
 
-            <div className="ai-image-area">
+            <div className="relative">
 
-              <div className="ai-road-placeholder">
+              <div className="relative aspect-[1.4/1] rounded-lg overflow-hidden bg-slate-900 border border-slate-200">
 
-                <div className="ai-road-line line-1" />
-                <div className="ai-road-line line-2" />
-                <div className="ai-road-line line-3" />
+                <div className="absolute h-0.5 bg-white/15 rotate-[-12deg] w-[120%] left-[-10%] top-[34%]" />
+                <div className="absolute h-0.5 bg-white/15 rotate-[-12deg] w-[120%] left-[-10%] top-[61%]" />
+                <div className="absolute h-0.5 bg-white/15 rotate-[-12deg] w-full left-[10%] top-[79%]" />
 
-                <div className="ai-damage-area">
+                <div className="absolute left-1/2 top-1/2 w-[120px] h-[75px] -translate-x-1/2 -translate-y-1/2 rotate-[-5deg] border-2 border-dashed border-blue-600 rounded-[40%] bg-blue-600/20 text-white flex flex-col items-center justify-center gap-1">
                   <AlertTriangle size={30} />
-                  <span>{type.label}</span>
+                  <span className="text-xs font-bold">{type.label}</span>
+                </div>
+
+                <div className="absolute top-2.5 left-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/85 backdrop-blur-[4px] flex flex-col gap-px">
+                  <span className="text-blue-400 text-[9px] font-extrabold">
+                    AI DETECTION
+                  </span>
+
+                  <span className="text-white text-xs font-bold">
+                    {type.label}
+                  </span>
+
+                  <span className="text-slate-400 text-[9px]">
+                    신뢰도 {analysisResult.confidence}%
+                  </span>
                 </div>
 
               </div>
-
-              <div className="ai-detection-box">
-                <span className="detection-label">
-                  AI DETECTION
-                </span>
-
-                <span className="detection-type">
-                  {type.label}
-                </span>
-
-                <span className="detection-confidence">
-                  신뢰도 {analysisResult.confidence}%
-                </span>
-              </div>
-
             </div>
 
-            <p className="ai-image-description">
+            <p className="mt-3 text-slate-500 text-xs leading-[1.5]">
               AI가 신고 이미지에서 도로파손 영역을 탐지하고
               파손 유형을 분류했습니다.
             </p>
@@ -258,52 +275,52 @@ export default function AiAnalysis() {
           </div>
 
           {/* Result */}
-          <div className="ai-result-card">
+          <div className={CARD}>
 
-            <div className="ai-card-header">
-              <div>
-                <span className="ai-section-label">
+            <div className={CARD_HEADER}>
+              <div className={CARD_HEADER_TITLE_WRAP}>
+                <span className={SECTION_LABEL}>
                   ANALYSIS RESULT
                 </span>
 
-                <h2>AI 분석 결과</h2>
+                <h2 className={CARD_HEADER_H2}>AI 분석 결과</h2>
               </div>
 
-              <BrainCircuit size={23} />
+              <BrainCircuit size={23} className="text-blue-600" />
             </div>
 
             {/* Type */}
-            <div className="ai-result-main">
+            <div className="flex items-center gap-3 p-[13px] rounded-lg bg-blue-50 border border-blue-100 mb-[18px]">
 
-              <div className="ai-result-icon">
+              <div className="w-10 h-10 shrink-0 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
                 <AlertTriangle size={25} />
               </div>
 
-              <div>
-                <span>탐지된 파손 유형</span>
-                <strong>{type.label}</strong>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-slate-500 text-xs">탐지된 파손 유형</span>
+                <strong className="text-base font-semibold text-slate-900">{type.label}</strong>
               </div>
 
             </div>
 
             {/* Confidence */}
-            <div className="ai-progress-section">
+            <div className="mb-[18px]">
 
-              <div className="ai-progress-top">
-                <span>AI 분석 신뢰도</span>
-                <strong>{analysisResult.confidence}%</strong>
+              <div className="flex justify-between mb-1.5 text-xs">
+                <span className="text-slate-500">AI 분석 신뢰도</span>
+                <strong className="text-blue-600 font-semibold">{analysisResult.confidence}%</strong>
               </div>
 
-              <div className="ai-progress">
+              <div className="h-2 rounded-full bg-slate-50 overflow-hidden border border-slate-200">
                 <div
-                  className="ai-progress-fill"
+                  className="h-full rounded-full bg-blue-600"
                   style={{
                     width: `${analysisResult.confidence}%`,
                   }}
                 />
               </div>
 
-              <p>
+              <p className="mt-1.5 text-slate-400 text-xs">
                 AI 모델이 해당 파손 유형으로 판단할 가능성이
                 {` ${analysisResult.confidence}%`}입니다.
               </p>
@@ -311,22 +328,20 @@ export default function AiAnalysis() {
             </div>
 
             {/* Severity */}
-            <div className="ai-severity-box">
+            <div className="flex items-start gap-3 p-[13px] rounded-lg border border-slate-200 bg-slate-50">
 
-              <div className="ai-severity-icon">
+              <div className="w-9 h-9 shrink-0 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
                 <ShieldAlert size={22} />
               </div>
 
-              <div className="ai-severity-content">
-                <span>AI 위험도 평가</span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-slate-400 text-xs">AI 위험도 평가</span>
 
-                <strong
-                  className={`severity-${selectedReport.severity}`}
-                >
+                <strong className={`text-sm font-medium ${severity.textClass}`}>
                   {severity.label}
                 </strong>
 
-                <p>
+                <p className="mt-0.5 text-slate-500 text-xs leading-[1.5]">
                   {severity.description}
                 </p>
               </div>
@@ -338,19 +353,19 @@ export default function AiAnalysis() {
         </section>
 
         {/* Detailed analysis */}
-        <section className="ai-detail-card">
+        <section className={CARD}>
 
-          <div className="ai-card-header">
-            <div>
-              <span className="ai-section-label">
+          <div className={CARD_HEADER}>
+            <div className={CARD_HEADER_TITLE_WRAP}>
+              <span className={SECTION_LABEL}>
                 DETAILED ANALYSIS
               </span>
 
-              <h2>상세 분석</h2>
+              <h2 className={CARD_HEADER_H2}>상세 분석</h2>
             </div>
           </div>
 
-          <div className="ai-detail-grid">
+          <div className="grid grid-cols-2 gap-[9px] max-[700px]:grid-cols-1">
 
             <AnalysisItem
               number="01"
@@ -385,21 +400,20 @@ export default function AiAnalysis() {
         </section>
 
         {/* AI Summary */}
-        <section className="ai-summary-card">
+        <section className="flex items-start gap-3.5 p-5 mb-[15px] bg-white border-l-4 border-blue-600 text-left max-[430px]:p-[17px]">
 
-          <div className="ai-summary-icon">
+          <div className="w-9 h-9 shrink-0 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
             <BrainCircuit size={25} />
           </div>
 
-          <div className="ai-summary-content">
-
-            <span className="ai-section-label">
+          <div>
+            <span className={SECTION_LABEL}>
               AI SUMMARY
             </span>
 
-            <h2>AI 분석 요약</h2>
+            <h2 className="mt-0.5 mb-1.5 text-sm font-semibold text-slate-900">AI 분석 요약</h2>
 
-            <p>
+            <p className="text-slate-500 text-xs leading-[1.7]">
               {analysisResult.summary}
             </p>
 
@@ -408,19 +422,19 @@ export default function AiAnalysis() {
         </section>
 
         {/* Processing status */}
-        <section className="ai-process-card">
+        <section className={CARD}>
 
-          <div className="ai-card-header">
-            <div>
-              <span className="ai-section-label">
+          <div className={CARD_HEADER}>
+            <div className={CARD_HEADER_TITLE_WRAP}>
+              <span className={SECTION_LABEL}>
                 PROCESS STATUS
               </span>
 
-              <h2>신고 처리 현황</h2>
+              <h2 className={CARD_HEADER_H2}>신고 처리 현황</h2>
             </div>
 
             <button
-              className="ai-detail-link"
+              className="border-0 bg-transparent flex items-center gap-1 text-slate-500 text-xs font-semibold cursor-pointer p-0 transition-colors hover:text-blue-600"
               onClick={() => navigate("/my-reports")}
             >
               내 신고에서 보기
@@ -428,7 +442,7 @@ export default function AiAnalysis() {
             </button>
           </div>
 
-          <div className="ai-timeline">
+          <div className="flex flex-col gap-[14px]">
 
             <TimelineItem
               title="신고 접수"
@@ -466,17 +480,17 @@ export default function AiAnalysis() {
         </section>
 
         {/* Bottom buttons */}
-        <div className="ai-bottom-actions">
+        <div className="flex justify-end gap-2 mt-6 max-[700px]:sticky max-[700px]:bottom-0 max-[700px]:py-3 max-[700px]:bg-slate-50/[0.94] max-[700px]:backdrop-blur-[10px] max-[430px]:flex-col">
 
           <button
-            className="ai-secondary-button"
+            className="h-12 px-[22px] rounded-lg text-sm font-medium cursor-pointer flex items-center justify-center gap-[7px] transition-colors border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 max-[700px]:flex-1 max-[430px]:w-full"
             onClick={() => navigate(-1)}
           >
             지도에서 위치 보기
           </button>
 
           <button
-            className="ai-primary-button"
+            className="h-12 px-[22px] rounded-lg text-sm font-medium cursor-pointer flex items-center justify-center gap-[7px] transition-colors border-0 bg-blue-600 text-white hover:bg-blue-700 max-[700px]:flex-1 max-[430px]:w-full"
             onClick={() => navigate("/my-reports")}
           >
             내 신고 현황 보기
@@ -485,7 +499,7 @@ export default function AiAnalysis() {
 
         </div>
 
-        <p className="ai-disclaimer">
+        <p className="mt-4 text-center text-slate-400 text-xs">
           ※ AI 분석 결과는 참고용이며 최종적인 도로파손 판정 및
           조치는 담당 부서의 현장 확인 결과에 따라 결정됩니다.
         </p>
@@ -507,21 +521,21 @@ function AnalysisItem({
   description,
 }) {
   return (
-    <div className="ai-analysis-item">
+    <div className="flex items-start gap-3 p-4 border border-slate-200 rounded-lg bg-white">
 
-      <span className="ai-analysis-number">
+      <span className="w-8 h-8 min-w-[32px] max-w-[32px] flex-none flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 text-xs font-bold mt-px">
         {number}
       </span>
 
-      <div className="ai-analysis-item-content">
+      <div className="flex flex-col gap-[3px] min-w-0">
 
-        <span className="ai-analysis-item-title">
+        <span className="text-slate-400 text-xs">
           {title}
         </span>
 
-        <strong>{value}</strong>
+        <strong className="text-sm font-semibold text-slate-900">{value}</strong>
 
-        <p>{description}</p>
+        <p className="mt-1 text-slate-500 text-xs leading-[1.5]">{description}</p>
 
       </div>
 
@@ -538,29 +552,33 @@ function TimelineItem({
   last,
 }) {
   return (
-    <div
-      className={`ai-timeline-item ${
-        active ? "is-active" : ""
-      } ${done ? "is-done" : ""}`}
-    >
+    <div className={`relative flex items-start gap-3 ${active ? "opacity-100" : "opacity-50"}`}>
 
-      <div className="ai-timeline-marker">
+      <div
+        className={`w-6 h-6 shrink-0 rounded-full border-[1.5px] bg-white flex items-center justify-center z-[2] ${
+          done
+            ? "bg-blue-600 border-blue-600 text-white"
+            : active
+              ? "border-blue-600 text-blue-600"
+              : "border-slate-200"
+        }`}
+      >
         {done ? (
           <CheckCircle2 size={17} />
         ) : (
-          <span />
+          <span className={`w-1.5 h-1.5 rounded-full ${active ? "bg-blue-600" : "bg-slate-200"}`} />
         )}
       </div>
 
       {!last && (
-        <div className="ai-timeline-line" />
+        <div className="absolute left-[11px] top-6 w-px h-[calc(100%+14px)] bg-slate-200" />
       )}
 
-      <div className="ai-timeline-content">
+      <div>
 
-        <strong>{title}</strong>
+        <strong className="block text-sm font-medium text-slate-900">{title}</strong>
 
-        <p>{description}</p>
+        <p className="mt-0.5 text-slate-500 text-xs">{description}</p>
 
       </div>
 
