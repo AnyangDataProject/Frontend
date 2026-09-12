@@ -1,4 +1,4 @@
-export default function Checkbox({ checked, onChange, label, required, emphasized = false }) {
+export default function Checkbox({ checked, onChange, label, emphasized = false }) {
   return (
     <label
       className={`relative flex items-center cursor-pointer ${
@@ -22,10 +22,7 @@ export default function Checkbox({ checked, onChange, label, required, emphasize
         )}
       </span>
 
-      <span>
-        {label}
-        {required && <em className="not-italic text-red-600"> *</em>}
-      </span>
+      <span>{label}</span>
     </label>
   );
 }
