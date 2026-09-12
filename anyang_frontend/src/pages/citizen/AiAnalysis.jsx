@@ -192,7 +192,7 @@ export default function AiAnalysis() {
               <div className="flex flex-col gap-[3px] min-w-0">
                 <span className="text-slate-400 text-xs">신고자</span>
                 <strong className="text-sm font-medium text-slate-900 overflow-hidden text-ellipsis whitespace-nowrap">
-                  {selectedReport.reporter}
+                  {selectedReport.reporter ?? "정보 없음"}
                 </strong>
               </div>
             </div>
