@@ -51,7 +51,8 @@ export default function AdminReports() {
   };
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const currentPage = Math.min(page, totalPages);
+  const paged = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   const handleStatusChange = async (id, nextStatus) => {
     const updated = await updateReportStatus(id, nextStatus);
@@ -168,23 +169,23 @@ export default function AdminReports() {
 
             <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3">
               <p className="text-xs text-slate-400">
-                총 {filtered.length}건 중 {(page - 1) * PAGE_SIZE + 1}-
-                {Math.min(page * PAGE_SIZE, filtered.length)}건 표시
+                총 {filtered.length}건 중 {(currentPage - 1) * PAGE_SIZE + 1}-
+                {Math.min(currentPage * PAGE_SIZE, filtered.length)}건 표시
               </p>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
+                  disabled={currentPage === 1}
                   className="flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 text-slate-500 disabled:opacity-40"
                 >
                   <ChevronLeft size={14} />
                 </button>
                 <span className="px-2 text-xs text-slate-500">
-                  {page} / {totalPages}
+                  {currentPage} / {totalPages}
                 </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
+                  disabled={currentPage === totalPages}
                   className="flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 text-slate-500 disabled:opacity-40"
                 >
                   <ChevronRight size={14} />
