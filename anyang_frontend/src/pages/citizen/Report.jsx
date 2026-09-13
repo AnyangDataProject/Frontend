@@ -15,6 +15,7 @@ import StepSection from "../../components/citizen/StepSection";
 import SelectableCard from "../../components/citizen/SelectableCard";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
+import MessageModal from "../../components/citizen/MessageModal";
 import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
@@ -35,15 +36,24 @@ export default function Report() {
   const [submitted, setSubmitted] = useState(false);
   const [mapCenter, setMapCenter] = useState({ lat: 37.3943, lng: 126.9568 });
   const [markerPos, setMarkerPos] = useState(null);
+  const [modal, setModal] = useState(null);
+
+  const showError = (message) => setModal({ variant: "error", message });
+  const showInfo = (message) => setModal({ variant: "info", message });
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.slice(0, 3 - images.length).map((file) => ({
+    const remaining = 3 - images.length;
+    const newImages = files.slice(0, remaining).map((file) => ({
       id: `${file.name}-${Date.now()}-${Math.random()}`,
       file,
       preview: URL.createObjectURL(file),
     }));
     setImages((prev) => [...prev, ...newImages]);
+
+    if (files.length > remaining) {
+      showInfo("사진은 최대 3장까지 등록할 수 있습니다.\n초과한 사진은 추가되지 않았습니다.");
+    }
   };
 
   const removeImage = (id) => {
@@ -101,23 +111,23 @@ export default function Report() {
     e.preventDefault();
 
     if (images.length === 0) {
-      alert("도로파손 사진을 최소 1장 등록해주세요.");
+      showError("도로파손 사진을 최소 1장 등록해주세요.");
       return;
     }
     if (!damageType) {
-      alert("파손 유형을 선택해주세요.");
+      showError("파손 유형을 선택해주세요.");
       return;
     }
     if (!address.trim()) {
-      alert("파손 위치를 입력해주세요.");
+      showError("파손 위치를 입력해주세요.");
       return;
     }
     if (!severity) {
-      alert("파손 심각도를 선택해주세요.");
+      showError("파손 심각도를 선택해주세요.");
       return;
     }
     if (!agree) {
-      alert("신고 안내사항에 동의해주세요.");
+      showError("신고 안내사항에 동의해주세요.");
       return;
     }
 
@@ -409,6 +419,13 @@ export default function Report() {
           </div>
         </form>
       </main>
+
+      <MessageModal
+        open={!!modal}
+        onClose={() => setModal(null)}
+        variant={modal?.variant}
+        message={modal?.message}
+      />
     </div>
   );
 }
