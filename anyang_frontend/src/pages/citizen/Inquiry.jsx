@@ -16,6 +16,7 @@ import InfoNotice from "../../components/citizen/InfoNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
 import MessageModal from "../../components/citizen/MessageModal";
+import { useMessageModal } from "../../hooks/useMessageModal";
 import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
 
 function Inquiry() {
@@ -29,8 +30,7 @@ function Inquiry() {
   const [agree, setAgree] = useState(false);
   const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const [modal, setModal] = useState(null);
-  const showError = (message) => setModal({ variant: "error", message });
+  const { modal, showError, close: closeModal } = useMessageModal();
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files || []);
@@ -425,7 +425,7 @@ function Inquiry() {
 
       <MessageModal
         open={!!modal}
-        onClose={() => setModal(null)}
+        onClose={closeModal}
         variant={modal?.variant}
         message={modal?.message}
       />

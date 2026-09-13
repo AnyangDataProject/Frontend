@@ -16,6 +16,7 @@ import SelectableCard from "../../components/citizen/SelectableCard";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
 import MessageModal from "../../components/citizen/MessageModal";
+import { useMessageModal } from "../../hooks/useMessageModal";
 import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
@@ -36,10 +37,7 @@ export default function Report() {
   const [submitted, setSubmitted] = useState(false);
   const [mapCenter, setMapCenter] = useState({ lat: 37.3943, lng: 126.9568 });
   const [markerPos, setMarkerPos] = useState(null);
-  const [modal, setModal] = useState(null);
-
-  const showError = (message) => setModal({ variant: "error", message });
-  const showInfo = (message) => setModal({ variant: "info", message });
+  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
@@ -422,7 +420,7 @@ export default function Report() {
 
       <MessageModal
         open={!!modal}
-        onClose={() => setModal(null)}
+        onClose={closeModal}
         variant={modal?.variant}
         message={modal?.message}
       />
