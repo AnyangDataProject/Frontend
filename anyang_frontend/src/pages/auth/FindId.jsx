@@ -4,6 +4,7 @@ import AuthCardShell from '../../components/auth/AuthCardShell';
 import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SuccessScreen from '../../components/citizen/SuccessScreen';
+import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
 
 function FindId() {
   const navigate = useNavigate();
@@ -45,9 +46,6 @@ function FindId() {
     setResult(null);
   };
 
-  const inputClass =
-    'w-full h-12 px-[14px] box-border border border-slate-200 rounded-lg outline-none font-inherit text-sm text-slate-900 bg-white transition-[border-color,box-shadow] placeholder:text-slate-400 focus:border-blue-600 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]';
-
   return (
     <AuthCardShell
       title="아이디 찾기"
@@ -79,7 +77,7 @@ function FindId() {
                 placeholder="이름을 입력해주세요"
                 autoComplete="name"
                 required
-                className={inputClass}
+                className={AUTH_INPUT_CLASS}
               />
             </div>
 
@@ -98,7 +96,7 @@ function FindId() {
                 placeholder="가입할 때 사용한 이메일을 입력해주세요"
                 autoComplete="email"
                 required
-                className={inputClass}
+                className={AUTH_INPUT_CLASS}
               />
             </div>
 
