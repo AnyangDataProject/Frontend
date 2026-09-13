@@ -8,69 +8,10 @@ import {
   CalendarDays,
   User,
   ShieldAlert,
-  Activity,
-  Wrench,
   ChevronRight,
 } from "lucide-react";
 import { fallbackReport, getMockAnalysis } from "../../mocks/citizen/aiAnalysisData";
-
-const TYPE_META = {
-  pothole: {
-    label: "포트홀",
-    description: "도로 표면이 국부적으로 파여 있는 형태의 파손입니다.",
-  },
-  crack: {
-    label: "노면 균열",
-    description: "도로 표면에 균열이 발생한 상태입니다.",
-  },
-  sign: {
-    label: "표지판 파손",
-    description: "도로 안전시설물 또는 표지판이 파손된 상태입니다.",
-  },
-  manhole: {
-    label: "맨홀/시설물",
-    description: "맨홀 및 도로 주변 시설물에 이상이 발생한 상태입니다.",
-  },
-};
-
-const SEVERITY_META = {
-  low: {
-    label: "낮음",
-    description: "현재 즉각적인 사고 위험은 낮은 상태입니다.",
-    textClass: "text-emerald-600",
-  },
-  mid: {
-    label: "보통",
-    description: "통행 시 주의가 필요하며 정비가 권장됩니다.",
-    textClass: "text-amber-600",
-  },
-  high: {
-    label: "높음",
-    description: "사고 위험이 높아 신속한 정비가 필요한 상태입니다.",
-    textClass: "text-red-600",
-  },
-};
-
-const STATUS_META = {
-  received: {
-    label: "접수됨",
-    description: "시민 신고가 접수되어 담당 부서의 확인을 기다리고 있습니다.",
-    icon: Activity,
-    textClass: "text-slate-500",
-  },
-  progress: {
-    label: "처리중",
-    description: "담당 부서에서 현장 확인 및 보수 작업을 진행하고 있습니다.",
-    icon: Wrench,
-    textClass: "text-amber-600",
-  },
-  done: {
-    label: "처리완료",
-    description: "도로파손에 대한 조치가 완료되었습니다.",
-    icon: CheckCircle2,
-    textClass: "text-emerald-600",
-  },
-};
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
 
 const SECTION_LABEL = "text-blue-600 text-xs font-bold tracking-[0.13em] text-left";
 const CARD = "p-7 mb-[15px] bg-white border border-slate-200 rounded-xl shadow-sm text-left max-[700px]:p-5 max-[430px]:p-[17px]";
@@ -87,9 +28,9 @@ export default function AiAnalysis() {
 
   const selectedReport = report || fallbackReport;
 
-  const type = TYPE_META[selectedReport.type];
+  const type = DAMAGE_TYPE_META[selectedReport.type];
   const severity = SEVERITY_META[selectedReport.severity];
-  const status = STATUS_META[selectedReport.status];
+  const status = REPORT_STATUS_META[selectedReport.status];
 
   const StatusIcon = status.icon;
 
@@ -332,7 +273,7 @@ export default function AiAnalysis() {
                 </strong>
 
                 <p className="mt-0.5 text-slate-500 text-xs leading-[1.5]">
-                  {severity.description}
+                  {severity.analysisDescription}
                 </p>
               </div>
 
@@ -361,7 +302,7 @@ export default function AiAnalysis() {
               number="01"
               title="파손 유형"
               value={type.label}
-              description={type.description}
+              description={type.analysisDescription}
             />
 
             <AnalysisItem
@@ -375,7 +316,7 @@ export default function AiAnalysis() {
               number="03"
               title="예상 위험도"
               value={severity.label}
-              description={severity.description}
+              description={severity.analysisDescription}
             />
 
             <AnalysisItem
