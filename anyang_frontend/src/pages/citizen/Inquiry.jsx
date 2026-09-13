@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/citizen/BackButton";
 import PageHeader from "../../components/citizen/PageHeader";
 import StepSection from "../../components/citizen/StepSection";
+import SelectableCard from "../../components/citizen/SelectableCard";
 import InfoNotice from "../../components/citizen/InfoNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
@@ -164,35 +165,17 @@ function Inquiry() {
               {/* 문의 유형 */}
               <StepSection number="01" title="문의 유형" description="문의하실 내용을 선택해주세요." card={false}>
                 <div className="grid grid-cols-2 max-[650px]:grid-cols-1 gap-[9px]">
-                  {INQUIRY_TYPES.map((type) => {
-                    const isSelected = inquiryType === type.value;
-                    return (
-                      <button
-                        type="button"
-                        key={type.value}
-                        className={`flex min-h-[76px] items-start gap-3 rounded-lg border p-[13px] text-left transition-colors ${
-                          isSelected
-                            ? "border-blue-600 bg-blue-50"
-                            : "border-slate-200 bg-white hover:border-blue-300"
-                        }`}
-                        onClick={() => setInquiryType(type.value)}
-                      >
-                        <div
-                          className={`mt-0.5 flex h-[17px] w-[17px] shrink-0 items-center justify-center rounded-full border-[1.5px] transition-colors ${
-                            isSelected ? "border-blue-600" : "border-slate-300"
-                          }`}
-                        >
-                          {isSelected && <span className="h-2 w-2 rounded-full bg-blue-600" />}
-                        </div>
-                        <div>
-                          <strong className="block text-sm text-slate-900">{type.label}</strong>
-                          <p className="mt-[3px] text-xs leading-[1.4] text-slate-400">
-                            {type.description}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  {INQUIRY_TYPES.map((type) => (
+                    <SelectableCard
+                      key={type.value}
+                      selected={inquiryType === type.value}
+                      onClick={() => setInquiryType(type.value)}
+                      radioPosition="left"
+                      align="start"
+                      label={type.label}
+                      description={type.description}
+                    />
+                  ))}
                 </div>
               </StepSection>
 
