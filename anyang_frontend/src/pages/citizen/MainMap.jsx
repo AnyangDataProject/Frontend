@@ -356,7 +356,7 @@ export default function MainMap() {
       </div>
 
       {/* 상세 모달 */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} className="px-[22px] pt-6 pb-5">
+      <Modal open={!!selected} onClose={() => setSelected(null)} className="px-[22px] pt-14 pb-5">
         {selected && (
           <>
             <div className="w-full h-40 rounded-xl bg-slate-50 mb-3.5 overflow-hidden flex items-center justify-center border border-slate-200">
