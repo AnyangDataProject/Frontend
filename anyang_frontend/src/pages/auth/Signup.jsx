@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthCardShell from '../../components/citizen/AuthCardShell';
+import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
+import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
+import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
 
 function Signup() {
   const navigate = useNavigate();
@@ -86,9 +88,6 @@ function Signup() {
     navigate('/login');
   };
 
-  const inputClass =
-    'w-full h-12 px-[14px] box-border border border-slate-200 rounded-lg outline-none font-inherit text-sm text-slate-900 bg-white transition-[border-color,box-shadow] placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-600 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]';
-
   return (
     <AuthCardShell
       title="회원가입"
@@ -117,7 +116,7 @@ function Signup() {
             onChange={handleChange}
             placeholder="이름을 입력해주세요"
             autoComplete="name"
-            className={inputClass}
+            className={AUTH_INPUT_CLASS}
           />
         </div>
 
@@ -136,7 +135,7 @@ function Signup() {
               onChange={handleChange}
               placeholder="이메일을 입력해주세요"
               autoComplete="email"
-              className={`flex-1 min-w-0 ${inputClass}`}
+              className={`flex-1 min-w-0 ${AUTH_INPUT_CLASS}`}
             />
 
             <button
@@ -160,14 +159,10 @@ function Signup() {
             type="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="영문, 숫자를 포함하여 8자 이상 입력"
+            placeholder="비밀번호를 입력해주세요"
             autoComplete="new-password"
-            className={inputClass}
+            className={AUTH_INPUT_CLASS}
           />
-
-          <p className="mt-1.5 mb-0 text-xs text-slate-400">
-            영문과 숫자를 포함하여 8자 이상 입력해주세요.
-          </p>
         </div>
 
         {/* 비밀번호 확인 */}
@@ -184,7 +179,7 @@ function Signup() {
             onChange={handleChange}
             placeholder="비밀번호를 다시 입력해주세요"
             autoComplete="new-password"
-            className={inputClass}
+            className={AUTH_INPUT_CLASS}
           />
 
           {form.passwordConfirm &&
@@ -216,7 +211,7 @@ function Signup() {
             onChange={handleChange}
             placeholder="010-0000-0000"
             autoComplete="tel"
-            className={inputClass}
+            className={AUTH_INPUT_CLASS}
           />
         </div>
 
@@ -228,38 +223,42 @@ function Signup() {
           <div className="h-px my-3.5 bg-slate-200" />
 
           <div className="flex items-center gap-2 mt-0">
-            <Checkbox
-              checked={agreements.service}
-              onChange={() => handleAgreementChange('service')}
-              label={
-                <>
-                  <b className="font-semibold text-blue-600">[필수]</b> 서비스 이용약관에 동의합니다.
-                </>
-              }
-            />
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.service}
+                onChange={() => handleAgreementChange('service')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 서비스 이용약관에 동의합니다.
+                  </>
+                }
+              />
+            </div>
 
             <button
               type="button"
-              className="ml-auto p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
             >
               보기
             </button>
           </div>
 
           <div className="flex items-center gap-2 mt-2.5">
-            <Checkbox
-              checked={agreements.privacy}
-              onChange={() => handleAgreementChange('privacy')}
-              label={
-                <>
-                  <b className="font-semibold text-blue-600">[필수]</b> 개인정보 수집 및 이용에 동의합니다.
-                </>
-              }
-            />
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.privacy}
+                onChange={() => handleAgreementChange('privacy')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 개인정보 수집 및 이용에 동의합니다.
+                  </>
+                }
+              />
+            </div>
 
             <button
               type="button"
-              className="ml-auto p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
             >
               보기
             </button>
@@ -276,6 +275,9 @@ function Signup() {
         </button>
 
       </form>
+
+      {/* 소셜 회원가입 */}
+      <SocialLoginButtons actionLabel="회원가입" />
 
       {/* 로그인으로 이동 */}
       <div className="flex justify-center items-center gap-1.5 mt-[22px] text-sm text-slate-500">

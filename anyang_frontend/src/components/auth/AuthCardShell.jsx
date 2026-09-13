@@ -3,7 +3,7 @@ export default function AuthCardShell({ title, description, maxWidth = 440, chil
     <div className="min-h-screen bg-slate-50 text-slate-900 text-left">
       <main className="min-h-screen flex justify-center items-start pt-[72px] max-[768px]:pt-16 box-border">
         <section
-          className="w-full box-border px-6 pt-[60px] max-[768px]:pt-10 pb-20 max-[480px]:px-4 max-[480px]:pt-[30px] max-[480px]:pb-[60px]"
+          className="w-full box-border px-6 pt-8 pb-20 max-[480px]:px-4 max-[480px]:pt-6 max-[480px]:pb-[60px]"
           style={{ maxWidth }}
         >
           <div className="text-center mb-7">
