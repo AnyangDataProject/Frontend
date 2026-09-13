@@ -17,6 +17,8 @@ import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
 import MessageModal from "../../components/citizen/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
+import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
@@ -62,20 +64,13 @@ export default function Report() {
     });
   };
 
+  const { reverseGeocode: kakaoReverseGeocode } = useKakaoGeocoder();
+  const { requestLocation } = useCurrentLocation();
+
   const reverseGeocode = (lat, lng) => {
-    if (!window.kakao?.maps?.services) {
-      setAddress("지도 서비스를 불러오는 중이에요. 잠시 후 다시 시도해주세요.");
-      return;
-    }
-    const geocoder = new window.kakao.maps.services.Geocoder();
-    geocoder.coord2Address(lng, lat, (result, status) => {
-      if (status === window.kakao.maps.services.Status.OK) {
-        const road = result[0].road_address?.address_name;
-        const jibun = result[0].address?.address_name;
-        setAddress(road || jibun || "주소를 찾을 수 없습니다.");
-      } else {
-        setAddress("주소를 찾을 수 없습니다. 직접 입력해주세요.");
-      }
+    kakaoReverseGeocode(lat, lng, {
+      onSuccess: setAddress,
+      onError: setAddress,
     });
   };
 
@@ -88,21 +83,15 @@ export default function Report() {
 
   const handleCurrentLocation = () => {
     setAddress("현재 위치를 확인하는 중입니다...");
-    if (!navigator.geolocation) {
-      setAddress("현재 위치를 사용할 수 없습니다.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setMapCenter({ lat: latitude, lng: longitude });
-        setMarkerPos({ lat: latitude, lng: longitude });
-        reverseGeocode(latitude, longitude);
+    requestLocation({
+      onSuccess: (coords) => {
+        setMapCenter({ lat: coords.latitude, lng: coords.longitude });
+        setMarkerPos({ lat: coords.latitude, lng: coords.longitude });
+        reverseGeocode(coords.latitude, coords.longitude);
       },
-      () => {
-        setAddress("현재 위치를 가져오지 못했습니다. 주소를 직접 입력해주세요.");
-      }
-    );
+      onUnsupported: () => setAddress("현재 위치를 사용할 수 없습니다."),
+      onError: () => setAddress("현재 위치를 가져오지 못했습니다. 주소를 직접 입력해주세요."),
+    });
   };
 
   const handleSubmit = (e) => {

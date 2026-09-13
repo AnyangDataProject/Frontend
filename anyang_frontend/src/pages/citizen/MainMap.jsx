@@ -6,6 +6,8 @@ import SegmentedToggle from "../../components/citizen/SegmentedToggle";
 import Modal from "../../components/citizen/Modal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META, ROAD_RISK_META } from "../../mocks/citizen/constants";
 import { MAP_PINS, RISK_SEGMENTS } from "../../mocks/citizen/reportsData";
+import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
+import { useCurrentLocation } from "../../hooks/useCurrentLocation";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
@@ -89,38 +91,29 @@ export default function MainMap() {
     ));
   }, [layer]);
 
+  const { searchAddress } = useKakaoGeocoder();
+  const { requestLocation } = useCurrentLocation();
+
   const handleSearch = (e) => {
     e.preventDefault();
     setSearchError("");
     if (!searchText.trim()) return;
 
-    if (!window.kakao?.maps?.services) {
-      setSearchError("지도 서비스를 불러오는 중이에요. 잠시 후 다시 시도해주세요.");
-      return;
-    }
-
-    const geocoder = new window.kakao.maps.services.Geocoder();
-    geocoder.addressSearch(searchText.trim(), (result, status) => {
-      if (status === window.kakao.maps.services.Status.OK && result[0]) {
-        setCenter({ lat: parseFloat(result[0].y), lng: parseFloat(result[0].x) });
-      } else {
-        setSearchError("주소를 찾을 수 없어요. 다르게 입력해보세요.");
-      }
+    searchAddress(searchText.trim(), {
+      onSuccess: setCenter,
+      onError: setSearchError,
     });
   };
 
   const handleLocate = () => {
-    if (!navigator.geolocation) {
-      setSearchError("이 브라우저에서는 위치 확인을 지원하지 않아요.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
+    requestLocation({
+      onSuccess: (coords) => {
         setSearchError("");
-        setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setCenter({ lat: coords.latitude, lng: coords.longitude });
       },
-      () => setSearchError("위치 권한을 확인해주세요.")
-    );
+      onUnsupported: () => setSearchError("이 브라우저에서는 위치 확인을 지원하지 않아요."),
+      onError: () => setSearchError("위치 권한을 확인해주세요."),
+    });
   };
 
   return (
