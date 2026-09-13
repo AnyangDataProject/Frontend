@@ -4,6 +4,7 @@ import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
+import MessageModal from '../../components/citizen/MessageModal';
 
 function Signup() {
   const navigate = useNavigate();
@@ -21,6 +22,9 @@ function Signup() {
     privacy: false,
   });
   const agreeAll = agreements.service && agreements.privacy;
+
+  const [modal, setModal] = useState(null);
+  const showError = (message) => setModal({ variant: 'error', message });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,41 +55,43 @@ function Signup() {
     e.preventDefault();
 
     if (!form.name.trim()) {
-      alert('이름을 입력해주세요.');
+      showError('이름을 입력해주세요.');
       return;
     }
 
     if (!form.email.trim()) {
-      alert('이메일을 입력해주세요.');
+      showError('이메일을 입력해주세요.');
       return;
     }
 
     if (!form.password) {
-      alert('비밀번호를 입력해주세요.');
+      showError('비밀번호를 입력해주세요.');
       return;
     }
 
     if (form.password !== form.passwordConfirm) {
-      alert('비밀번호가 일치하지 않습니다.');
+      showError('비밀번호가 일치하지 않습니다.');
       return;
     }
 
     if (!form.phone.trim()) {
-      alert('휴대폰 번호를 입력해주세요.');
+      showError('휴대폰 번호를 입력해주세요.');
       return;
     }
 
     if (!agreements.service || !agreements.privacy) {
-      alert('필수 약관에 동의해주세요.');
+      showError('필수 약관에 동의해주세요.');
       return;
     }
 
     // TODO: 추후 회원가입 API 연결
     console.log('회원가입 요청:', form);
 
-    alert('회원가입이 완료되었습니다.');
-
-    navigate('/login');
+    setModal({
+      variant: 'info',
+      message: '회원가입이 완료되었습니다.',
+      onConfirm: () => navigate('/login'),
+    });
   };
 
   return (
@@ -291,6 +297,17 @@ function Signup() {
           로그인
         </button>
       </div>
+
+      <MessageModal
+        open={!!modal}
+        onClose={() => {
+          const onConfirm = modal?.onConfirm;
+          setModal(null);
+          onConfirm?.();
+        }}
+        variant={modal?.variant}
+        message={modal?.message}
+      />
     </AuthCardShell>
   );
 }

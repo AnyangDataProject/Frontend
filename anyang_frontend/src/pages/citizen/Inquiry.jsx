@@ -15,6 +15,7 @@ import StepSection from "../../components/citizen/StepSection";
 import InfoNotice from "../../components/citizen/InfoNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
+import MessageModal from "../../components/citizen/MessageModal";
 import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
 
 function Inquiry() {
@@ -28,6 +29,8 @@ function Inquiry() {
   const [agree, setAgree] = useState(false);
   const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
+  const [modal, setModal] = useState(null);
+  const showError = (message) => setModal({ variant: "error", message });
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files || []);
@@ -42,23 +45,23 @@ function Inquiry() {
     event.preventDefault();
 
     if (!inquiryType) {
-      alert("문의 유형을 선택해주세요.");
+      showError("문의 유형을 선택해주세요.");
       return;
     }
     if (!title.trim()) {
-      alert("제목을 입력해주세요.");
+      showError("제목을 입력해주세요.");
       return;
     }
     if (!content.trim()) {
-      alert("문의 내용을 입력해주세요.");
+      showError("문의 내용을 입력해주세요.");
       return;
     }
     if (!email.trim()) {
-      alert("답변 받을 이메일을 입력해주세요.");
+      showError("답변 받을 이메일을 입력해주세요.");
       return;
     }
     if (!agree) {
-      alert("개인정보 수집 및 이용에 동의해주세요.");
+      showError("개인정보 수집 및 이용에 동의해주세요.");
       return;
     }
 
@@ -419,6 +422,13 @@ function Inquiry() {
           </aside>
         </div>
       </main>
+
+      <MessageModal
+        open={!!modal}
+        onClose={() => setModal(null)}
+        variant={modal?.variant}
+        message={modal?.message}
+      />
     </div>
   );
 }
