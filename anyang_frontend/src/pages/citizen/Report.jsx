@@ -181,17 +181,9 @@ export default function Report() {
           eyebrow="ROAD DAMAGE REPORT"
           title="도로파손 신고"
           description="도로파손 현장을 촬영하고 위치와 내용을 입력해주세요."
-          action={
-            <>
-              <span className="flex items-center justify-center w-7 h-7 rounded-full bg-blue-600 text-white text-xs font-semibold shrink-0">
-                01
-              </span>
-              <span className="text-slate-500 text-xs font-medium">신고 정보 입력</span>
-            </>
-          }
         />
 
-        <form onSubmit={handleSubmit} className="max-w-[1080px]">
+        <form onSubmit={handleSubmit}>
           {/* 01. Photo */}
           <StepSection number="01" title="파손 현장 사진" description="AI 분석을 위해 파손 부위가 잘 보이도록 촬영해주세요.">
             <div className="flex items-center gap-2 py-[11px] px-[13px] mb-[13px] rounded-lg bg-slate-50 text-slate-500 text-xs text-left">
