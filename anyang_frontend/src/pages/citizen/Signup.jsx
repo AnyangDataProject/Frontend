@@ -160,14 +160,10 @@ function Signup() {
             type="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="영문, 숫자를 포함하여 8자 이상 입력"
+            placeholder="영문, 숫자를 포함하여 8자 이상 입력해주세요"
             autoComplete="new-password"
             className={inputClass}
           />
-
-          <p className="mt-1.5 mb-0 text-xs text-slate-400">
-            영문과 숫자를 포함하여 8자 이상 입력해주세요.
-          </p>
         </div>
 
         {/* 비밀번호 확인 */}
@@ -228,38 +224,42 @@ function Signup() {
           <div className="h-px my-3.5 bg-slate-200" />
 
           <div className="flex items-center gap-2 mt-0">
-            <Checkbox
-              checked={agreements.service}
-              onChange={() => handleAgreementChange('service')}
-              label={
-                <>
-                  <b className="font-semibold text-blue-600">[필수]</b> 서비스 이용약관에 동의합니다.
-                </>
-              }
-            />
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.service}
+                onChange={() => handleAgreementChange('service')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 서비스 이용약관에 동의합니다.
+                  </>
+                }
+              />
+            </div>
 
             <button
               type="button"
-              className="ml-auto p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
             >
               보기
             </button>
           </div>
 
           <div className="flex items-center gap-2 mt-2.5">
-            <Checkbox
-              checked={agreements.privacy}
-              onChange={() => handleAgreementChange('privacy')}
-              label={
-                <>
-                  <b className="font-semibold text-blue-600">[필수]</b> 개인정보 수집 및 이용에 동의합니다.
-                </>
-              }
-            />
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.privacy}
+                onChange={() => handleAgreementChange('privacy')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 개인정보 수집 및 이용에 동의합니다.
+                  </>
+                }
+              />
+            </div>
 
             <button
               type="button"
-              className="ml-auto p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
             >
               보기
             </button>
