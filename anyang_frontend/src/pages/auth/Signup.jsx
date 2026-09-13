@@ -160,7 +160,7 @@ function Signup() {
             type="password"
             value={form.password}
             onChange={handleChange}
-            placeholder="영문, 숫자를 포함하여 8자 이상 입력해주세요"
+            placeholder="비밀번호를 입력해주세요"
             autoComplete="new-password"
             className={inputClass}
           />
