@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthCardShell from '../../components/citizen/AuthCardShell';
+import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
 
 function Signup() {

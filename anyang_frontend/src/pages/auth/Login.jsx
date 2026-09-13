@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import AuthCardShell from '../../components/citizen/AuthCardShell';
+import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
 import InfoNotice from '../../components/citizen/InfoNotice';
-import AuthLinksRow from '../../components/citizen/AuthLinksRow';
+import AuthLinksRow from '../../components/auth/AuthLinksRow';
 
 function Login() {
   const [form, setForm] = useState({

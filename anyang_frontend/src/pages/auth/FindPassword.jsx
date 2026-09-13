@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthCardShell from '../../components/citizen/AuthCardShell';
+import AuthCardShell from '../../components/auth/AuthCardShell';
 import InfoNotice from '../../components/citizen/InfoNotice';
-import AuthLinksRow from '../../components/citizen/AuthLinksRow';
+import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SuccessScreen from '../../components/citizen/SuccessScreen';
 
 function FindPassword() {
