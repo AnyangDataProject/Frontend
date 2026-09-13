@@ -35,7 +35,19 @@ const PROVIDERS = [
   },
 ];
 
-export default function SocialLoginButtons({ actionLabel, onSelect }) {
+export default function SocialLoginButtons({ actionLabel }) {
+  const handleSelect = (provider) => {
+    // TODO: 추후 Spring Boot OAuth2 로그인/회원가입 API 연결
+    console.log(`${provider} ${actionLabel}`);
+
+    /*
+      추후 예시
+
+      window.location.href =
+        `http://localhost:8080/oauth2/authorization/${provider}`;
+    */
+  };
+
   return (
     <div className="mt-6">
 
@@ -50,7 +62,7 @@ export default function SocialLoginButtons({ actionLabel, onSelect }) {
           <button
             key={provider.key}
             type="button"
-            onClick={() => onSelect(provider.key)}
+            onClick={() => handleSelect(provider.key)}
             className={provider.className}
           >
             <span className="absolute left-4 w-[22px] h-[22px] flex items-center justify-center">

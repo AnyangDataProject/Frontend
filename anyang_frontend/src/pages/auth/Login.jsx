@@ -30,19 +30,6 @@ function Login() {
     console.log('로그인 요청:', form);
   };
 
-  // 소셜 로그인
-  const handleSocialLogin = (provider) => {
-    // TODO: 추후 Spring Boot OAuth2 로그인 API 연결
-    console.log(`${provider} 로그인`);
-
-    /*
-      추후 예시
-
-      window.location.href =
-        `http://localhost:8080/oauth2/authorization/${provider}`;
-    */
-  };
-
   return (
     <AuthCardShell
       title="로그인"
@@ -119,7 +106,7 @@ function Login() {
       </form>
 
       {/* 소셜 로그인 */}
-      <SocialLoginButtons actionLabel="로그인" onSelect={handleSocialLogin} />
+      <SocialLoginButtons actionLabel="로그인" />
 
       {/* 하단 메뉴 */}
       <AuthLinksRow

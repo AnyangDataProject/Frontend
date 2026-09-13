@@ -88,19 +88,6 @@ function Signup() {
     navigate('/login');
   };
 
-  // 소셜 회원가입
-  const handleSocialSignup = (provider) => {
-    // TODO: 추후 Spring Boot OAuth2 회원가입 API 연결
-    console.log(`${provider} 회원가입`);
-
-    /*
-      추후 예시
-
-      window.location.href =
-        `http://localhost:8080/oauth2/authorization/${provider}`;
-    */
-  };
-
   return (
     <AuthCardShell
       title="회원가입"
@@ -290,7 +277,7 @@ function Signup() {
       </form>
 
       {/* 소셜 회원가입 */}
-      <SocialLoginButtons actionLabel="회원가입" onSelect={handleSocialSignup} />
+      <SocialLoginButtons actionLabel="회원가입" />
 
       {/* 로그인으로 이동 */}
       <div className="flex justify-center items-center gap-1.5 mt-[22px] text-sm text-slate-500">
