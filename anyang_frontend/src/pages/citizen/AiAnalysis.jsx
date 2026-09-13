@@ -12,12 +12,7 @@ import {
 } from "lucide-react";
 import { fallbackReport, getMockAnalysis } from "../../mocks/citizen/aiAnalysisData";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
-
-const SECTION_LABEL = "text-blue-600 text-xs font-bold tracking-[0.13em] text-left";
-const CARD = "p-7 mb-[15px] bg-white border border-slate-200 rounded-xl shadow-sm text-left max-[700px]:p-5 max-[430px]:p-[17px]";
-const CARD_HEADER = "flex items-start justify-between gap-3 mb-[23px] text-left";
-const CARD_HEADER_TITLE_WRAP = "flex-1 min-w-0 text-left";
-const CARD_HEADER_H2 = "mt-1 text-sm font-semibold tracking-[-0.03em] text-left text-slate-900";
+import AnalysisCard, { SECTION_LABEL_CLASS } from "../../components/citizen/AnalysisCard";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();
@@ -69,7 +64,7 @@ export default function AiAnalysis() {
         {/* Page title */}
         <section className="flex items-end justify-between mb-[30px] text-left max-[700px]:block">
           <div className="flex-1 min-w-0 text-left">
-            <span className={SECTION_LABEL}>
+            <span className={SECTION_LABEL_CLASS}>
               ROAD DAMAGE ANALYSIS
             </span>
 
@@ -90,21 +85,16 @@ export default function AiAnalysis() {
         </section>
 
         {/* Report information */}
-        <section className={`${CARD} overflow-hidden`}>
-
-          <div className={CARD_HEADER}>
-            <div className={CARD_HEADER_TITLE_WRAP}>
-              <span className={SECTION_LABEL}>
-                REPORT INFORMATION
-              </span>
-
-              <h2 className={CARD_HEADER_H2}>신고 정보</h2>
-            </div>
-
+        <AnalysisCard
+          eyebrow="REPORT INFORMATION"
+          title="신고 정보"
+          className="overflow-hidden"
+          action={
             <span className="px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 text-xs font-medium">
               신고 #{String(selectedReport.id).padStart(4, "0")}
             </span>
-          </div>
+          }
+        >
 
           <div className="grid grid-cols-4 gap-[9px] mt-[15px] max-[700px]:grid-cols-1">
 
@@ -150,23 +140,13 @@ export default function AiAnalysis() {
 
           </div>
 
-        </section>
+        </AnalysisCard>
 
         {/* AI Analysis */}
         <section className="grid grid-cols-2 gap-[15px] mb-[15px] max-[700px]:grid-cols-1">
 
           {/* Image */}
-          <div className={CARD}>
-
-            <div className={CARD_HEADER}>
-              <div className={CARD_HEADER_TITLE_WRAP}>
-                <span className={SECTION_LABEL}>
-                  AI VISION
-                </span>
-
-                <h2 className={CARD_HEADER_H2}>파손 이미지 분석</h2>
-              </div>
-            </div>
+          <AnalysisCard eyebrow="AI VISION" title="파손 이미지 분석">
 
             <div className="relative">
 
@@ -203,22 +183,14 @@ export default function AiAnalysis() {
               파손 유형을 분류했습니다.
             </p>
 
-          </div>
+          </AnalysisCard>
 
           {/* Result */}
-          <div className={CARD}>
-
-            <div className={CARD_HEADER}>
-              <div className={CARD_HEADER_TITLE_WRAP}>
-                <span className={SECTION_LABEL}>
-                  ANALYSIS RESULT
-                </span>
-
-                <h2 className={CARD_HEADER_H2}>AI 분석 결과</h2>
-              </div>
-
-              <BrainCircuit size={23} className="text-blue-600" />
-            </div>
+          <AnalysisCard
+            eyebrow="ANALYSIS RESULT"
+            title="AI 분석 결과"
+            action={<BrainCircuit size={23} className="text-blue-600" />}
+          >
 
             {/* Type */}
             <div className="flex items-center gap-3 p-[13px] rounded-lg bg-blue-50 border border-blue-100 mb-[18px]">
@@ -279,22 +251,12 @@ export default function AiAnalysis() {
 
             </div>
 
-          </div>
+          </AnalysisCard>
 
         </section>
 
         {/* Detailed analysis */}
-        <section className={CARD}>
-
-          <div className={CARD_HEADER}>
-            <div className={CARD_HEADER_TITLE_WRAP}>
-              <span className={SECTION_LABEL}>
-                DETAILED ANALYSIS
-              </span>
-
-              <h2 className={CARD_HEADER_H2}>상세 분석</h2>
-            </div>
-          </div>
+        <AnalysisCard eyebrow="DETAILED ANALYSIS" title="상세 분석">
 
           <div className="grid grid-cols-2 gap-[9px] max-[700px]:grid-cols-1">
 
@@ -328,7 +290,7 @@ export default function AiAnalysis() {
 
           </div>
 
-        </section>
+        </AnalysisCard>
 
         {/* AI Summary */}
         <section className="flex items-start gap-3.5 p-5 mb-[15px] bg-white border-l-4 border-blue-600 text-left max-[430px]:p-[17px]">
@@ -338,7 +300,7 @@ export default function AiAnalysis() {
           </div>
 
           <div>
-            <span className={SECTION_LABEL}>
+            <span className={SECTION_LABEL_CLASS}>
               AI SUMMARY
             </span>
 
@@ -353,17 +315,10 @@ export default function AiAnalysis() {
         </section>
 
         {/* Processing status */}
-        <section className={CARD}>
-
-          <div className={CARD_HEADER}>
-            <div className={CARD_HEADER_TITLE_WRAP}>
-              <span className={SECTION_LABEL}>
-                PROCESS STATUS
-              </span>
-
-              <h2 className={CARD_HEADER_H2}>신고 처리 현황</h2>
-            </div>
-
+        <AnalysisCard
+          eyebrow="PROCESS STATUS"
+          title="신고 처리 현황"
+          action={
             <button
               className="border-0 bg-transparent flex items-center gap-1 text-slate-500 text-xs font-semibold cursor-pointer p-0 transition-colors hover:text-blue-600"
               onClick={() => navigate("/my-reports")}
@@ -371,7 +326,8 @@ export default function AiAnalysis() {
               내 신고에서 보기
               <ChevronRight size={16} />
             </button>
-          </div>
+          }
+        >
 
           <div className="flex flex-col gap-[14px]">
 
@@ -408,7 +364,7 @@ export default function AiAnalysis() {
 
           </div>
 
-        </section>
+        </AnalysisCard>
 
         {/* Bottom buttons */}
         <div className="flex justify-end gap-2 mt-6 max-[700px]:sticky max-[700px]:bottom-0 max-[700px]:py-3 max-[700px]:bg-slate-50/[0.94] max-[700px]:backdrop-blur-[10px] max-[430px]:flex-col">
