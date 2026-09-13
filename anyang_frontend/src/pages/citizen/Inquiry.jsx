@@ -355,7 +355,7 @@ function Inquiry() {
               <h3 className="text-sm font-semibold text-slate-900">
                 민원 · 문의 접수 안내
               </h3>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 text-sm text-slate-500 break-keep">
                 도로 파손 신고와 관련된 문의나 서비스 이용 중 발생한 불편사항을 접수할 수 있습니다.
               </p>
 
@@ -363,7 +363,7 @@ function Inquiry() {
 
               <div className="w-full text-left">
                 <strong className="text-sm font-semibold text-slate-900">도로 파손을 발견했다면?</strong>
-                <p className="mb-3.5 mt-1.5 text-xs leading-[1.6] text-slate-500">
+                <p className="mb-3.5 mt-1.5 text-xs leading-[1.6] text-slate-500 break-keep">
                   일반 문의보다 <b className="font-semibold text-blue-600">파손 신고</b>를 이용해주세요. 사진과
                   위치를 등록하면 AI 분석을 통해 신고가 접수됩니다.
                 </p>
