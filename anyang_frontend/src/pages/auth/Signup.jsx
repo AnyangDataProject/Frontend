@@ -6,11 +6,12 @@ import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
 import MessageModal from '../../components/citizen/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
+import { useFormFields } from '../../hooks/auth/useFormFields';
 
 function Signup() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, handleChange] = useFormFields({
     name: '',
     email: '',
     password: '',
@@ -25,15 +26,6 @@ function Signup() {
   const agreeAll = agreements.service && agreements.privacy;
 
   const { modal, showError, showInfo, close: closeModal } = useMessageModal();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleAgreementChange = (name) => {
     setAgreements((prev) => ({

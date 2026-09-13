@@ -5,23 +5,15 @@ import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
+import { useFormFields } from '../../hooks/auth/useFormFields';
 
 function Login() {
-  const [form, setForm] = useState({
+  const [form, handleChange] = useFormFields({
     email: '',
     password: '',
   });
 
   const [rememberMe, setRememberMe] = useState(false);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm({
-      ...form,
-      [name]: value,
-    });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
