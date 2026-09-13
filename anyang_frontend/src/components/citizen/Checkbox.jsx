@@ -22,7 +22,7 @@ export default function Checkbox({ checked, onChange, label, emphasized = false 
         )}
       </span>
 
-      <span>{label}</span>
+      <span className="break-keep">{label}</span>
     </label>
   );
 }
