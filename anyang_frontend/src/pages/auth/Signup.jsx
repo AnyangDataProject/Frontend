@@ -99,7 +99,7 @@ function Signup() {
     } catch (err) {
       const message = err.message || '회원가입에 실패했습니다.';
 
-      if (message.includes('이메일')) {
+      if (message === '이미 가입된 이메일입니다.') {
         setEmailError(message);
       } else {
         showError(message);
