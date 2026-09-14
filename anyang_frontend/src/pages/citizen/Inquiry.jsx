@@ -10,7 +10,7 @@ import InquiryContactStep from "../../components/citizen/inquiry/InquiryContactS
 import InquiryPrivacyConsent from "../../components/citizen/inquiry/InquiryPrivacyConsent";
 import InquirySidebar from "../../components/citizen/inquiry/InquirySidebar";
 import InquirySubmittedView from "../../components/citizen/inquiry/InquirySubmittedView";
-import MessageModal from "../../components/citizen/MessageModal";
+import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
 import { useFileAttachments } from "../../hooks/useFileAttachments";
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/useAuth';
-import MessageModal from './citizen/MessageModal';
+import MessageModal from './common/MessageModal';
 
 const MENU_BASE =
   'relative px-3 py-2.5 text-sm font-medium transition-colors max-[1000px]:px-2 max-[1000px]:text-[13px] max-[768px]:px-1.5 max-[768px]:text-xs max-[560px]:px-[5px] max-[560px]:text-[11px]';

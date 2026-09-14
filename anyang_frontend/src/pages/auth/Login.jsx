@@ -6,7 +6,7 @@ import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
-import MessageModal from '../../components/citizen/MessageModal';
+import MessageModal from '../../components/common/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
 import { login } from '../../api/auth';

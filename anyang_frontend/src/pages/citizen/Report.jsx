@@ -10,7 +10,7 @@ import ReportSeverityStep from "../../components/citizen/report/ReportSeveritySt
 import ReportDetailStep from "../../components/citizen/report/ReportDetailStep";
 import ReportNotice from "../../components/citizen/report/ReportNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
-import MessageModal from "../../components/citizen/MessageModal";
+import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
 import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";

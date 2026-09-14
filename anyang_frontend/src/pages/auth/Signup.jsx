@@ -4,7 +4,7 @@ import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
-import MessageModal from '../../components/citizen/MessageModal';
+import MessageModal from '../../components/common/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
 import { signup } from '../../api/auth';
