@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthCardShell from '../../components/auth/AuthCardShell';
-import Checkbox from '../../components/citizen/Checkbox';
+import Checkbox from '../../components/common/Checkbox';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
 import MessageModal from '../../components/common/MessageModal';

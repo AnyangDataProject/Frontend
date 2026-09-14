@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthCardShell from '../../components/auth/AuthCardShell';
-import Checkbox from '../../components/citizen/Checkbox';
+import Checkbox from '../../components/common/Checkbox';
 import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
