@@ -55,6 +55,10 @@ export function AuthProvider({ children }) {
   const login = useCallback((data, { rememberMe = false } = {}) => {
     const { accessToken, ...userInfo } = data || {};
     const storage = rememberMe ? localStorage : sessionStorage;
+    const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+    otherStorage.removeItem('accessToken');
+    otherStorage.removeItem('authUser');
 
     if (accessToken) storage.setItem('accessToken', accessToken);
     storage.setItem('authUser', JSON.stringify(userInfo));
