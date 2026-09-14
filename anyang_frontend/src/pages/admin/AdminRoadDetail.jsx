@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Car, Gauge, TrafficCone, FileWarning, Wrench, TrendingUp } from 'lucide-react';
 
@@ -8,6 +8,7 @@ import Badge from '../../components/admin/Badge';
 import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
+import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchRoadById } from '../../mocks/admin/api';
 import {
   CAUSE_FACTOR_LABEL,
@@ -28,24 +29,7 @@ const CAUSE_BAR_COLOR = {
 export default function AdminRoadDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [road, setRoad] = useState(null);
-  const [notFound, setNotFound] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    fetchRoadById(id).then((data) => {
-      if (!active) return;
-      if (!data) {
-        setNotFound(true);
-      } else {
-        setNotFound(false);
-        setRoad(data);
-      }
-    });
-    return () => {
-      active = false;
-    };
-  }, [id]);
+  const { data: road, notFound } = useAdminDetailQuery(fetchRoadById, id);
 
   const mapPoints = useMemo(() => {
     if (!road) return [];
