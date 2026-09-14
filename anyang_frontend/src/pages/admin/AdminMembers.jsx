@@ -10,7 +10,7 @@ import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchMembers, updateMemberStatus } from '../../api/admin';
 
 export default function AdminMembers() {
-  const { data: members, setData: setMembers } = useAdminListQuery(fetchMembers);
+  const { data: members, setData: setMembers, error } = useAdminListQuery(fetchMembers);
   const [keyword, setKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [pendingId, setPendingId] = useState(null);
@@ -59,6 +59,7 @@ export default function AdminMembers() {
       >
         <AdminMembersTable
           loading={!members}
+          error={error}
           members={filtered}
           pendingId={pendingId}
           onToggleStatus={setConfirmTarget}
