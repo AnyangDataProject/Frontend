@@ -9,6 +9,15 @@ function formatDate(iso) {
   return iso ? iso.slice(0, 10) : null;
 }
 
+function mapStatus(rawStatus) {
+  const mapped = STATUS_FROM_API[String(rawStatus).toLowerCase()];
+  if (mapped) return mapped;
+  // 모르는 상태값을 '정상'으로 흘려보내면 실제로 이상이 있는 계정을 놓칠 수 있으므로,
+  // 관리자 눈에 띄도록 '이용 제한' 쪽으로 안전하게 처리한다.
+  console.warn(`알 수 없는 회원 status 값: ${rawStatus}`);
+  return 'restricted';
+}
+
 function mapMember(dto) {
   return {
     id: dto.id,
@@ -18,7 +27,7 @@ function mapMember(dto) {
     role: dto.role,
     joinedAt: formatDate(dto.createdAt),
     lastLogin: formatDate(dto.lastLogin),
-    status: STATUS_FROM_API[String(dto.status).toLowerCase()] ?? 'active',
+    status: mapStatus(dto.status),
     reportCount: dto.reportCount ?? 0,
   };
 }
