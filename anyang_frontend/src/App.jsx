@@ -17,6 +17,7 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminRoadDetail from './pages/admin/AdminRoadDetail';
 import RequireAdmin from './components/auth/RequireAdmin';
+import RedirectAdminHome from './components/auth/RedirectAdminHome';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
 function App() {
@@ -30,7 +31,9 @@ function App() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<MainMap />} />
+        <Route element={<RedirectAdminHome />}>
+          <Route path="/" element={<MainMap />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/ai-analysis" element={<AiAnalysis />} />
