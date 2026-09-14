@@ -13,31 +13,43 @@ function clearStoredAuth() {
   sessionStorage.removeItem('authUser');
 }
 
-function readStoredUser() {
+function getInitialAuthState() {
   const token = getStoredToken();
 
   if (token && isTokenExpired(token)) {
     clearStoredAuth();
-    return null;
+    return { user: null, sessionExpired: true };
   }
 
   const raw = localStorage.getItem('authUser') || sessionStorage.getItem('authUser');
+  let user = null;
 
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
+  if (raw) {
+    try {
+      user = JSON.parse(raw);
+    } catch {
+      user = null;
+    }
   }
+
+  return { user, sessionExpired: false };
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser);
+  const [{ user, sessionExpired }, setState] = useState(getInitialAuthState);
 
   const logout = useCallback(() => {
     clearStoredAuth();
-    setUser(null);
+    setState({ user: null, sessionExpired: false });
+  }, []);
+
+  const expireSession = useCallback(() => {
+    clearStoredAuth();
+    setState({ user: null, sessionExpired: true });
+  }, []);
+
+  const dismissSessionExpired = useCallback(() => {
+    setState((prev) => ({ ...prev, sessionExpired: false }));
   }, []);
 
   const login = useCallback((data, { rememberMe = false } = {}) => {
@@ -47,7 +59,7 @@ export function AuthProvider({ children }) {
     if (accessToken) storage.setItem('accessToken', accessToken);
     storage.setItem('authUser', JSON.stringify(userInfo));
 
-    setUser(userInfo);
+    setState({ user: userInfo, sessionExpired: false });
   }, []);
 
   useEffect(() => {
@@ -59,13 +71,13 @@ export function AuthProvider({ children }) {
     if (!expiryMs) return;
 
     const remainingMs = Math.max(expiryMs - Date.now(), 0);
-    const timerId = setTimeout(logout, remainingMs);
+    const timerId = setTimeout(expireSession, remainingMs);
 
     return () => clearTimeout(timerId);
-  }, [user, logout]);
+  }, [user, expireSession]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, sessionExpired, dismissSessionExpired }}>
       {children}
     </AuthContext.Provider>
   );

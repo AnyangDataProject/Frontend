@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/useAuth';
+import MessageModal from './citizen/MessageModal';
 
 const MENU_BASE =
   'relative px-3 py-2.5 text-sm font-medium transition-colors max-[1000px]:px-2 max-[1000px]:text-[13px] max-[768px]:px-1.5 max-[768px]:text-xs max-[560px]:px-[5px] max-[560px]:text-[11px]';
@@ -16,7 +17,7 @@ function menuClass(isActive) {
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, sessionExpired, dismissSessionExpired } = useAuth();
 
   const isAdmin = location.pathname.startsWith('/admin');
 
@@ -26,6 +27,7 @@ function Header() {
   };
 
   return (
+    <>
     <header className="fixed top-0 left-0 z-[1000] h-[72px] w-full border-b border-[#C9D0D9] bg-white max-[768px]:h-16">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-10 max-[1000px]:px-[25px] max-[768px]:px-5 max-[560px]:px-3.5">
 
@@ -166,6 +168,14 @@ function Header() {
 
       </div>
     </header>
+
+    <MessageModal
+      open={sessionExpired}
+      onClose={dismissSessionExpired}
+      variant="error"
+      message="로그인이 만료되었습니다. 다시 로그인해주세요."
+    />
+    </>
   );
 }
 
