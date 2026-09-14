@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/auth/useAuth';
 import MessageModal from './citizen/MessageModal';
@@ -21,8 +22,11 @@ function Header() {
 
   const isAdmin = location.pathname.startsWith('/admin');
 
+  const [showLogoutNotice, setShowLogoutNotice] = useState(false);
+
   const handleLogout = () => {
     logout();
+    setShowLogoutNotice(true);
     navigate('/');
   };
 
@@ -180,6 +184,13 @@ function Header() {
       onClose={dismissSessionExpired}
       variant="error"
       message="로그인이 만료되었습니다. 다시 로그인해주세요."
+    />
+
+    <MessageModal
+      open={showLogoutNotice}
+      onClose={() => setShowLogoutNotice(false)}
+      variant="info"
+      message="로그아웃되었습니다."
     />
     </>
   );
