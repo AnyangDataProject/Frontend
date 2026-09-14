@@ -25,6 +25,8 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
+  if (!open) return null;
+
   const { icon: Icon, iconClass, buttonClass } = VARIANTS[tone];
 
   return (
