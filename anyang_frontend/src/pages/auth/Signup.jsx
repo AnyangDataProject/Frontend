@@ -26,6 +26,8 @@ function Signup() {
   });
   const agreeAll = agreements.service && agreements.privacy;
 
+  const [emailError, setEmailError] = useState('');
+
   const { modal, showError, showInfo, close: closeModal } = useMessageModal();
 
   const handleAgreementChange = (name) => {
@@ -46,6 +48,8 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setEmailError('');
 
     if (!form.name.trim()) {
       showError('이름을 입력해주세요.');
@@ -87,7 +91,13 @@ function Signup() {
 
       showInfo('회원가입이 완료되었습니다.', { onConfirm: () => navigate('/login') });
     } catch (err) {
-      showError(err.message || '회원가입에 실패했습니다.');
+      const message = err.message || '회원가입에 실패했습니다.';
+
+      if (message.includes('이메일')) {
+        setEmailError(message);
+      } else {
+        showError(message);
+      }
     }
   };
 
@@ -129,25 +139,23 @@ function Signup() {
             이메일
           </label>
 
-          <div className="flex gap-2">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="이메일을 입력해주세요"
-              autoComplete="email"
-              className={`flex-1 min-w-0 ${AUTH_INPUT_CLASS}`}
-            />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => {
+              handleChange(e);
+              if (emailError) setEmailError('');
+            }}
+            placeholder="이메일을 입력해주세요"
+            autoComplete="email"
+            className={AUTH_INPUT_CLASS}
+          />
 
-            <button
-              type="button"
-              className="w-[88px] max-[480px]:w-20 h-12 shrink-0 border border-slate-200 rounded-lg bg-white font-inherit text-xs font-semibold text-slate-500 cursor-pointer transition-colors hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50"
-            >
-              중복확인
-            </button>
-          </div>
+          {emailError && (
+            <p className="mt-1.5 mb-0 text-xs text-red-600">{emailError}</p>
+          )}
         </div>
 
         {/* 비밀번호 */}
