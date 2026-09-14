@@ -8,17 +8,23 @@ import MessageModal from '../../components/citizen/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
 import { signup } from '../../api/auth';
+import { formatPhoneNumber } from '../../utils/phone';
 
 function Signup() {
   const navigate = useNavigate();
 
-  const [form, handleChange] = useFormFields({
+  const [form, handleChange, setForm] = useFormFields({
     name: '',
     email: '',
     password: '',
     passwordConfirm: '',
     phone: '',
   });
+
+  const handlePhoneChange = (e) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setForm((prev) => ({ ...prev, phone: formatted }));
+  };
 
   const [agreements, setAgreements] = useState({
     service: false,
@@ -219,9 +225,10 @@ function Signup() {
             name="phone"
             type="tel"
             value={form.phone}
-            onChange={handleChange}
+            onChange={handlePhoneChange}
             placeholder="010-0000-0000"
             autoComplete="tel"
+            maxLength={13}
             className={AUTH_INPUT_CLASS}
           />
         </div>
