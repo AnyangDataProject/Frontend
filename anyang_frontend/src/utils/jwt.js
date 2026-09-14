@@ -3,8 +3,10 @@ export function decodeJwtPayload(token) {
     const [, payload] = token.split('.');
     const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
     const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), '=');
+    const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+    const json = new TextDecoder('utf-8').decode(bytes);
 
-    return JSON.parse(atob(padded));
+    return JSON.parse(json);
   } catch {
     return null;
   }
