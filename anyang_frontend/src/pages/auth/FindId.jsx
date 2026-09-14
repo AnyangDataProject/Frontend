@@ -5,25 +5,17 @@ import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SuccessScreen from '../../components/citizen/SuccessScreen';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
+import { useFormFields } from '../../hooks/auth/useFormFields';
 
 function FindId() {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const [form, handleChange, setForm] = useFormFields({
     name: '',
     email: '',
   });
 
   const [result, setResult] = useState(null);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setForm({
-      ...form,
-      [name]: value,
-    });
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -2,10 +2,30 @@ import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckC
 
 // 파손 유형 (Report/MainMap/MyReports/AiAnalysis 공통)
 export const DAMAGE_TYPE_META = {
-  pothole: { label: "포트홀", icon: CircleDot, description: "도로가 움푹 파인 상태" },
-  crack: { label: "노면 균열", icon: Construction, description: "도로 표면에 균열이 발생한 상태" },
-  sign: { label: "표지판 파손", icon: Signpost, description: "표지판이나 안전시설물이 파손된 상태" },
-  manhole: { label: "맨홀/시설물", icon: AlertTriangle, description: "맨홀 및 도로시설물 이상" },
+  pothole: {
+    label: "포트홀",
+    icon: CircleDot,
+    description: "도로가 움푹 파인 상태",
+    analysisDescription: "도로 표면이 국부적으로 파여 있는 형태의 파손입니다.",
+  },
+  crack: {
+    label: "노면 균열",
+    icon: Construction,
+    description: "도로 표면에 균열이 발생한 상태",
+    analysisDescription: "도로 표면에 균열이 발생한 상태입니다.",
+  },
+  sign: {
+    label: "표지판 파손",
+    icon: Signpost,
+    description: "표지판이나 안전시설물이 파손된 상태",
+    analysisDescription: "도로 안전시설물 또는 표지판이 파손된 상태입니다.",
+  },
+  manhole: {
+    label: "맨홀/시설물",
+    icon: AlertTriangle,
+    description: "맨홀 및 도로시설물 이상",
+    analysisDescription: "맨홀 및 도로 주변 시설물에 이상이 발생한 상태입니다.",
+  },
 };
 
 // 신고 건별 심각도 (도로 구간 위험도 예측인 ROAD_RISK_META와는 별개의 값)
@@ -13,6 +33,7 @@ export const SEVERITY_META = {
   low: {
     label: "낮음",
     description: "경미한 파손",
+    analysisDescription: "현재 즉각적인 사고 위험은 낮은 상태입니다.",
     color: "#059669", // emerald-600 (텍스트/뱃지용)
     dotColor: "#10b981", // emerald-500 (지도 마커 등 solid dot용)
     textClass: "text-emerald-600",
@@ -22,6 +43,7 @@ export const SEVERITY_META = {
   mid: {
     label: "보통",
     description: "통행에 불편이 있는 파손",
+    analysisDescription: "통행 시 주의가 필요하며 정비가 권장됩니다.",
     color: "#d97706",
     dotColor: "#f59e0b",
     textClass: "text-amber-600",
@@ -31,6 +53,7 @@ export const SEVERITY_META = {
   high: {
     label: "높음",
     description: "사고 위험이 높은 파손",
+    analysisDescription: "사고 위험이 높아 신속한 정비가 필요한 상태입니다.",
     color: "#dc2626",
     dotColor: "#ef4444",
     textClass: "text-red-600",

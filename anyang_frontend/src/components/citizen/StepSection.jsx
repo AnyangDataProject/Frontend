@@ -1,7 +1,8 @@
+export const CARD_SURFACE_CLASS =
+  "p-7 mb-[15px] bg-white border border-slate-200 rounded-xl shadow-sm text-left max-[700px]:p-5 max-[430px]:p-[17px]";
+
 export default function StepSection({ number, title, description, children, card = true }) {
-  const wrapperClass = card
-    ? "p-7 mb-[15px] bg-white border border-slate-200 rounded-xl shadow-sm text-left max-[700px]:p-5 max-[430px]:p-[17px]"
-    : "mb-[30px] border-b border-slate-200 pb-[30px] text-left";
+  const wrapperClass = card ? CARD_SURFACE_CLASS : "mb-[30px] border-b border-slate-200 pb-[30px] text-left";
 
   return (
     <section className={wrapperClass}>

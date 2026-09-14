@@ -19,46 +19,43 @@ import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import StatusTimeline from '../../components/admin/StatusTimeline';
-import { fetchReportById, fetchRoadById, updateReportClassification, updateReportStatus } from '../../mocks/admin/api';
+import ReportClassificationEditor from '../../components/admin/report-detail/ReportClassificationEditor';
+import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
+import { fetchReportById, fetchRoadById, fetchMemberById, updateReportStatus } from '../../mocks/admin/api';
 import { DAMAGE_TYPE_META, REPORT_STATUS_STEPS, SEVERITY_META, REPORT_STATUS_META } from '../../mocks/admin/constants';
-import { getMemberById } from '../../mocks/admin/membersData';
 
 export default function AdminReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [report, setReport] = useState(null);
+  const { data: report, setData: setReport, notFound } = useAdminDetailQuery(fetchReportById, id);
   const [road, setRoad] = useState(null);
-  const [notFound, setNotFound] = useState(false);
+  const [reporter, setReporter] = useState(null);
   const [advancing, setAdvancing] = useState(false);
 
-  const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ type: '', severity: '', note: '' });
-  const [saving, setSaving] = useState(false);
-
   useEffect(() => {
+    if (!report) return;
     let active = true;
-    fetchReportById(id).then((data) => {
-      if (!active) return;
-      if (!data) {
-        setNotFound(true);
-        return;
-      }
-      setNotFound(false);
-      setReport(data);
-      setForm({
-        type: data.manualOverride?.type ?? data.type,
-        severity: data.manualOverride?.severity ?? data.severity,
-        note: data.manualOverride?.note ?? '',
-      });
-      fetchRoadById(data.roadId).then((roadData) => {
-        if (active) setRoad(roadData);
-      });
+    fetchRoadById(report.roadId).then((data) => {
+      if (active) setRoad(data);
     });
     return () => {
       active = false;
     };
-  }, [id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report?.roadId]);
+
+  useEffect(() => {
+    if (!report) return;
+    let active = true;
+    fetchMemberById(report.reporterId).then((data) => {
+      if (active) setReporter(data);
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [report?.reporterId]);
 
   if (notFound) {
     return (
@@ -78,11 +75,8 @@ export default function AdminReportDetail() {
     );
   }
 
-  const reporter = getMemberById(report.reporterId);
   const currentIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === report.status);
   const nextStep = REPORT_STATUS_STEPS[currentIndex + 1];
-  const displayType = report.manualOverride?.type ?? report.type;
-  const displaySeverity = report.manualOverride?.severity ?? report.severity;
 
   const handleAdvance = async () => {
     if (!nextStep) return;
@@ -90,15 +84,6 @@ export default function AdminReportDetail() {
     const updated = await updateReportStatus(report.id, nextStep.key);
     setReport(updated);
     setAdvancing(false);
-  };
-
-  const handleSaveOverride = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    const updated = await updateReportClassification(report.id, form);
-    setReport(updated);
-    setSaving(false);
-    setEditing(false);
   };
 
   return (
@@ -116,7 +101,9 @@ export default function AdminReportDetail() {
             <h1 className="text-xl font-semibold text-slate-900">신고 #{report.id}</h1>
             <Badge tone={REPORT_STATUS_META[report.status].tone}>{REPORT_STATUS_META[report.status].label}</Badge>
           </div>
-          <p className="mt-1 text-sm text-slate-500">{DAMAGE_TYPE_META[displayType].label} 신고 상세 및 AI 검수</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {DAMAGE_TYPE_META[report.manualOverride?.type ?? report.type].label} 신고 상세 및 AI 검수
+          </p>
         </div>
         {nextStep && (
           <button
@@ -223,85 +210,7 @@ export default function AdminReportDetail() {
             )}
           </Card>
 
-          <Card
-            title="AI 판정 수정"
-            description="AI 판단이 실제와 다를 경우 관리자가 직접 수정할 수 있습니다."
-            actions={
-              !editing && (
-                <button
-                  onClick={() => setEditing(true)}
-                  className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-700"
-                >
-                  <PencilLine size={13} /> 수정하기
-                </button>
-              )
-            }
-          >
-            {!editing ? (
-              <p className="text-sm text-slate-400">
-                현재 확정된 판정: {DAMAGE_TYPE_META[displayType].label} · {SEVERITY_META[displaySeverity].label}
-              </p>
-            ) : (
-              <form onSubmit={handleSaveOverride} className="flex flex-col gap-4">
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <label className="flex flex-col gap-1.5">
-                    <span className="text-xs font-medium text-slate-500">파손 유형</span>
-                    <select
-                      value={form.type}
-                      onChange={(e) => setForm((f) => ({ ...f, type: e.target.value }))}
-                      className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500"
-                    >
-                      {Object.entries(DAMAGE_TYPE_META).map(([key, meta]) => (
-                        <option key={key} value={key}>
-                          {meta.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="flex flex-col gap-1.5">
-                    <span className="text-xs font-medium text-slate-500">파손 정도</span>
-                    <select
-                      value={form.severity}
-                      onChange={(e) => setForm((f) => ({ ...f, severity: e.target.value }))}
-                      className="rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500"
-                    >
-                      {Object.entries(SEVERITY_META).map(([key, meta]) => (
-                        <option key={key} value={key}>
-                          {meta.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-                <label className="flex flex-col gap-1.5">
-                  <span className="text-xs font-medium text-slate-500">수정 사유 (선택)</span>
-                  <textarea
-                    value={form.note}
-                    onChange={(e) => setForm((f) => ({ ...f, note: e.target.value }))}
-                    rows={2}
-                    placeholder="예: 현장 확인 결과 AI가 균열을 포트홀로 오탐지"
-                    className="resize-none rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500"
-                  />
-                </label>
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setEditing(false)}
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50"
-                  >
-                    취소
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
-                  >
-                    {saving ? '저장 중...' : '수정 저장'}
-                  </button>
-                </div>
-              </form>
-            )}
-          </Card>
+          <ReportClassificationEditor key={report.id} report={report} onSaved={setReport} />
         </div>
       </div>
     </AdminLayout>
