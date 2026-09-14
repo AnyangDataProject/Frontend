@@ -6,6 +6,8 @@ function getStoredToken() {
   return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 }
 
+const MAX_TIMEOUT_MS = 2_147_483_647; // setTimeout이 안전하게 지원하는 최대 지연(약 24.8일)
+
 function clearStoredAuth() {
   localStorage.removeItem('accessToken');
   localStorage.removeItem('authUser');
@@ -74,8 +76,22 @@ export function AuthProvider({ children }) {
 
     if (!expiryMs) return;
 
-    const remainingMs = Math.max(expiryMs - Date.now(), 0);
-    const timerId = setTimeout(expireSession, remainingMs);
+    let timerId;
+
+    const scheduleCheck = () => {
+      const remainingMs = Math.max(expiryMs - Date.now(), 0);
+      const delay = Math.min(remainingMs, MAX_TIMEOUT_MS);
+
+      timerId = setTimeout(() => {
+        if (Date.now() >= expiryMs) {
+          expireSession();
+        } else {
+          scheduleCheck();
+        }
+      }, delay);
+    };
+
+    scheduleCheck();
 
     return () => clearTimeout(timerId);
   }, [user, expireSession]);
