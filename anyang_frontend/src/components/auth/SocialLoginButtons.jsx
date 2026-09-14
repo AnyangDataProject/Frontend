@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 function GoogleIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +40,15 @@ const PROVIDERS = [
 ];
 
 export default function SocialLoginButtons({ actionLabel }) {
+  const [error, setError] = useState('');
+
   const handleSelect = (authUrl) => {
+    if (!authUrl) {
+      console.error('소셜 로그인 URL이 설정되지 않았습니다. .env의 VITE_GOOGLE_OAUTH_URL / VITE_NAVER_OAUTH_URL을 확인해주세요.');
+      setError('현재 소셜 로그인을 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
+
     window.location.assign(authUrl);
   };
 
@@ -67,6 +77,8 @@ export default function SocialLoginButtons({ actionLabel }) {
           </button>
         ))}
       </div>
+
+      {error && <p className="mt-2 text-xs text-red-600 text-center">{error}</p>}
     </div>
   );
 }
