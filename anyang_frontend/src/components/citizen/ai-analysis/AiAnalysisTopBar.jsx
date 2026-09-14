@@ -16,7 +16,7 @@ export default function AiAnalysisTopBar({ onBack }) {
           <BrainCircuit size={20} />
           <div className="flex flex-col gap-px text-left">
             <strong className="text-slate-900 text-sm font-bold">AI 분석 결과</strong>
-            <span className="text-slate-400 text-xs">로드센스 도로파손 분석 시스템</span>
+            <span className="text-slate-400 text-xs">알로드 도로파손 분석 시스템</span>
           </div>
         </div>
       </div>

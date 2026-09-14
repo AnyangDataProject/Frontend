@@ -53,14 +53,14 @@ function Login() {
       title="로그인"
       description={
         <>
-          안양시 시민안전 서비스에
+          안양시 알로드 서비스에
           <br />
           로그인해주세요.
         </>
       }
       footer={
         <InfoNotice>
-          안양시 시민안전 서비스는 시민 여러분의
+          안양시 알로드 서비스는 시민 여러분의
           <br />
           안전하고 편리한 생활을 위해 운영됩니다.
         </InfoNotice>

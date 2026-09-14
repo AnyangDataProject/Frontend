@@ -41,11 +41,11 @@ function Header() {
           onClick={() => navigate(isAdmin ? '/admin' : '/')}
         >
           <span className="text-xl font-extrabold tracking-[-0.5px] text-blue-600 max-[768px]:text-lg">
-            ANYANG
+            AIROAD
           </span>
 
           <span className="border-l border-[#C9D0D9] pl-2.5 text-base font-semibold text-[#23262B] max-[768px]:text-sm max-[560px]:hidden">
-            {isAdmin ? '시민안전 관리자' : '시민안전'}
+            {isAdmin ? '알로드 관리자' : '알로드'}
           </span>
         </div>
 

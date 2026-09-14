@@ -86,7 +86,7 @@ function Inquiry() {
         <PageHeader
           eyebrow="CIVIL SERVICE"
           title="민원 · 문의 접수"
-          description="로드센스 이용 중 궁금한 점이나 개선 의견을 남겨주세요."
+          description="알로드 이용 중 궁금한 점이나 개선 의견을 남겨주세요."
         />
 
         <div className="grid grid-cols-[minmax(0,1fr)_300px] max-[850px]:grid-cols-1 items-start gap-[18px]">
