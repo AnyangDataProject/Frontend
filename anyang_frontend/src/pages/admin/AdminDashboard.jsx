@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileWarning, Clock3, TriangleAlert, CheckCircle2, ChevronRight, Trophy } from 'lucide-react';
 
@@ -8,23 +8,14 @@ import StatCard from '../../components/admin/StatCard';
 import KakaoMap from '../../components/admin/KakaoMap';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
+import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { fetchDashboardSummary } from '../../mocks/admin/api';
 import { RISK_LEVEL_META } from '../../mocks/admin/constants';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [summary, setSummary] = useState(null);
+  const { data: summary } = useAdminListQuery(fetchDashboardSummary);
   const [selectedRoadId, setSelectedRoadId] = useState(null);
-
-  useEffect(() => {
-    let active = true;
-    fetchDashboardSummary().then((data) => {
-      if (active) setSummary(data);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
 
   if (!summary) {
     return (

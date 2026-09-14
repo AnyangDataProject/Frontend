@@ -4,7 +4,7 @@
 
 import { REPORTS, getReportStats } from './reportsData';
 import { ROADS, getPriorityRoads, getRoadById as findRoadById, HIGH_RISK_ROAD_COUNT } from './roadsData';
-import { MEMBERS } from './membersData';
+import { MEMBERS, getMemberById as findMemberById } from './membersData';
 import { INQUIRIES } from './inquiriesData';
 import { REPORT_STATUS_STEPS, RISK_LEVEL_META } from './constants';
 
@@ -14,14 +14,18 @@ function delay(value, ms = NETWORK_DELAY) {
   return new Promise((resolve) => setTimeout(() => resolve(value), ms));
 }
 
+function formatNow() {
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(
+    now.getHours()
+  )}:${pad(now.getMinutes())}`;
+}
+
 function rebuildTimeline(status, previousTimeline) {
   const stageIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === status);
   const isFinalStage = stageIndex === REPORT_STATUS_STEPS.length - 1;
-  const now = new Date();
-  const pad = (n) => String(n).padStart(2, '0');
-  const nowStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(
-    now.getHours()
-  )}:${pad(now.getMinutes())}`;
+  const nowStr = formatNow();
 
   return REPORT_STATUS_STEPS.map((step, i) => {
     const prev = previousTimeline.find((t) => t.key === step.key);
@@ -80,15 +84,11 @@ export async function updateReportStatus(id, nextStatus) {
 export async function updateReportClassification(id, { type, severity, note }) {
   const report = REPORTS.find((r) => r.id === id);
   if (!report) return delay(null);
-  const pad = (n) => String(n).padStart(2, '0');
-  const now = new Date();
   report.manualOverride = {
     type,
     severity,
     note: note ?? '',
-    at: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(
-      now.getHours()
-    )}:${pad(now.getMinutes())}`,
+    at: formatNow(),
   };
   return delay({ ...report });
 }
@@ -120,6 +120,10 @@ export async function fetchMembers() {
   }));
 
   return delay(merged);
+}
+
+export async function fetchMemberById(id) {
+  return delay(findMemberById(id) ?? null);
 }
 
 export async function updateMemberStatus(id, status, reason) {

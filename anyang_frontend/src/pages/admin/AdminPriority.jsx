@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronRight } from 'lucide-react';
 
@@ -7,6 +7,9 @@ import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
+import { TONE_DOT_CLASSES } from '../../components/admin/toneClasses';
+import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityRoads } from '../../mocks/admin/api';
 import { RISK_LEVEL_META, SEVERITY_META, TRAFFIC_LEVEL_META } from '../../mocks/admin/constants';
 
@@ -19,29 +22,16 @@ const RISK_TABS = [
 
 export default function AdminPriority() {
   const navigate = useNavigate();
-  const [roads, setRoads] = useState(null);
+  const { data: roads } = useAdminListQuery(fetchPriorityRoads);
   const [riskFilter, setRiskFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
 
-  useEffect(() => {
-    let active = true;
-    fetchPriorityRoads().then((data) => {
-      if (active) setRoads(data);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const filtered = useMemo(() => {
-    if (!roads) return [];
+  const filtered = useListFilter(roads, (road) => {
     const kw = keyword.trim().toLowerCase();
-    return roads.filter((road) => {
-      const matchesRisk = riskFilter === 'all' || road.riskLevel === riskFilter;
-      const matchesKeyword = !kw || road.name.toLowerCase().includes(kw) || road.district.includes(kw);
-      return matchesRisk && matchesKeyword;
-    });
-  }, [roads, riskFilter, keyword]);
+    const matchesRisk = riskFilter === 'all' || road.riskLevel === riskFilter;
+    const matchesKeyword = !kw || road.name.toLowerCase().includes(kw) || road.district.includes(kw);
+    return matchesRisk && matchesKeyword;
+  });
 
   return (
     <AdminLayout
@@ -119,13 +109,7 @@ export default function AdminPriority() {
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 flex-1 rounded-full bg-slate-100">
                           <div
-                            className={`h-1.5 rounded-full ${
-                              road.riskLevel === 'high'
-                                ? 'bg-red-500'
-                                : road.riskLevel === 'mid'
-                                  ? 'bg-amber-500'
-                                  : 'bg-emerald-500'
-                            }`}
+                            className={`h-1.5 rounded-full ${TONE_DOT_CLASSES[RISK_LEVEL_META[road.riskLevel].tone]}`}
                             style={{ width: `${road.riskScore}%` }}
                           />
                         </div>

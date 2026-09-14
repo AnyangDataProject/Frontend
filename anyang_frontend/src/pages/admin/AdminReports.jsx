@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
@@ -7,6 +7,8 @@ import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
+import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchReports, updateReportStatus } from '../../mocks/admin/api';
 import { DAMAGE_TYPE_META, REPORT_STATUS_STEPS, SEVERITY_META } from '../../mocks/admin/constants';
 
@@ -16,26 +18,19 @@ const STATUS_TABS = [{ key: 'all', label: '전체' }, ...REPORT_STATUS_STEPS];
 
 export default function AdminReports() {
   const navigate = useNavigate();
-  const [reports, setReports] = useState(null);
+  const { data: reports, setData: setReports } = useAdminListQuery(fetchReports);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    fetchReports().then(setReports);
-  }, []);
-
-  const filtered = useMemo(() => {
-    if (!reports) return [];
+  const filtered = useListFilter(reports, (r) => {
     const kw = keyword.trim().toLowerCase();
-    return reports.filter((r) => {
-      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-      const matchesType = typeFilter === 'all' || r.type === typeFilter;
-      const matchesKeyword = !kw || r.id.includes(kw) || r.address.toLowerCase().includes(kw);
-      return matchesStatus && matchesType && matchesKeyword;
-    });
-  }, [reports, statusFilter, typeFilter, keyword]);
+    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+    const matchesType = typeFilter === 'all' || r.type === typeFilter;
+    const matchesKeyword = !kw || r.id.includes(kw) || r.address.toLowerCase().includes(kw);
+    return matchesStatus && matchesType && matchesKeyword;
+  });
 
   const setStatusFilterAndResetPage = (value) => {
     setStatusFilter(value);

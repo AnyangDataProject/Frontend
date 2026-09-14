@@ -1,23 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { ANYANG_BOUNDS } from '../../mocks/admin/constants';
+import { TONE_DOT_CLASSES } from './toneClasses';
 
-const TONE_DOT = {
-  danger: 'bg-red-500 ring-red-200',
-  warning: 'bg-amber-500 ring-amber-200',
-  success: 'bg-emerald-500 ring-emerald-200',
-  info: 'bg-blue-500 ring-blue-200',
-  neutral: 'bg-slate-400 ring-slate-200',
-};
-
-// 마커 채우기 색상. 시민 화면 지도(MainMap)와 동일한 원형 점 마커 컨벤션을 쓴다 —
-// 색상으로 위험도 구분, 위험(danger)만 한 단계 크게 그려서 강조.
-const TONE_BG = {
-  danger: 'bg-red-500',
-  warning: 'bg-amber-500',
-  success: 'bg-emerald-500',
-  info: 'bg-blue-500',
-  neutral: 'bg-slate-400',
+// 범례 점 전용 링 강조색. 채우기 색 자체는 toneClasses의 TONE_DOT_CLASSES를
+// 그대로 재사용해서 Badge/StatCard와 같은 tone 색 체계를 유지한다.
+const TONE_RING_ACCENT = {
+  danger: 'ring-red-200',
+  warning: 'ring-amber-200',
+  success: 'ring-emerald-200',
+  info: 'ring-blue-200',
+  neutral: 'ring-slate-200',
 };
 
 const TONE_LABEL = {
@@ -91,7 +84,7 @@ export default function KakaoMap({
               >
                 <span
                   className={`block rounded-full border-2 border-white shadow-[0_0_0_1px_#e2e8f0,0_3px_8px_rgba(0,0,0,0.25)] transition-transform duration-150 group-hover:scale-[1.2] ${
-                    TONE_BG[point.tone] ?? TONE_BG.neutral
+                    TONE_DOT_CLASSES[point.tone] ?? TONE_DOT_CLASSES.neutral
                   } ${point.tone === 'danger' ? 'h-[26px] w-[26px] border-[3px]' : 'h-[18px] w-[18px]'} ${
                     isActive ? 'outline outline-[3px] outline-slate-900 outline-offset-2' : ''
                   }`}
@@ -116,13 +109,13 @@ export default function KakaoMap({
       {showLegend && (
         <div className="absolute bottom-2 left-2 flex gap-3 rounded-md bg-white/90 px-3 py-1.5 text-[11px] text-slate-600 ring-1 ring-slate-200">
           <span className="flex items-center gap-1">
-            <span className={`h-2 w-2 rounded-full ${TONE_DOT.danger}`} /> 위험
+            <span className={`h-2 w-2 rounded-full ${TONE_DOT_CLASSES.danger} ${TONE_RING_ACCENT.danger}`} /> 위험
           </span>
           <span className="flex items-center gap-1">
-            <span className={`h-2 w-2 rounded-full ${TONE_DOT.warning}`} /> 점검필요
+            <span className={`h-2 w-2 rounded-full ${TONE_DOT_CLASSES.warning} ${TONE_RING_ACCENT.warning}`} /> 점검필요
           </span>
           <span className="flex items-center gap-1">
-            <span className={`h-2 w-2 rounded-full ${TONE_DOT.success}`} /> 안전
+            <span className={`h-2 w-2 rounded-full ${TONE_DOT_CLASSES.success} ${TONE_RING_ACCENT.success}`} /> 안전
           </span>
         </div>
       )}

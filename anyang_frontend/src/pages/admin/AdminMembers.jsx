@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Search, ShieldOff, ShieldCheck } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -6,29 +6,24 @@ import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
+import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchMembers, updateMemberStatus } from '../../mocks/admin/api';
 import { MEMBER_STATUS_META } from '../../mocks/admin/constants';
 
 export default function AdminMembers() {
-  const [members, setMembers] = useState(null);
+  const { data: members, setData: setMembers } = useAdminListQuery(fetchMembers);
   const [keyword, setKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [pendingId, setPendingId] = useState(null);
 
-  useEffect(() => {
-    fetchMembers().then(setMembers);
-  }, []);
-
-  const filtered = useMemo(() => {
-    if (!members) return [];
+  const filtered = useListFilter(members, (m) => {
     const kw = keyword.trim().toLowerCase();
-    return members.filter((m) => {
-      const matchesKeyword =
-        !kw || m.id.toLowerCase().includes(kw) || m.name.toLowerCase().includes(kw) || m.email.toLowerCase().includes(kw);
-      const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
-      return matchesKeyword && matchesStatus;
-    });
-  }, [members, keyword, statusFilter]);
+    const matchesKeyword =
+      !kw || m.id.toLowerCase().includes(kw) || m.name.toLowerCase().includes(kw) || m.email.toLowerCase().includes(kw);
+    const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
+    return matchesKeyword && matchesStatus;
+  });
 
   const handleToggleStatus = async (member) => {
     const nextStatus = member.status === 'active' ? 'restricted' : 'active';
