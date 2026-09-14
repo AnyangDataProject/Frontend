@@ -12,9 +12,9 @@ import ReportNotice from "../../components/citizen/report/ReportNotice";
 import SuccessScreen from "../../components/citizen/SuccessScreen";
 import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
-import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
-import { useCurrentLocation } from "../../hooks/useCurrentLocation";
-import { useFileAttachments } from "../../hooks/useFileAttachments";
+import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
+import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
+import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
 

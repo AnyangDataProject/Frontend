@@ -12,7 +12,7 @@ import InquirySidebar from "../../components/citizen/inquiry/InquirySidebar";
 import InquirySubmittedView from "../../components/citizen/inquiry/InquirySubmittedView";
 import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
-import { useFileAttachments } from "../../hooks/useFileAttachments";
+import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
 
 function Inquiry() {
   const navigate = useNavigate();
