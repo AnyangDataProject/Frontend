@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { X } from "lucide-react";
 import { CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
-import { DAMAGE_TYPE_META, SEVERITY_META, ROAD_RISK_META } from "../../mocks/citizen/constants";
-import { MAP_PINS, RISK_SEGMENTS } from "../../mocks/citizen/reportsData";
+import { DAMAGE_TYPE_META, SEVERITY_META, ROAD_RISK_META } from "../../../mocks/citizen/constants";
+import { MAP_PINS, RISK_SEGMENTS } from "../../../mocks/citizen/reportsData";
 
 export default function MainMapOverlays({ layer, selectedPin, onSelectPin, selectedRisk, onSelectRisk }) {
   const currentMarkers = useMemo(() => {

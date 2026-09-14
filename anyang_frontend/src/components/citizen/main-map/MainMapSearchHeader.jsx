@@ -1,5 +1,5 @@
 import { Camera, Search, Map as MapGlyph, List as ListIcon } from "lucide-react";
-import SegmentedToggle from "./SegmentedToggle";
+import SegmentedToggle from "../SegmentedToggle";
 
 export default function MainMapSearchHeader({
   listOpen,

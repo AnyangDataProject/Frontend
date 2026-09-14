@@ -1,6 +1,6 @@
-import StepSection from "./StepSection";
-import SelectableCard from "./SelectableCard";
-import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
+import StepSection from "../StepSection";
+import SelectableCard from "../SelectableCard";
+import { INQUIRY_TYPES } from "../../../mocks/citizen/inquiryData";
 
 export default function InquiryTypeStep({ value, onChange }) {
   return (

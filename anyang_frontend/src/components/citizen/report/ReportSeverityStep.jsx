@@ -1,6 +1,6 @@
-import StepSection from "./StepSection";
-import SelectableCard from "./SelectableCard";
-import { SEVERITY_META } from "../../mocks/citizen/constants";
+import StepSection from "../StepSection";
+import SelectableCard from "../SelectableCard";
+import { SEVERITY_META } from "../../../mocks/citizen/constants";
 
 const SEVERITY_OPTIONS = Object.entries(SEVERITY_META).map(([value, meta]) => ({ value, ...meta }));
 

@@ -13,8 +13,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/citizen/BackButton";
 import PageHeader from "../../components/citizen/PageHeader";
-import StatFilterCard from "../../components/citizen/StatFilterCard";
-import ReportDetailModal from "../../components/citizen/ReportDetailModal";
+import StatFilterCard from "../../components/citizen/my-reports/StatFilterCard";
+import ReportDetailModal from "../../components/citizen/my-reports/ReportDetailModal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
 import { MY_REPORTS } from "../../mocks/citizen/reportsData";
 

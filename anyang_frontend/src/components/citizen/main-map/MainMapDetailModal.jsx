@@ -1,5 +1,5 @@
-import Modal from "./Modal";
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
+import Modal from "../Modal";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
 
 export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
   return (

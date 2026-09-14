@@ -1,5 +1,5 @@
 import { Camera, Upload, X } from "lucide-react";
-import StepSection from "./StepSection";
+import StepSection from "../StepSection";
 
 export default function ReportPhotoStep({ images, onChange, onRemove }) {
   return (

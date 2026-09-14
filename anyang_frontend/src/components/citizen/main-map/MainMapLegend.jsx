@@ -1,4 +1,4 @@
-import { SEVERITY_META, ROAD_RISK_META } from "../../mocks/citizen/constants";
+import { SEVERITY_META, ROAD_RISK_META } from "../../../mocks/citizen/constants";
 
 export default function MainMapLegend({ layer }) {
   if (layer === "current") {

@@ -1,6 +1,6 @@
 import { Mail, Clock3 } from "lucide-react";
-import BackButton from "./BackButton";
-import SuccessScreen from "./SuccessScreen";
+import BackButton from "../BackButton";
+import SuccessScreen from "../SuccessScreen";
 
 export default function InquirySubmittedView({ email, onGoToMap, onReset }) {
   return (

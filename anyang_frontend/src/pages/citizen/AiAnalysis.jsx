@@ -2,14 +2,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { BrainCircuit, ChevronRight } from "lucide-react";
 import { fallbackReport, getMockAnalysis } from "../../mocks/citizen/aiAnalysisData";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
-import { SECTION_LABEL_CLASS } from "../../components/citizen/AnalysisCard";
-import AiAnalysisTopBar from "../../components/citizen/AiAnalysisTopBar";
-import ReportInfoSection from "../../components/citizen/ReportInfoSection";
-import AiVisionSection from "../../components/citizen/AiVisionSection";
-import AiResultSection from "../../components/citizen/AiResultSection";
-import DetailedAnalysisSection from "../../components/citizen/DetailedAnalysisSection";
-import AiSummarySection from "../../components/citizen/AiSummarySection";
-import ProcessingStatusSection from "../../components/citizen/ProcessingStatusSection";
+import { SECTION_LABEL_CLASS } from "../../components/citizen/ai-analysis/AnalysisCard";
+import AiAnalysisTopBar from "../../components/citizen/ai-analysis/AiAnalysisTopBar";
+import ReportInfoSection from "../../components/citizen/ai-analysis/ReportInfoSection";
+import AiVisionSection from "../../components/citizen/ai-analysis/AiVisionSection";
+import AiResultSection from "../../components/citizen/ai-analysis/AiResultSection";
+import DetailedAnalysisSection from "../../components/citizen/ai-analysis/DetailedAnalysisSection";
+import AiSummarySection from "../../components/citizen/ai-analysis/AiSummarySection";
+import ProcessingStatusSection from "../../components/citizen/ai-analysis/ProcessingStatusSection";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();

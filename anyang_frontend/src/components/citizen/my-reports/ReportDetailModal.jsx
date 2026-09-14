@@ -1,5 +1,5 @@
 import { X, MapPin, FileText, Sparkles } from "lucide-react";
-import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
+import { DAMAGE_TYPE_META, SEVERITY_META } from "../../../mocks/citizen/constants";
 import ReportStatusSteps from "./ReportStatusSteps";
 
 export default function ReportDetailModal({ report, onClose }) {

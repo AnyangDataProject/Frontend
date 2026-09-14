@@ -1,7 +1,7 @@
 import { AlertTriangle } from "lucide-react";
-import StepSection from "./StepSection";
-import SelectableCard from "./SelectableCard";
-import { DAMAGE_TYPE_META } from "../../mocks/citizen/constants";
+import StepSection from "../StepSection";
+import SelectableCard from "../SelectableCard";
+import { DAMAGE_TYPE_META } from "../../../mocks/citizen/constants";
 
 const DAMAGE_TYPES = Object.entries(DAMAGE_TYPE_META).map(([value, meta]) => ({ value, ...meta }));
 

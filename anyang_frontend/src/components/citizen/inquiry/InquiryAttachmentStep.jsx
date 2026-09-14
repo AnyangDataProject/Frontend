@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Paperclip, X } from "lucide-react";
-import StepSection from "./StepSection";
+import StepSection from "../StepSection";
 
 export default function InquiryAttachmentStep({ files, onChange, onRemove }) {
   const fileInputRef = useRef(null);

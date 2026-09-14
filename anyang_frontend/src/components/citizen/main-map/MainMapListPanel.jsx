@@ -1,4 +1,4 @@
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
+import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
 
 const TYPE_FILTER_OPTIONS = [
   { value: "all", label: "전체 유형" },

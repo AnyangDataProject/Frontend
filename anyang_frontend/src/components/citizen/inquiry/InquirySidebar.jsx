@@ -1,5 +1,5 @@
 import { MessageSquareText, Info } from "lucide-react";
-import InfoNotice from "./InfoNotice";
+import InfoNotice from "../InfoNotice";
 
 const PROCESS_STEPS = [
   { step: 1, title: "문의 접수", description: "문의 내용을 등록합니다." },

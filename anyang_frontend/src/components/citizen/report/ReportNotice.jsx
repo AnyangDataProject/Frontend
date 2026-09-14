@@ -1,5 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-import Checkbox from "./Checkbox";
+import Checkbox from "../Checkbox";
 
 export default function ReportNotice({ agree, onAgreeChange }) {
   return (

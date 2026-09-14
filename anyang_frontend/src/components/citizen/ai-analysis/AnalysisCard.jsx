@@ -1,4 +1,4 @@
-import { CARD_SURFACE_CLASS } from "./StepSection";
+import { CARD_SURFACE_CLASS } from "../StepSection";
 
 export const SECTION_LABEL_CLASS = "text-blue-600 text-xs font-bold tracking-[0.13em] text-left";
 

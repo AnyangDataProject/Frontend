@@ -1,4 +1,4 @@
-import StepSection from "./StepSection";
+import StepSection from "../StepSection";
 
 export default function ReportDetailStep({ value, onChange }) {
   return (

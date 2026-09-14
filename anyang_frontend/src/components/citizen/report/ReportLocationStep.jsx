@@ -1,6 +1,6 @@
 import { MapPin, Navigation } from "lucide-react";
 import { Map, CustomOverlayMap } from "react-kakao-maps-sdk";
-import StepSection from "./StepSection";
+import StepSection from "../StepSection";
 
 export default function ReportLocationStep({
   address,
