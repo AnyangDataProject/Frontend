@@ -1,13 +1,19 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
+function getStoredToken() {
+  return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
+}
+
 export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
   let response;
+  const token = getStoredToken();
 
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
