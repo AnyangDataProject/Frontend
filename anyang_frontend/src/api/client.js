@@ -1,8 +1,6 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+import { getStoredToken } from '../utils/authStorage';
 
-function getStoredToken() {
-  return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
   let response;
