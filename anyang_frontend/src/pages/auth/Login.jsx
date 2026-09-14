@@ -42,7 +42,7 @@ function Login() {
       const data = await login(form);
 
       setAuthUser(data, { rememberMe });
-      navigate('/');
+      navigate(data?.role === 'ADMIN' ? '/admin' : '/');
     } catch (err) {
       showError(err.message || '로그인에 실패했습니다.');
     }
