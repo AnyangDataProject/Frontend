@@ -19,7 +19,7 @@ import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import StatusTimeline from '../../components/admin/StatusTimeline';
-import ReportClassificationEditor from '../../components/admin/ReportClassificationEditor';
+import ReportClassificationEditor from '../../components/admin/report-detail/ReportClassificationEditor';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchReportById, fetchRoadById, fetchMemberById, updateReportStatus } from '../../mocks/admin/api';
 import { DAMAGE_TYPE_META, REPORT_STATUS_STEPS, SEVERITY_META, REPORT_STATUS_META } from '../../mocks/admin/constants';

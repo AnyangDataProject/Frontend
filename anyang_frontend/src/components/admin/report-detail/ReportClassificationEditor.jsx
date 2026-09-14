@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { PencilLine } from 'lucide-react';
-import Card from './Card';
-import { updateReportClassification } from '../../mocks/admin/api';
-import { DAMAGE_TYPE_META, SEVERITY_META } from '../../mocks/admin/constants';
+import Card from '../Card';
+import { updateReportClassification } from '../../../mocks/admin/api';
+import { DAMAGE_TYPE_META, SEVERITY_META } from '../../../mocks/admin/constants';
 
 export default function ReportClassificationEditor({ report, onSaved }) {
   const [editing, setEditing] = useState(false);

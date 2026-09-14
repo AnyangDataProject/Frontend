@@ -1,6 +1,6 @@
 import { FileWarning, MessageSquare, X, FileText, Send, ChevronRight } from 'lucide-react';
-import Badge from './Badge';
-import { INQUIRY_STATUS_META, INQUIRY_TYPE_META } from '../../mocks/admin/constants';
+import Badge from '../Badge';
+import { INQUIRY_STATUS_META, INQUIRY_TYPE_META } from '../../../mocks/admin/constants';
 
 export default function InquiryDetailModal({
   inquiry,
