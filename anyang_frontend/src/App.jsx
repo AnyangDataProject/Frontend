@@ -3,6 +3,7 @@ import MainMap from './pages/citizen/MainMap';
 import Header from './components/Header';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
+import OAuthCallback from './pages/auth/OAuthCallback';
 import AiAnalysis from "./pages/citizen/AiAnalysis";
 import Report from "./pages/citizen/Report";
 import MyReports from "./pages/citizen/MyReports";
@@ -36,6 +37,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/ai-analysis" element={<AiAnalysis />} />
         <Route path="/report" element={<Report />} />
         <Route path="/my-reports" element={<MyReports />} />

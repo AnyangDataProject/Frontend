@@ -23,6 +23,7 @@ const PROVIDERS = [
     key: 'google',
     name: 'Google',
     icon: <GoogleIcon />,
+    authUrl: import.meta.env.VITE_GOOGLE_OAUTH_URL,
     className:
       'relative w-full h-12 flex items-center justify-center border border-slate-200 rounded-lg font-inherit text-sm font-semibold cursor-pointer transition-transform bg-white text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:translate-y-0',
   },
@@ -30,22 +31,15 @@ const PROVIDERS = [
     key: 'naver',
     name: '네이버',
     icon: <NaverIcon />,
+    authUrl: import.meta.env.VITE_NAVER_OAUTH_URL,
     className:
       'relative w-full h-12 flex items-center justify-center border border-[#03C75A] rounded-lg font-inherit text-sm font-semibold cursor-pointer transition-colors bg-[#03C75A] text-white hover:bg-[#02b351] hover:border-[#02b351]',
   },
 ];
 
 export default function SocialLoginButtons({ actionLabel }) {
-  const handleSelect = (provider) => {
-    // TODO: 추후 Spring Boot OAuth2 로그인/회원가입 API 연결
-    console.log(`${provider} ${actionLabel}`);
-
-    /*
-      추후 예시
-
-      window.location.href =
-        `http://localhost:8080/oauth2/authorization/${provider}`;
-    */
+  const handleSelect = (authUrl) => {
+    window.location.assign(authUrl);
   };
 
   return (
@@ -62,7 +56,7 @@ export default function SocialLoginButtons({ actionLabel }) {
           <button
             key={provider.key}
             type="button"
-            onClick={() => handleSelect(provider.key)}
+            onClick={() => handleSelect(provider.authUrl)}
             className={provider.className}
           >
             <span className="absolute left-4 w-[22px] h-[22px] flex items-center justify-center">
