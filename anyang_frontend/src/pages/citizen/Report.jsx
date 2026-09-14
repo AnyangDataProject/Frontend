@@ -19,6 +19,7 @@ import MessageModal from "../../components/citizen/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
 import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useFileAttachments } from "../../hooks/useFileAttachments";
 import { DAMAGE_TYPE_META, SEVERITY_META } from "../../mocks/citizen/constants";
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
@@ -29,7 +30,7 @@ const SEVERITY_OPTIONS = Object.entries(SEVERITY_META).map(([value, meta]) => ({
 export default function Report() {
   const navigate = useNavigate();
 
-  const [images, setImages] = useState([]);
+  const { items: images, addFiles, removeItem: removeImage } = useFileAttachments({ max: 3, createPreview: true });
   const [damageType, setDamageType] = useState("");
   const [severity, setSeverity] = useState("");
   const [address, setAddress] = useState("");
@@ -42,25 +43,9 @@ export default function Report() {
   const { modal, showError, showInfo, close: closeModal } = useMessageModal();
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const remaining = 3 - images.length;
-    const newImages = files.slice(0, remaining).map((file) => ({
-      id: `${file.name}-${Date.now()}-${Math.random()}`,
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-    setImages((prev) => [...prev, ...newImages]);
-
-    if (files.length > remaining) {
-      showInfo("사진은 최대 3장까지 등록할 수 있습니다.\n초과한 사진은 추가되지 않았습니다.");
-    }
-  };
-
-  const removeImage = (id) => {
-    setImages((prev) => {
-      const target = prev.find((image) => image.id === id);
-      if (target) URL.revokeObjectURL(target.preview);
-      return prev.filter((image) => image.id !== id);
+    addFiles(e.target.files, {
+      onLimitExceeded: () =>
+        showInfo("사진은 최대 3장까지 등록할 수 있습니다.\n초과한 사진은 추가되지 않았습니다."),
     });
   };
 

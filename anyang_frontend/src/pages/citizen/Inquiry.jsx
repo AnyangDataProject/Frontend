@@ -18,6 +18,7 @@ import SuccessScreen from "../../components/citizen/SuccessScreen";
 import Checkbox from "../../components/citizen/Checkbox";
 import MessageModal from "../../components/citizen/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
+import { useFileAttachments } from "../../hooks/useFileAttachments";
 import { INQUIRY_TYPES } from "../../mocks/citizen/inquiryData";
 
 function Inquiry() {
@@ -29,17 +30,15 @@ function Inquiry() {
   const [content, setContent] = useState("");
   const [email, setEmail] = useState("");
   const [agree, setAgree] = useState(false);
-  const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
-  const { modal, showError, close: closeModal } = useMessageModal();
+  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
+  const { items: files, addFiles, removeItem: removeFile, clear: clearFiles } = useFileAttachments({ max: 5 });
 
   const handleFileChange = (event) => {
-    const selectedFiles = Array.from(event.target.files || []);
-    setFiles((prev) => [...prev, ...selectedFiles]);
-  };
-
-  const removeFile = (index) => {
-    setFiles((prev) => prev.filter((_, fileIndex) => fileIndex !== index));
+    addFiles(event.target.files, {
+      onLimitExceeded: () =>
+        showInfo("파일은 최대 5개까지 첨부할 수 있습니다.\n초과한 파일은 추가되지 않았습니다."),
+    });
   };
 
   const handleSubmit = (event) => {
@@ -75,7 +74,7 @@ function Inquiry() {
     setContent("");
     setEmail("");
     setAgree(false);
-    setFiles([]);
+    clearFiles();
     setSubmitted(false);
   };
 
@@ -240,18 +239,18 @@ function Inquiry() {
 
                 {files.length > 0 && (
                   <div className="mt-2.5 flex flex-col gap-1.5">
-                    {files.map((file, index) => (
+                    {files.map((item) => (
                       <div
                         className="flex min-h-9 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-500"
-                        key={`${file.name}-${index}`}
+                        key={item.id}
                       >
                         <Paperclip size={14} />
                         <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
-                          {file.name}
+                          {item.file.name}
                         </span>
                         <button
                           type="button"
-                          onClick={() => removeFile(index)}
+                          onClick={() => removeFile(item.id)}
                           className="flex h-6 w-6 items-center justify-center rounded-full border-0 bg-transparent text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
                         >
                           <X size={14} />
