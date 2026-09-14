@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthCardShell from '../../components/auth/AuthCardShell';
-import Checkbox from '../../components/citizen/Checkbox';
+import Checkbox from '../../components/common/Checkbox';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
-import MessageModal from '../../components/citizen/MessageModal';
+import MessageModal from '../../components/common/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
+import { signup } from '../../api/auth';
+import { formatPhoneNumber } from '../../utils/phone';
 
 function Signup() {
   const navigate = useNavigate();
 
-  const [form, handleChange] = useFormFields({
+  const [form, handleChange, setForm] = useFormFields({
     name: '',
     email: '',
     password: '',
@@ -19,13 +21,20 @@ function Signup() {
     phone: '',
   });
 
+  const handlePhoneChange = (e) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setForm((prev) => ({ ...prev, phone: formatted }));
+  };
+
   const [agreements, setAgreements] = useState({
     service: false,
     privacy: false,
   });
   const agreeAll = agreements.service && agreements.privacy;
 
-  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
+  const [emailError, setEmailError] = useState('');
+
+  const { modal, showError, close: closeModal } = useMessageModal();
 
   const handleAgreementChange = (name) => {
     setAgreements((prev) => ({
@@ -43,8 +52,10 @@ function Signup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setEmailError('');
 
     if (!form.name.trim()) {
       showError('이름을 입력해주세요.');
@@ -76,10 +87,24 @@ function Signup() {
       return;
     }
 
-    // TODO: 추후 회원가입 API 연결
-    console.log('회원가입 요청:', form);
+    try {
+      await signup({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        phone: form.phone,
+      });
 
-    showInfo('회원가입이 완료되었습니다.', { onConfirm: () => navigate('/login') });
+      navigate('/login', { state: { signupSuccess: true } });
+    } catch (err) {
+      const message = err.message || '회원가입에 실패했습니다.';
+
+      if (message === '이미 가입된 이메일입니다.') {
+        setEmailError(message);
+      } else {
+        showError(message);
+      }
+    }
   };
 
   return (
@@ -87,7 +112,7 @@ function Signup() {
       title="회원가입"
       description={
         <>
-          안양시 시민안전 서비스를 이용하기 위해
+          안양시 알로드 서비스를 이용하기 위해
           <br />
           회원가입을 진행해주세요.
         </>
@@ -120,25 +145,23 @@ function Signup() {
             이메일
           </label>
 
-          <div className="flex gap-2">
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="이메일을 입력해주세요"
-              autoComplete="email"
-              className={`flex-1 min-w-0 ${AUTH_INPUT_CLASS}`}
-            />
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => {
+              handleChange(e);
+              if (emailError) setEmailError('');
+            }}
+            placeholder="이메일을 입력해주세요"
+            autoComplete="email"
+            className={AUTH_INPUT_CLASS}
+          />
 
-            <button
-              type="button"
-              className="w-[88px] max-[480px]:w-20 h-12 shrink-0 border border-slate-200 rounded-lg bg-white font-inherit text-xs font-semibold text-slate-500 cursor-pointer transition-colors hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50"
-            >
-              중복확인
-            </button>
-          </div>
+          {emailError && (
+            <p className="mt-1.5 mb-0 text-xs text-red-600">{emailError}</p>
+          )}
         </div>
 
         {/* 비밀번호 */}
@@ -202,9 +225,10 @@ function Signup() {
             name="phone"
             type="tel"
             value={form.phone}
-            onChange={handleChange}
+            onChange={handlePhoneChange}
             placeholder="010-0000-0000"
             autoComplete="tel"
+            maxLength={13}
             className={AUTH_INPUT_CLASS}
           />
         </div>

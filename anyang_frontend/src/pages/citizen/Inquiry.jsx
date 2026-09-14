@@ -10,9 +10,9 @@ import InquiryContactStep from "../../components/citizen/inquiry/InquiryContactS
 import InquiryPrivacyConsent from "../../components/citizen/inquiry/InquiryPrivacyConsent";
 import InquirySidebar from "../../components/citizen/inquiry/InquirySidebar";
 import InquirySubmittedView from "../../components/citizen/inquiry/InquirySubmittedView";
-import MessageModal from "../../components/citizen/MessageModal";
+import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
-import { useFileAttachments } from "../../hooks/useFileAttachments";
+import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
 
 function Inquiry() {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ function Inquiry() {
         <PageHeader
           eyebrow="CIVIL SERVICE"
           title="민원 · 문의 접수"
-          description="로드센스 이용 중 궁금한 점이나 개선 의견을 남겨주세요."
+          description="알로드 이용 중 궁금한 점이나 개선 의견을 남겨주세요."
         />
 
         <div className="grid grid-cols-[minmax(0,1fr)_300px] max-[850px]:grid-cols-1 items-start gap-[18px]">

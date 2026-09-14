@@ -1,4 +1,7 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/auth/useAuth';
+import MessageModal from './common/MessageModal';
 
 const MENU_BASE =
   'relative px-3 py-2.5 text-sm font-medium transition-colors max-[1000px]:px-2 max-[1000px]:text-[13px] max-[768px]:px-1.5 max-[768px]:text-xs max-[560px]:px-[5px] max-[560px]:text-[11px]';
@@ -15,10 +18,20 @@ function menuClass(isActive) {
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout, sessionExpired, dismissSessionExpired } = useAuth();
 
   const isAdmin = location.pathname.startsWith('/admin');
 
+  const [showLogoutNotice, setShowLogoutNotice] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setShowLogoutNotice(true);
+    navigate('/');
+  };
+
   return (
+    <>
     <header className="fixed top-0 left-0 z-[1000] h-[72px] w-full border-b border-[#C9D0D9] bg-white max-[768px]:h-16">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-10 max-[1000px]:px-[25px] max-[768px]:px-5 max-[560px]:px-3.5">
 
@@ -28,11 +41,11 @@ function Header() {
           onClick={() => navigate(isAdmin ? '/admin' : '/')}
         >
           <span className="text-xl font-extrabold tracking-[-0.5px] text-blue-600 max-[768px]:text-lg">
-            ANYANG
+            AIROAD
           </span>
 
           <span className="border-l border-[#C9D0D9] pl-2.5 text-base font-semibold text-[#23262B] max-[768px]:text-sm max-[560px]:hidden">
-            {isAdmin ? '시민안전 관리자' : '시민안전'}
+            {isAdmin ? '알로드 관리자' : '알로드'}
           </span>
         </div>
 
@@ -67,19 +80,36 @@ function Header() {
               문의하기
             </button>
 
-            <button
-              className="ml-2 px-3.5 py-2.5 text-sm font-medium text-[#5B6472] transition-colors hover:text-blue-600 max-[768px]:ml-1 max-[768px]:px-[7px] max-[560px]:hidden"
-              onClick={() => navigate('/login')}
-            >
-              로그인
-            </button>
+            {user ? (
+              <>
+                <span className="ml-2 px-3.5 py-2.5 text-sm font-medium text-[#23262B] max-[768px]:px-[7px] max-[560px]:hidden">
+                  {user.name}님
+                </span>
 
-            <button
-              className="rounded-lg bg-gradient-to-br from-[#5B8DEF] to-blue-600 px-[18px] py-2.5 text-sm font-medium text-white transition-[filter] hover:brightness-105 max-[768px]:px-2.5 max-[768px]:py-2 max-[560px]:px-[9px] max-[560px]:py-[7px]"
-              onClick={() => navigate('/signup')}
-            >
-              회원가입
-            </button>
+                <button
+                  className="rounded-lg bg-gradient-to-br from-[#5B8DEF] to-blue-600 px-[18px] py-2.5 text-sm font-medium text-white transition-[filter] hover:brightness-105 max-[768px]:px-2.5 max-[768px]:py-2 max-[560px]:px-[9px] max-[560px]:py-[7px]"
+                  onClick={handleLogout}
+                >
+                  로그아웃
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="ml-2 px-3.5 py-2.5 text-sm font-medium text-[#5B6472] transition-colors hover:text-blue-600 max-[768px]:ml-1 max-[768px]:px-[7px] max-[560px]:hidden"
+                  onClick={() => navigate('/login')}
+                >
+                  로그인
+                </button>
+
+                <button
+                  className="rounded-lg bg-gradient-to-br from-[#5B8DEF] to-blue-600 px-[18px] py-2.5 text-sm font-medium text-white transition-[filter] hover:brightness-105 max-[768px]:px-2.5 max-[768px]:py-2 max-[560px]:px-[9px] max-[560px]:py-[7px]"
+                  onClick={() => navigate('/signup')}
+                >
+                  회원가입
+                </button>
+              </>
+            )}
 
           </nav>
         )}
@@ -130,9 +160,15 @@ function Header() {
               문의 관리
             </button>
 
+            {user && (
+              <span className="ml-2 px-1.5 text-sm font-medium text-[#23262B] max-[768px]:hidden">
+                {user.name}님
+              </span>
+            )}
+
             <button
               className="h-9 rounded-md border border-[#C9D0D9] bg-white px-3.5 text-xs font-semibold text-[#5B6472] transition-colors hover:border-[#C1432D] hover:text-[#C1432D]"
-              onClick={() => navigate('/login')}
+              onClick={handleLogout}
             >
               로그아웃
             </button>
@@ -142,6 +178,21 @@ function Header() {
 
       </div>
     </header>
+
+    <MessageModal
+      open={sessionExpired}
+      onClose={dismissSessionExpired}
+      variant="error"
+      message="로그인이 만료되었습니다. 다시 로그인해주세요."
+    />
+
+    <MessageModal
+      open={showLogoutNotice}
+      onClose={() => setShowLogoutNotice(false)}
+      variant="info"
+      message="로그아웃되었습니다."
+    />
+    </>
   );
 }
 

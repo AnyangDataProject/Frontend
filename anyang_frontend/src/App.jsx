@@ -3,6 +3,7 @@ import MainMap from './pages/citizen/MainMap';
 import Header from './components/Header';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
+import OAuthCallback from './pages/auth/OAuthCallback';
 import AiAnalysis from "./pages/citizen/AiAnalysis";
 import Report from "./pages/citizen/Report";
 import MyReports from "./pages/citizen/MyReports";
@@ -16,6 +17,8 @@ import AdminMembers from './pages/admin/AdminMembers';
 import AdminReports from './pages/admin/AdminReports';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminRoadDetail from './pages/admin/AdminRoadDetail';
+import RequireAdmin from './components/auth/RequireAdmin';
+import RedirectAdminHome from './components/auth/RedirectAdminHome';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
 function App() {
@@ -29,9 +32,12 @@ function App() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<MainMap />} />
+        <Route element={<RedirectAdminHome />}>
+          <Route path="/" element={<MainMap />} />
+        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/oauth/callback" element={<OAuthCallback />} />
         <Route path="/ai-analysis" element={<AiAnalysis />} />
         <Route path="/report" element={<Report />} />
         <Route path="/my-reports" element={<MyReports />} />
@@ -40,13 +46,15 @@ function App() {
         <Route path="/find-password" element={<FindPassword />} />
 
 
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/reports" element={<AdminReports />} />
-        <Route path="/admin/reports/:id" element={<AdminReportDetail />} />
-        <Route path="/admin/priority" element={<AdminPriority />} />
-        <Route path="/admin/roads/:id" element={<AdminRoadDetail />} />
-        <Route path="/admin/members" element={<AdminMembers />} />
-        <Route path="/admin/inquiries" element={<AdminInquiries />} />
+        <Route element={<RequireAdmin />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/reports/:id" element={<AdminReportDetail />} />
+          <Route path="/admin/priority" element={<AdminPriority />} />
+          <Route path="/admin/roads/:id" element={<AdminRoadDetail />} />
+          <Route path="/admin/members" element={<AdminMembers />} />
+          <Route path="/admin/inquiries" element={<AdminInquiries />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

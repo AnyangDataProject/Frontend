@@ -8,8 +8,8 @@ import MainMapLegend from "../../components/citizen/main-map/MainMapLegend";
 import MainMapListPanel from "../../components/citizen/main-map/MainMapListPanel";
 import MainMapDetailModal from "../../components/citizen/main-map/MainMapDetailModal";
 import { MAP_PINS } from "../../mocks/citizen/reportsData";
-import { useKakaoGeocoder } from "../../hooks/useKakaoGeocoder";
-import { useCurrentLocation } from "../../hooks/useCurrentLocation";
+import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
+import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 

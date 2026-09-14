@@ -1,4 +1,4 @@
-import Checkbox from "../Checkbox";
+import Checkbox from "../../common/Checkbox";
 
 export default function InquiryPrivacyConsent({ agree, onChange }) {
   return (

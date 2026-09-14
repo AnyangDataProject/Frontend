@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
-import ConfirmModal from '../../components/admin/ConfirmModal';
+import ConfirmModal from '../../components/common/ConfirmModal';
 import AdminMembersFilters from '../../components/admin/members/AdminMembersFilters';
 import AdminMembersTable from '../../components/admin/members/AdminMembersTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';

@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthCardShell from '../../components/auth/AuthCardShell';
-import Checkbox from '../../components/citizen/Checkbox';
+import Checkbox from '../../components/common/Checkbox';
 import InfoNotice from '../../components/citizen/InfoNotice';
 import AuthLinksRow from '../../components/auth/AuthLinksRow';
 import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
 import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
+import MessageModal from '../../components/common/MessageModal';
+import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
+import { login } from '../../api/auth';
+import { useAuth } from '../../hooks/auth/useAuth';
 
 function Login() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login: setAuthUser } = useAuth();
+
   const [form, handleChange] = useFormFields({
     email: '',
     password: '',
@@ -15,11 +24,36 @@ function Login() {
 
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (e) => {
+  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
+
+  useEffect(() => {
+    if (location.state?.signupSuccess) {
+      showInfo('회원가입이 완료되었습니다. 로그인해주세요.');
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate, showInfo]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // TODO: 추후 백엔드 일반 로그인 API 연결
-    console.log('로그인 요청:', form);
+    if (!form.email.trim()) {
+      showError('이메일을 입력해주세요.');
+      return;
+    }
+
+    if (!form.password) {
+      showError('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    try {
+      const data = await login(form);
+
+      setAuthUser(data, { rememberMe });
+      navigate(data?.role === 'ADMIN' ? '/admin' : '/');
+    } catch (err) {
+      showError(err.message || '로그인에 실패했습니다.');
+    }
   };
 
   return (
@@ -27,14 +61,14 @@ function Login() {
       title="로그인"
       description={
         <>
-          안양시 시민안전 서비스에
+          안양시 알로드 서비스에
           <br />
           로그인해주세요.
         </>
       }
       footer={
         <InfoNotice>
-          안양시 시민안전 서비스는 시민 여러분의
+          안양시 알로드 서비스는 시민 여러분의
           <br />
           안전하고 편리한 생활을 위해 운영됩니다.
         </InfoNotice>
@@ -107,6 +141,13 @@ function Login() {
           { label: '비밀번호 찾기', to: '/find-password' },
           { label: '회원가입', to: '/signup' },
         ]}
+      />
+
+      <MessageModal
+        open={!!modal}
+        onClose={closeModal}
+        variant={modal?.variant}
+        message={modal?.message}
       />
     </AuthCardShell>
   );

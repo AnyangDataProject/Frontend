@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 function GoogleIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -23,6 +25,7 @@ const PROVIDERS = [
     key: 'google',
     name: 'Google',
     icon: <GoogleIcon />,
+    authUrl: import.meta.env.VITE_GOOGLE_OAUTH_URL,
     className:
       'relative w-full h-12 flex items-center justify-center border border-slate-200 rounded-lg font-inherit text-sm font-semibold cursor-pointer transition-transform bg-white text-slate-900 hover:bg-slate-50 hover:border-slate-300 active:translate-y-0',
   },
@@ -30,22 +33,23 @@ const PROVIDERS = [
     key: 'naver',
     name: '네이버',
     icon: <NaverIcon />,
+    authUrl: import.meta.env.VITE_NAVER_OAUTH_URL,
     className:
       'relative w-full h-12 flex items-center justify-center border border-[#03C75A] rounded-lg font-inherit text-sm font-semibold cursor-pointer transition-colors bg-[#03C75A] text-white hover:bg-[#02b351] hover:border-[#02b351]',
   },
 ];
 
 export default function SocialLoginButtons({ actionLabel }) {
-  const handleSelect = (provider) => {
-    // TODO: 추후 Spring Boot OAuth2 로그인/회원가입 API 연결
-    console.log(`${provider} ${actionLabel}`);
+  const [error, setError] = useState('');
 
-    /*
-      추후 예시
+  const handleSelect = (authUrl) => {
+    if (!authUrl) {
+      console.error('소셜 로그인 URL이 설정되지 않았습니다. .env의 VITE_GOOGLE_OAUTH_URL / VITE_NAVER_OAUTH_URL을 확인해주세요.');
+      setError('현재 소셜 로그인을 사용할 수 없습니다. 잠시 후 다시 시도해주세요.');
+      return;
+    }
 
-      window.location.href =
-        `http://localhost:8080/oauth2/authorization/${provider}`;
-    */
+    window.location.assign(authUrl);
   };
 
   return (
@@ -62,7 +66,7 @@ export default function SocialLoginButtons({ actionLabel }) {
           <button
             key={provider.key}
             type="button"
-            onClick={() => handleSelect(provider.key)}
+            onClick={() => handleSelect(provider.authUrl)}
             className={provider.className}
           >
             <span className="absolute left-4 w-[22px] h-[22px] flex items-center justify-center">
@@ -73,6 +77,8 @@ export default function SocialLoginButtons({ actionLabel }) {
           </button>
         ))}
       </div>
+
+      {error && <p className="mt-2 text-xs text-red-600 text-center">{error}</p>}
     </div>
   );
 }
