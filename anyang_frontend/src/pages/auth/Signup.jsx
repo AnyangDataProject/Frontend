@@ -7,6 +7,7 @@ import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
 import MessageModal from '../../components/citizen/MessageModal';
 import { useMessageModal } from '../../hooks/useMessageModal';
 import { useFormFields } from '../../hooks/auth/useFormFields';
+import { signup } from '../../api/auth';
 
 function Signup() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ function Signup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!form.name.trim()) {
@@ -76,10 +77,18 @@ function Signup() {
       return;
     }
 
-    // TODO: 추후 회원가입 API 연결
-    console.log('회원가입 요청:', form);
+    try {
+      await signup({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        phone: form.phone,
+      });
 
-    showInfo('회원가입이 완료되었습니다.', { onConfirm: () => navigate('/login') });
+      showInfo('회원가입이 완료되었습니다.', { onConfirm: () => navigate('/login') });
+    } catch (err) {
+      showError(err.message || '회원가입에 실패했습니다.');
+    }
   };
 
   return (
