@@ -22,7 +22,12 @@ export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
   }
 
   if (!response.ok) {
-    throw new Error(data?.message || `요청이 실패했습니다. (${response.status})`);
+    const message =
+      (typeof data === 'string' ? data : data?.message) ||
+      text ||
+      `요청이 실패했습니다. (${response.status})`;
+
+    throw new Error(message);
   }
 
   return data;
