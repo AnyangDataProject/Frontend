@@ -34,7 +34,7 @@ function Signup() {
 
   const [emailError, setEmailError] = useState('');
 
-  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
+  const { modal, showError, close: closeModal } = useMessageModal();
 
   const handleAgreementChange = (name) => {
     setAgreements((prev) => ({
@@ -95,7 +95,7 @@ function Signup() {
         phone: form.phone,
       });
 
-      showInfo('회원가입이 완료되었습니다.', { onConfirm: () => navigate('/login') });
+      navigate('/login', { state: { signupSuccess: true } });
     } catch (err) {
       const message = err.message || '회원가입에 실패했습니다.';
 

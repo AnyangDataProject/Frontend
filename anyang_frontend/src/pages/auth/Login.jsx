@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthCardShell from '../../components/auth/AuthCardShell';
 import Checkbox from '../../components/citizen/Checkbox';
 import InfoNotice from '../../components/citizen/InfoNotice';
@@ -14,6 +14,7 @@ import { useAuth } from '../../hooks/auth/useAuth';
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: setAuthUser } = useAuth();
 
   const [form, handleChange] = useFormFields({
@@ -23,7 +24,14 @@ function Login() {
 
   const [rememberMe, setRememberMe] = useState(false);
 
-  const { modal, showError, close: closeModal } = useMessageModal();
+  const { modal, showError, showInfo, close: closeModal } = useMessageModal();
+
+  useEffect(() => {
+    if (location.state?.signupSuccess) {
+      showInfo('회원가입이 완료되었습니다. 로그인해주세요.');
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate, showInfo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
