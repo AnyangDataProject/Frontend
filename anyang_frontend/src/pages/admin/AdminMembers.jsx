@@ -21,8 +21,8 @@ export default function AdminMembers() {
     const matchesKeyword =
       !kw ||
       String(m.id).toLowerCase().includes(kw) ||
-      m.name.toLowerCase().includes(kw) ||
-      m.email.toLowerCase().includes(kw);
+      (m.name ?? '').toLowerCase().includes(kw) ||
+      (m.email ?? '').toLowerCase().includes(kw);
     const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
     return matchesKeyword && matchesStatus;
   });
