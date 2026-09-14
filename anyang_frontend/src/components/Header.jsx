@@ -156,6 +156,12 @@ function Header() {
               문의 관리
             </button>
 
+            {user && (
+              <span className="ml-2 px-1.5 text-sm font-medium text-[#23262B] max-[768px]:hidden">
+                {user.name}님
+              </span>
+            )}
+
             <button
               className="h-9 rounded-md border border-[#C9D0D9] bg-white px-3.5 text-xs font-semibold text-[#5B6472] transition-colors hover:border-[#C1432D] hover:text-[#C1432D]"
               onClick={handleLogout}
