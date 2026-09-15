@@ -7,10 +7,10 @@ import AdminMembersFilters from '../../components/admin/members/AdminMembersFilt
 import AdminMembersTable from '../../components/admin/members/AdminMembersTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchMembers, updateMemberStatus } from '../../mocks/admin/api';
+import { fetchMembers, updateMemberStatus } from '../../api/admin';
 
 export default function AdminMembers() {
-  const { data: members, setData: setMembers } = useAdminListQuery(fetchMembers);
+  const { data: members, setData: setMembers, error } = useAdminListQuery(fetchMembers);
   const [keyword, setKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [pendingId, setPendingId] = useState(null);
@@ -19,7 +19,10 @@ export default function AdminMembers() {
   const filtered = useListFilter(members, (m) => {
     const kw = keyword.trim().toLowerCase();
     const matchesKeyword =
-      !kw || m.id.toLowerCase().includes(kw) || m.name.toLowerCase().includes(kw) || m.email.toLowerCase().includes(kw);
+      !kw ||
+      String(m.id).toLowerCase().includes(kw) ||
+      (m.name ?? '').toLowerCase().includes(kw) ||
+      (m.email ?? '').toLowerCase().includes(kw);
     const matchesStatus = statusFilter === 'all' || m.status === statusFilter;
     return matchesKeyword && matchesStatus;
   });
@@ -30,10 +33,15 @@ export default function AdminMembers() {
     const member = confirmTarget;
     const nextStatus = member.status === 'active' ? 'restricted' : 'active';
     setPendingId(member.id);
-    const updated = await updateMemberStatus(member.id, nextStatus);
-    setMembers((prev) => prev.map((m) => (m.id === member.id ? { ...m, ...updated } : m)));
-    setPendingId(null);
-    setConfirmTarget(null);
+    try {
+      const updated = await updateMemberStatus(member.id, nextStatus);
+      setMembers((prev) => prev.map((m) => (m.id === member.id ? { ...m, ...updated } : m)));
+      setConfirmTarget(null);
+    } catch (err) {
+      alert(err.message || '회원 상태 변경에 실패했습니다.');
+    } finally {
+      setPendingId(null);
+    }
   };
 
   return (
@@ -51,6 +59,7 @@ export default function AdminMembers() {
       >
         <AdminMembersTable
           loading={!members}
+          error={error}
           members={filtered}
           pendingId={pendingId}
           onToggleStatus={setConfirmTarget}

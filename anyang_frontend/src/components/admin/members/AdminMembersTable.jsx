@@ -1,10 +1,19 @@
-import { ShieldOff, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, ShieldOff, ShieldCheck } from 'lucide-react';
 import Badge from '../Badge';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import { MEMBER_STATUS_META } from '../../../mocks/admin/constants';
 
-export default function AdminMembersTable({ loading, members, pendingId, onToggleStatus }) {
+export default function AdminMembersTable({ loading, error, members, pendingId, onToggleStatus }) {
+  if (error) {
+    return (
+      <EmptyState
+        icon={AlertTriangle}
+        title="회원 목록을 불러오지 못했습니다"
+        description={error.message}
+      />
+    );
+  }
   if (loading) return <LoadingState />;
   if (members.length === 0) return <EmptyState title="조건에 맞는 회원이 없습니다" />;
 
