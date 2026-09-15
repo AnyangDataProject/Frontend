@@ -19,9 +19,7 @@ export function fetchUnclassifiedReports() {
 
 export async function fetchReportById(id) {
   const reports = await apiRequest('/api/admin/report');
-  const report = reports.find((r) => String(r.id) === String(id));
-  if (!report) throw new Error('신고를 찾을 수 없습니다.');
-  return report;
+  return reports.find((r) => String(r.id) === String(id)) ?? null;
 }
 
 export function updateReportStatusAdmin(reportId, status) {
