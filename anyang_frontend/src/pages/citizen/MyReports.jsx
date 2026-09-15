@@ -194,7 +194,7 @@ function MyReports() {
               </div>
             ) : (
               filteredReports.map((report) => {
-                const type = DAMAGE_TYPE_META[report.type];
+                const type = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? "-", icon: FileText };
                 const severity = SEVERITY_META[report.severity];
                 const status = REPORT_STATUS_META[report.status];
                 const TypeIcon = type.icon;

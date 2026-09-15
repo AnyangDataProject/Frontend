@@ -3,6 +3,8 @@ import { DAMAGE_TYPE_META, SEVERITY_META } from "../../../mocks/citizen/constant
 import ReportStatusSteps from "./ReportStatusSteps";
 
 export default function ReportDetailModal({ report, onClose }) {
+  const typeLabel = DAMAGE_TYPE_META[report.type]?.label ?? report.type ?? "-";
+
   return (
     <div
       className="fixed inset-0 z-[1000] flex items-center justify-center bg-[rgba(15,23,42,0.55)] p-6 backdrop-blur-[6px] max-[520px]:p-0"
@@ -39,9 +41,7 @@ export default function ReportDetailModal({ report, onClose }) {
           <div className="mb-5 grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-white max-[800px]:grid-cols-2">
             <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-b">
               <span className="text-xs font-medium text-slate-500">파손 유형</span>
-              <strong className="text-sm font-medium text-slate-900">
-                {DAMAGE_TYPE_META[report.type].label}
-              </strong>
+              <strong className="text-sm font-medium text-slate-900">{typeLabel}</strong>
             </div>
             <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-r-0 max-[800px]:border-b">
               <span className="text-xs font-medium text-slate-500">위험도</span>
@@ -87,9 +87,7 @@ export default function ReportDetailModal({ report, onClose }) {
             <div className="mb-3 grid grid-cols-3 gap-2.5 max-[800px]:grid-cols-1">
               <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
                 <span className="text-xs font-medium text-slate-500">파손 유형</span>
-                <strong className="text-sm font-semibold text-slate-900">
-                  {DAMAGE_TYPE_META[report.type].label}
-                </strong>
+                <strong className="text-sm font-semibold text-slate-900">{typeLabel}</strong>
               </div>
               <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
                 <span className="text-xs font-medium text-slate-500">위험도</span>
