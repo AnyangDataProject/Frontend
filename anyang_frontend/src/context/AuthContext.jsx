@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AuthContext } from './authContext';
 import { getTokenExpiryMs, isTokenExpired } from '../utils/jwt';
-
-export function getStoredToken() {
-  return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
-}
+import { getStoredToken } from '../utils/authStorage';
 
 const MAX_TIMEOUT_MS = 2_147_483_647; // setTimeout이 안전하게 지원하는 최대 지연(약 24.8일)
 

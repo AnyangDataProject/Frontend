@@ -1,11 +1,7 @@
 import { apiRequest, apiRequestMultipart } from './client';
-import { getStoredToken } from '../context/AuthContext.jsx';
 
 export function getMyReports() {
-  const token = getStoredToken();
-  return apiRequest('/api/report/my', {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  return apiRequest('/api/report/my');
 }
 
 export function submitReport({ detail, latitude, longitude, address, damageType, severity, images }) {
@@ -21,10 +17,5 @@ export function submitReport({ detail, latitude, longitude, address, damageType,
     formData.append('images', item.file);
   });
 
-  const token = getStoredToken();
-
-  return apiRequestMultipart('/api/report', {
-    formData,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  return apiRequestMultipart('/api/report', { formData });
 }

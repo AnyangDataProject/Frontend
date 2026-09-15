@@ -1,13 +1,17 @@
+import { getStoredToken } from '../utils/authStorage';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8085';
 
 export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
   let response;
+  const token = getStoredToken();
 
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
@@ -41,12 +45,14 @@ export async function apiRequest(path, { method = 'GET', body, headers } = {}) {
 
 export async function apiRequestMultipart(path, { method = 'POST', formData, headers } = {}) {
   let response;
+  const token = getStoredToken();
 
   try {
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers: {
         // Content-Type은 지정하지 않는다 — 브라우저가 boundary 포함해서 자동으로 설정
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
       },
       body: formData,
