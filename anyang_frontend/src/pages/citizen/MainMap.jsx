@@ -37,7 +37,10 @@ const [pins, setPins] = useState([]);
 useEffect(() => {
   getMyReports()
     .then((data) => setPins(data.map(toMapPin)))
-    .catch(() => setPins([]));
+    .catch((err) => {
+      console.error('신고 마커를 불러오지 못했습니다.', err);
+      setPins([]);
+    });
 }, []);
 
   const navigate = useNavigate();

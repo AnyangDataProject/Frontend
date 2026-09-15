@@ -28,10 +28,13 @@ export default function AiAnalysis() {
 
     getAiAnalysis(selectedReport.id)
       .then((data) => setDetectionData(data))
-      .catch(() => setDetectionData(null));
+      .catch((err) => {
+        console.error('AI 분석 결과를 불러오지 못했습니다.', err);
+        setDetectionData(null);
+      });
   }, [selectedReport?.id]);
 
-  const type = DAMAGE_TYPE_META[selectedReport.type];
+  const type = DAMAGE_TYPE_META[selectedReport.type] ?? { label: selectedReport.type ?? '-' };
   const severity = SEVERITY_META[selectedReport.severity];
   const status = REPORT_STATUS_META[selectedReport.status];
 
