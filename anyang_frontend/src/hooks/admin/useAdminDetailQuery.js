@@ -9,16 +9,20 @@ export function useAdminDetailQuery(fetchFn, id, { onLoaded } = {}) {
 
   useEffect(() => {
     let active = true;
-    fetchFn(id).then((result) => {
-      if (!active) return;
-      if (!result) {
-        setNotFound(true);
-        return;
-      }
-      setNotFound(false);
-      setData(result);
-      onLoaded?.(result);
-    });
+    fetchFn(id)
+      .then((result) => {
+        if (!active) return;
+        if (!result) {
+          setNotFound(true);
+          return;
+        }
+        setNotFound(false);
+        setData(result);
+        onLoaded?.(result);
+      })
+      .catch(() => {
+        if (active) setNotFound(true);
+      });
     return () => {
       active = false;
     };

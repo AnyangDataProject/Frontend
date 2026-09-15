@@ -11,8 +11,8 @@ import { fetchPriorityClusters, fetchUnclassifiedReports } from '../../api/admin
 
 export default function AdminPriority() {
   const navigate = useNavigate();
-  const { data: roads } = useAdminListQuery(fetchPriorityClusters);
-  const { data: unclassifiedReports } = useAdminListQuery(fetchUnclassifiedReports);
+  const { data: roads, error: roadsError } = useAdminListQuery(fetchPriorityClusters);
+  const { data: unclassifiedReports, error: unclassifiedError } = useAdminListQuery(fetchUnclassifiedReports);
   const [riskFilter, setRiskFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
 
@@ -42,6 +42,7 @@ export default function AdminPriority() {
       >
         <AdminPriorityTable
           loading={!roads}
+          error={roadsError}
           roads={filtered}
           onRowClick={(id) => navigate(`/admin/roads/${id}`)}
         />
@@ -56,7 +57,11 @@ export default function AdminPriority() {
         }
         description="기존 분석 구간에 매칭되지 않은 시민 신고입니다."
       >
-        {!unclassifiedReports ? (
+        {unclassifiedError ? (
+          <p className="py-6 text-center text-sm text-red-500">
+            미분류 신고를 불러오지 못했습니다. ({unclassifiedError.message})
+          </p>
+        ) : !unclassifiedReports ? (
           <p className="py-6 text-center text-sm text-slate-400">불러오는 중...</p>
         ) : unclassifiedReports.length === 0 ? (
           <p className="py-6 text-center text-sm text-slate-400">미분류 신고가 없습니다.</p>

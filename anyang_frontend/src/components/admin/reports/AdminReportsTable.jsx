@@ -1,10 +1,10 @@
-import { MapPin } from 'lucide-react';
+import { AlertTriangle, MapPin } from 'lucide-react';
 import Badge from '../Badge';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import Pagination from '../Pagination';
 import { DAMAGE_TYPE_META } from '../../../mocks/admin/constants';
-import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../../api/enumMapping';
+import { SEVERITY_TO_UI } from '../../../api/enumMapping';
 
 const STATUS_TABS = [
   { key: 'all', label: '전체' },
@@ -45,6 +45,7 @@ const PAGE_SIZE = 15;
 
 export default function AdminReportsTable({
   loading,
+  error,
   reports,
   statusFilter,
   onStatusFilterChange,
@@ -75,7 +76,9 @@ export default function AdminReportsTable({
         ))}
       </div>
 
-      {loading ? (
+      {error ? (
+        <EmptyState icon={AlertTriangle} title="신고 목록을 불러오지 못했습니다" description={error.message} />
+      ) : loading ? (
         <LoadingState />
       ) : reports.length === 0 ? (
         <EmptyState title="조건에 맞는 신고가 없습니다" />

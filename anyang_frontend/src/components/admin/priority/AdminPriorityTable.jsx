@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { AlertTriangle, ChevronRight } from 'lucide-react';
 import Badge from '../Badge';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
@@ -15,7 +15,12 @@ function formatNumber(value) {
   return value == null ? '-' : Number(value).toFixed(2);
 }
 
-export default function AdminPriorityTable({ loading, roads, onRowClick }) {
+export default function AdminPriorityTable({ loading, error, roads, onRowClick }) {
+  if (error) {
+    return (
+      <EmptyState icon={AlertTriangle} title="구간 목록을 불러오지 못했습니다" description={error.message} />
+    );
+  }
   if (loading) return <LoadingState />;
   if (roads.length === 0) return <EmptyState title="조건에 맞는 구간이 없습니다" />;
 

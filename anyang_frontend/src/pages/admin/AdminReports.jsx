@@ -12,7 +12,7 @@ import { STATUS_TO_UI } from '../../api/enumMapping';
 
 export default function AdminReports() {
   const navigate = useNavigate();
-  const { data: reports, setData: setReports } = useAdminListQuery(fetchAllReports);
+  const { data: reports, setData: setReports, error } = useAdminListQuery(fetchAllReports);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
@@ -42,10 +42,14 @@ export default function AdminReports() {
   };
 
   const handleStatusChange = async (id, nextStatus) => {
-    await updateReportStatusAdmin(id, nextStatus);
-    setReports((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, status: nextStatus.toLowerCase() } : r))
-    );
+    try {
+      await updateReportStatusAdmin(id, nextStatus);
+      setReports((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: nextStatus.toLowerCase() } : r))
+      );
+    } catch (err) {
+      alert(err.message || '신고 상태 변경에 실패했습니다.');
+    }
   };
 
   return (
@@ -63,6 +67,7 @@ export default function AdminReports() {
       >
         <AdminReportsTable
           loading={!reports}
+          error={error}
           reports={filtered}
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilterAndResetPage}

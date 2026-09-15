@@ -5,17 +5,22 @@ import { useEffect, useState } from "react";
 // active 플래그로 경합 상태를 방지한다.
 export function useAdminListQuery(fetchFn) {
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let active = true;
-    fetchFn().then((result) => {
-      if (active) setData(result);
-    });
+    fetchFn()
+      .then((result) => {
+        if (active) setData(result);
+      })
+      .catch((err) => {
+        if (active) setError(err);
+      });
     return () => {
       active = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { data, setData, loading: data === null };
+  return { data, setData, loading: data === null && !error, error };
 }
