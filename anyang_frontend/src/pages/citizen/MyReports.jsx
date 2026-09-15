@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Camera,
   CheckCircle2,
@@ -16,27 +16,52 @@ import PageHeader from "../../components/citizen/PageHeader";
 import StatFilterCard from "../../components/citizen/my-reports/StatFilterCard";
 import ReportDetailModal from "../../components/citizen/my-reports/ReportDetailModal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
-import { MY_REPORTS } from "../../mocks/citizen/reportsData";
+import { getMyReports } from "../../api/report";
+import { SEVERITY_TO_UI, STATUS_TO_UI } from "../../api/enumMapping";
+
+function normalizeReport(dto) {
+  return {
+    id: dto.id,
+    type: dto.type,
+    severity: SEVERITY_TO_UI[dto.severity] ?? "low",
+    status: STATUS_TO_UI[dto.status] ?? "received",
+    address: dto.address,
+    reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",
+    description: dto.description,
+    aiConfidence: dto.aiConfidence != null ? Math.round(dto.aiConfidence) : null,
+    image: dto.images?.[0]?.imageUrl ?? "",
+  };
+}
 
 function MyReports() {
   const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedReport, setSelectedReport] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    getMyReports()
+      .then((data) => setReports(data.map(normalizeReport)))
+      .catch((err) => setError(err.message || "신고 목록을 불러오지 못했습니다."))
+      .finally(() => setLoading(false));
+  }, []);
 
   const counts = useMemo(() => {
     return {
-      all: MY_REPORTS.length,
-      received: MY_REPORTS.filter((r) => r.status === "received").length,
-      progress: MY_REPORTS.filter((r) => r.status === "progress").length,
-      done: MY_REPORTS.filter((r) => r.status === "done").length,
+      all: reports.length,
+      received: reports.filter((r) => r.status === "received").length,
+      progress: reports.filter((r) => r.status === "progress").length,
+      done: reports.filter((r) => r.status === "done").length,
     };
-  }, []);
+  }, [reports]);
 
   const filteredReports = useMemo(() => {
-    if (statusFilter === "all") return MY_REPORTS;
-    return MY_REPORTS.filter((r) => r.status === statusFilter);
-  }, [statusFilter]);
+    if (statusFilter === "all") return reports;
+    return reports.filter((r) => r.status === statusFilter);
+  }, [statusFilter, reports]);
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pt-[72px] text-left max-[768px]:pt-16">
@@ -153,7 +178,15 @@ function MyReports() {
           </div>
 
           <div className="flex flex-col gap-3">
-            {filteredReports.length === 0 ? (
+            {loading ? (
+              <div className="flex min-h-[280px] items-center justify-center text-slate-400 text-sm">
+                불러오는 중...
+              </div>
+            ) : error ? (
+              <div className="flex min-h-[280px] items-center justify-center text-red-500 text-sm">
+                {error}
+              </div>
+            ) : filteredReports.length === 0 ? (
               <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-center text-slate-400 shadow-sm">
                 <FileText size={42} />
                 <h3 className="mt-[14px] mb-[5px] text-sm font-medium text-slate-600">신고 내역이 없습니다.</h3>

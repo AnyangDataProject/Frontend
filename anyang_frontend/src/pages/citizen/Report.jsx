@@ -15,6 +15,9 @@ import { useMessageModal } from "../../hooks/useMessageModal";
 import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
 import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
+import { submitReport } from "../../api/report";
+import { SEVERITY_TO_BACKEND } from "../../api/enumMapping";
+
 
 const PAGE_ROOT = "min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left";
 
@@ -70,7 +73,9 @@ export default function Report() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const [reportId, setReportId] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (images.length === 0) {
@@ -93,12 +98,29 @@ export default function Report() {
       showError("신고 안내사항에 동의해주세요.");
       return;
     }
+    if (!markerPos) {
+      showError("지도에서 위치를 선택하거나 현재 위치를 불러와주세요.");
+      return;
+    }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      const id = await submitReport({
+        detail,
+        latitude: markerPos.lat,
+        longitude: markerPos.lng,
+        address,
+        damageType,
+        severity: SEVERITY_TO_BACKEND[severity],
+        images,
+      });
+      setReportId(id);
       setSubmitted(true);
-    }, 1200);
+    } catch (err) {
+      showError(err.message || "신고 접수 중 오류가 발생했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -118,7 +140,7 @@ export default function Report() {
             summary={
               <div className="flex flex-col gap-1.5 w-[250px] mx-auto p-[17px] border border-slate-200 rounded-xl shadow-sm bg-white text-center">
                 <span className="text-slate-400 text-xs">신고 접수번호</span>
-                <strong className="text-blue-600 text-base font-semibold tracking-[0.04em]">RS-202609-0009</strong>
+                <strong className="text-blue-600 text-base font-semibold tracking-[0.04em]">{reportId}</strong>
               </div>
             }
             secondaryAction={

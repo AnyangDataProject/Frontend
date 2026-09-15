@@ -10,6 +10,8 @@ import AiResultSection from "../../components/citizen/ai-analysis/AiResultSectio
 import DetailedAnalysisSection from "../../components/citizen/ai-analysis/DetailedAnalysisSection";
 import AiSummarySection from "../../components/citizen/ai-analysis/AiSummarySection";
 import ProcessingStatusSection from "../../components/citizen/ai-analysis/ProcessingStatusSection";
+import { useEffect, useState } from "react";
+import { getAiAnalysis } from "../../api/ai";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();
@@ -19,6 +21,15 @@ export default function AiAnalysis() {
   const report = location.state?.report;
 
   const selectedReport = report || fallbackReport;
+  const [detectionData, setDetectionData] = useState(null);
+
+  useEffect(() => {
+    if (!selectedReport?.id) return;
+
+    getAiAnalysis(selectedReport.id)
+      .then((data) => setDetectionData(data))
+      .catch(() => setDetectionData(null));
+  }, [selectedReport?.id]);
 
   const type = DAMAGE_TYPE_META[selectedReport.type];
   const severity = SEVERITY_META[selectedReport.severity];
@@ -26,8 +37,19 @@ export default function AiAnalysis() {
 
   const StatusIcon = status.icon;
 
-  // 실제 AI 모델 연동 전 사용할 Mock 분석 결과
-  const analysisResult = getMockAnalysis(selectedReport);
+  const mockResult = getMockAnalysis(selectedReport);
+
+  // 실제 탐지 결과가 있으면 병합, 없으면(fallback 신고이거나 API 실패 시) mock 그대로
+  const firstAnalysis = detectionData?.[0];
+
+  const analysisResult = {
+    ...mockResult,
+    confidence: selectedReport.aiConfidence != null
+      ? Math.round(selectedReport.aiConfidence)
+      : mockResult.confidence,
+    resultImageUrl: firstAnalysis?.resultImageUrl ?? null,
+    detections: firstAnalysis?.detections ?? [],
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left">
@@ -61,7 +83,11 @@ export default function AiAnalysis() {
         <ReportInfoSection report={selectedReport} status={status} StatusIcon={StatusIcon} />
 
         <section className="grid grid-cols-2 gap-[15px] mb-[15px] max-[700px]:grid-cols-1">
-          <AiVisionSection typeLabel={type.label} confidence={analysisResult.confidence} />
+          <AiVisionSection
+            typeLabel={type.label}
+            confidence={analysisResult.confidence}
+            resultImageUrl={analysisResult.resultImageUrl}
+          />
           <AiResultSection type={type} severity={severity} confidence={analysisResult.confidence} />
         </section>
 

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AuthContext } from './authContext';
 import { getTokenExpiryMs, isTokenExpired } from '../utils/jwt';
 
-function getStoredToken() {
+export function getStoredToken() {
   return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 }
 
