@@ -49,7 +49,7 @@ export default function AdminRoadDetail() {
         if (active) setLoading(false);
       });
 
-    fetchMonthlyDamage(cluster, 2026)
+    fetchMonthlyDamage(cluster, new Date().getFullYear())
       .then((data) => {
         if (active) setMonthlyDamage(data);
       })
