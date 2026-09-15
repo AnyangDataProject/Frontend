@@ -73,7 +73,9 @@ export default function AdminReportDetail() {
     setAdvancing(true);
     try {
       await updateReportStatusAdmin(report.id, nextStep.key);
-      setReport({ ...report, status: nextStep.key });
+      setReport({ ...report, status: nextStep.key.toLowerCase() });
+    } catch (err) {
+      alert(err.message || '신고 상태 변경에 실패했습니다.');
     } finally {
       setAdvancing(false);
     }
