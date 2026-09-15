@@ -8,7 +8,7 @@ import Badge from '../../components/admin/Badge';
 import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
-import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/admin';
+import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/inspectionClusters';
 
 const PRIORITY_GRADE_META = {
   최우선: { label: '최우선', tone: 'danger' },

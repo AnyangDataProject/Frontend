@@ -7,7 +7,8 @@ import AdminPriorityFilters from '../../components/admin/priority/AdminPriorityF
 import AdminPriorityTable from '../../components/admin/priority/AdminPriorityTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchPriorityClusters, fetchUnclassifiedReports } from '../../api/admin';
+import { fetchPriorityClusters } from '../../api/inspectionClusters';
+import { fetchUnclassifiedReports } from '../../api/report';
 
 export default function AdminPriority() {
   const navigate = useNavigate();

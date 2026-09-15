@@ -7,7 +7,7 @@ import AdminReportsFilters from '../../components/admin/reports/AdminReportsFilt
 import AdminReportsTable from '../../components/admin/reports/AdminReportsTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchAllReports, updateReportStatusAdmin } from '../../api/admin';
+import { fetchAllReports, updateReportStatusAdmin } from '../../api/report';
 import { STATUS_TO_UI } from '../../api/enumMapping';
 
 export default function AdminReports() {

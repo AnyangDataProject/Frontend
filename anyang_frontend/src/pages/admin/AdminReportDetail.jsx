@@ -17,7 +17,7 @@ import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
-import { fetchReportById, updateReportStatusAdmin } from '../../api/admin';
+import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
 import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
 import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
 
