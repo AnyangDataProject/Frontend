@@ -44,6 +44,7 @@ export default function AdminPriority() {
   const { data: roads, error: roadsError } = useListQuery(fetchPriorityClusters);
   const { data: unclassifiedReports, error: unclassifiedError } = useListQuery(fetchUnclassifiedReports);
   const [riskFilter, setRiskFilter] = useState('all');
+  const [districtFilter, setDistrictFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
 
   const gradeCounts = useMemo(() => {
@@ -57,8 +58,9 @@ export default function AdminPriority() {
   const filtered = useListFilter(roads, (road) => {
     const kw = keyword.trim().toLowerCase();
     const matchesRisk = riskFilter === 'all' || road.priorityGrade === riskFilter;
+    const matchesDistrict = districtFilter === 'all' || (road.roadAddress ?? '').includes(districtFilter);
     const matchesKeyword = !kw || (road.roadAddress ?? '').toLowerCase().includes(kw);
-    return matchesRisk && matchesKeyword;
+    return matchesRisk && matchesDistrict && matchesKeyword;
   });
 
   return (
@@ -88,6 +90,8 @@ export default function AdminPriority() {
             onKeywordChange={setKeyword}
             riskFilter={riskFilter}
             onRiskFilterChange={setRiskFilter}
+            districtFilter={districtFilter}
+            onDistrictFilterChange={setDistrictFilter}
           />
         }
       >
