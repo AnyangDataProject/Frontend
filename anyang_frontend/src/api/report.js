@@ -1,8 +1,14 @@
 import { apiRequest, apiRequestMultipart } from './client';
 
-// 백엔드가 파손 유형(type) 값을 대소문자 혼재로 내려줘서(POTHOLE / pothole) 소문자로 정규화
+// 백엔드가 type/severity/status 값을 대소문자 혼재로 내려줘서(POTHOLE/pothole, HIGH/high 등)
+// 프론트의 매핑 테이블(DAMAGE_TYPE_META, SEVERITY_TO_UI, STATUS_TO_UI)이 전부 소문자 키를 쓰는 것에 맞춰 정규화
 function normalizeReport(dto) {
-  return { ...dto, type: String(dto.type ?? '').toLowerCase() };
+  return {
+    ...dto,
+    type: String(dto.type ?? '').toLowerCase(),
+    severity: String(dto.severity ?? '').toLowerCase(),
+    status: String(dto.status ?? '').toLowerCase(),
+  };
 }
 
 export async function getMyReports() {
