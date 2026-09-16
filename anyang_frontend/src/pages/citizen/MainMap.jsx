@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LocateFixed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map } from "react-kakao-maps-sdk";
@@ -11,20 +11,17 @@ import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
 import { getMyReports } from "../../api/report";
 import { toReportViewModel } from "../../utils/reportViewModel";
+import { useListQuery } from "../../hooks/useListQuery";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
 export default function MainMap() {
-const [pins, setPins] = useState([]);
+  const { data: rawPins, error: pinsError } = useListQuery(getMyReports);
+  const pins = useMemo(() => (rawPins ?? []).map(toReportViewModel), [rawPins]);
 
-useEffect(() => {
-  getMyReports()
-    .then((data) => setPins(data.map(toReportViewModel)))
-    .catch((err) => {
-      console.error('신고 마커를 불러오지 못했습니다.', err);
-      setPins([]);
-    });
-}, []);
+  useEffect(() => {
+    if (pinsError) console.error('신고 마커를 불러오지 못했습니다.', pinsError);
+  }, [pinsError]);
 
   const navigate = useNavigate();
   const [listOpen, setListOpen] = useState(false);
