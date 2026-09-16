@@ -23,6 +23,11 @@ function formatScore(value) {
   return value == null ? '-' : Number(value).toFixed(2);
 }
 
+// 전 구간이 "경기도 안양시"라 반복돼서, 좁은 목록에서는 구/도로명만 보여준다.
+function shortenRoadAddress(address) {
+  return address?.replace(/^경기도\s*안양시\s*/, '') ?? '';
+}
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { data: summary } = useAdminListQuery(fetchDashboardSummary);
@@ -112,7 +117,7 @@ export default function AdminDashboard() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-medium text-slate-900">
-                          {cluster.roadAddress || '도로명 정보 없음'}
+                          {cluster.roadAddress ? shortenRoadAddress(cluster.roadAddress) : '도로명 정보 없음'}
                         </span>
                       </span>
                       <Badge tone={grade.tone} dot>
