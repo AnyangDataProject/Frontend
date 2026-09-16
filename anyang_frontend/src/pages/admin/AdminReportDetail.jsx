@@ -33,7 +33,7 @@ export default function AdminReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: report, setData: setReport, notFound } = useAdminDetailQuery(fetchReportById, id);
+  const { data: report, setData: setReport, notFound, error } = useAdminDetailQuery(fetchReportById, id);
   const [advancing, setAdvancing] = useState(false);
 
   if (notFound) {
@@ -41,6 +41,16 @@ export default function AdminReportDetail() {
       <AdminLayout title="신고 상세">
         <Card>
           <EmptyState title="존재하지 않는 신고입니다" description={`신고번호 #${id}를 찾을 수 없습니다.`} />
+        </Card>
+      </AdminLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminLayout title="신고 상세">
+        <Card>
+          <EmptyState title="신고 정보를 불러오지 못했습니다" description={error.message} />
         </Card>
       </AdminLayout>
     );
