@@ -8,6 +8,9 @@ import {
   Brain,
   ChevronRight,
   ExternalLink,
+  AlertTriangle,
+  Gauge,
+  FileText,
 } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
@@ -106,7 +109,7 @@ export default function AdminReportDetail() {
                 {report.images.map((img) => (
                   <img
                     key={img.id}
-                    src={img.resultImageUrl || img.imageUrl}
+                    src={img.imageUrl}
                     alt="신고 사진"
                     className="w-full rounded-lg border border-slate-200 object-cover"
                   />
@@ -144,6 +147,33 @@ export default function AdminReportDetail() {
                   <dd className="font-medium text-slate-800">{report.userName ?? '알 수 없음'}</dd>
                 </div>
               </div>
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={15} className="mt-0.5 shrink-0 text-slate-400" />
+                <div>
+                  <dt className="text-xs text-slate-400">파손 유형</dt>
+                  <dd className="font-medium text-slate-800">{damageType.label}</dd>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <Gauge size={15} className="mt-0.5 shrink-0 text-slate-400" />
+                <div>
+                  <dt className="mb-1 text-xs text-slate-400">파손 정도</dt>
+                  <dd>
+                    <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>
+                      {SEVERITY_UI_META[uiSeverity].label}
+                    </Badge>
+                  </dd>
+                </div>
+              </div>
+              {report.description && (
+                <div className="flex items-start gap-2">
+                  <FileText size={15} className="mt-0.5 shrink-0 text-slate-400" />
+                  <div>
+                    <dt className="text-xs text-slate-400">신고 내용</dt>
+                    <dd className="font-medium text-slate-800">{report.description}</dd>
+                  </div>
+                </div>
+              )}
               {report.inspectionClusterId && (
                 <button
                   onClick={() => navigate(`/admin/roads/${report.inspectionClusterId}`)}
@@ -166,30 +196,27 @@ export default function AdminReportDetail() {
               )
             }
           >
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              <div>
-                <p className="text-xs text-slate-400">파손 유형 (AI)</p>
-                <p className="mt-1 font-medium text-slate-900">{damageType.label}</p>
+            {report.images?.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {report.images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.resultImageUrl || img.imageUrl}
+                    alt="AI 분석 결과 이미지"
+                    className="w-full rounded-lg border border-slate-200 object-cover"
+                  />
+                ))}
               </div>
-              <div>
-                <p className="text-xs text-slate-400">파손 정도 (AI)</p>
-                <Badge tone={SEVERITY_UI_META[uiSeverity].tone} className="mt-1">
-                  {SEVERITY_UI_META[uiSeverity].label}
-                </Badge>
-              </div>
-              <div>
-                <p className="text-xs text-slate-400">탐지 신뢰도</p>
-                <p className="mt-1 font-medium text-slate-900">
-                  {report.aiConfidence != null ? `${Math.round(report.aiConfidence)}%` : '-'}
-                </p>
-              </div>
-            </div>
-
-            {report.description && (
-              <div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
-                {report.description}
-              </div>
+            ) : (
+              <PhotoPlaceholder seed={Number(report.id)} />
             )}
+
+            <div className="mt-4">
+              <p className="text-xs text-slate-400">탐지 신뢰도</p>
+              <p className="mt-1 font-medium text-slate-900">
+                {report.aiConfidence != null ? `${Math.round(report.aiConfidence)}%` : '-'}
+              </p>
+            </div>
           </Card>
         </div>
       </div>
