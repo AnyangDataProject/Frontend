@@ -62,20 +62,18 @@ export default function AdminPriority() {
       title="점검 우선순위"
       description="종합 위험도 점수가 높은 구간부터 우선적으로 점검하세요."
     >
-      {roads && (
-        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {GRADE_STAT_META.map((meta) => (
-            <StatCard
-              key={meta.key}
-              icon={meta.icon}
-              label={meta.label}
-              value={gradeCounts[meta.key]}
-              suffix="개 구간"
-              tone={meta.tone}
-            />
-          ))}
-        </div>
-      )}
+      <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {GRADE_STAT_META.map((meta) => (
+          <StatCard
+            key={meta.key}
+            icon={meta.icon}
+            label={meta.label}
+            value={roads ? gradeCounts[meta.key] : '-'}
+            suffix="개 구간"
+            tone={meta.tone}
+          />
+        ))}
+      </div>
 
       <Card
         bodyClassName="p-0"
