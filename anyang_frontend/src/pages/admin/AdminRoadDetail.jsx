@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Gauge, TrafficCone, FileWarning, Wrench } from 'lucide-react';
+import { ArrowLeft, Gauge, TrafficCone, FileWarning, Route, Wrench } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
@@ -9,17 +9,8 @@ import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/inspectionClusters';
-
-const PRIORITY_GRADE_META = {
-  최우선: { label: '최우선', tone: 'danger' },
-  우선: { label: '우선', tone: 'warning' },
-  관심: { label: '관심', tone: 'info' },
-  일반: { label: '일반', tone: 'success' },
-};
-
-function formatNumber(value) {
-  return value == null ? '-' : Number(value).toFixed(2);
-}
+import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
+import { formatDecimal } from '../../utils/number';
 
 function formatInteger(value) {
   return value == null ? '-' : Number(value).toLocaleString();
@@ -116,7 +107,7 @@ export default function AdminRoadDetail() {
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500">
           점검 우선순위 점수
-          <span className="text-2xl font-bold text-slate-900">{formatNumber(road.currentPriorityScore)}</span>
+          <span className="text-2xl font-bold text-slate-900">{formatDecimal(road.currentPriorityScore)}</span>
         </div>
       </div>
 
@@ -127,6 +118,12 @@ export default function AdminRoadDetail() {
 
         <Card title="현재 상태 요약">
           <dl className="flex h-full flex-col justify-between gap-4">
+            <div className="flex items-center justify-between">
+              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
+                <Route size={15} /> 분석 구간 수
+              </dt>
+              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.linkCount)}개</dd>
+            </div>
             <div className="flex items-center justify-between">
               <dt className="flex items-center gap-1.5 text-sm text-slate-500">
                 <FileWarning size={15} /> 시민 신고 건수
@@ -141,7 +138,7 @@ export default function AdminRoadDetail() {
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-sm text-slate-500">포트홀 비율</dt>
-              <dd className="text-sm font-semibold text-slate-900">{formatNumber(road.potholeRatio)}%</dd>
+              <dd className="text-sm font-semibold text-slate-900">{formatDecimal(road.potholeRatio)}%</dd>
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-sm text-slate-500">전체 순위</dt>
@@ -155,14 +152,14 @@ export default function AdminRoadDetail() {
         <Card title="평균 속도">
           <p className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
             <Gauge size={18} className="text-blue-500" />
-            {formatNumber(road.avgSpeed)}
+            {formatDecimal(road.avgSpeed)}
             <span className="text-sm font-normal text-slate-400">km/h</span>
           </p>
         </Card>
 
         <Card title="평균 통행 시간">
           <p className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            {formatNumber(road.avgTravelTime)}
+            {formatDecimal(road.avgTravelTime)}
             <span className="text-sm font-normal text-slate-400">초</span>
           </p>
         </Card>
@@ -170,11 +167,11 @@ export default function AdminRoadDetail() {
         <Card title="혼잡도">
           <div className="flex items-center gap-2 text-sm text-slate-600">
             <TrafficCone size={18} className="text-blue-500" />
-            정체 구간 비율 {formatNumber(road.congestionRatio)}%
+            정체 구간 비율 {formatDecimal(road.congestionRatio)}%
           </div>
           <p className="mt-1 text-xs text-slate-400">
-            지체·정체 구간 비율 {formatNumber(road.delayCongestionRatio)}% · 교통정보 확보율{' '}
-            {formatNumber(road.trafficDataCoverage)}%
+            지체·정체 구간 비율 {formatDecimal(road.delayCongestionRatio)}% · 교통정보 확보율{' '}
+            {formatDecimal(road.trafficDataCoverage)}%
           </p>
         </Card>
       </div>
@@ -190,7 +187,7 @@ export default function AdminRoadDetail() {
               />
             </div>
             <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
-              {formatNumber(road.damageScore)}
+              {formatDecimal(road.damageScore)}
             </span>
           </div>
 
@@ -203,7 +200,7 @@ export default function AdminRoadDetail() {
               />
             </div>
             <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
-              {formatNumber(road.trafficScore)}
+              {formatDecimal(road.trafficScore)}
             </span>
           </div>
         </div>
@@ -211,7 +208,7 @@ export default function AdminRoadDetail() {
         <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
           <span className="text-slate-500">최종 점검 우선순위 점수</span>
           <strong className="text-lg text-slate-900">
-            {formatNumber(road.currentPriorityScore)} <span className="text-xs font-normal text-slate-400">/ 100</span>
+            {formatDecimal(road.currentPriorityScore)} <span className="text-xs font-normal text-slate-400">/ 100</span>
           </strong>
         </div>
       </Card>
