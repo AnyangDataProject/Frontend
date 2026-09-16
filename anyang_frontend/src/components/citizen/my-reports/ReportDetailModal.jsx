@@ -38,12 +38,12 @@ export default function ReportDetailModal({ report, onClose }) {
 
           <ReportStatusSteps status={report.status} />
 
-          <div className="mb-5 grid grid-cols-4 overflow-hidden rounded-xl border border-slate-200 bg-white max-[800px]:grid-cols-2">
-            <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-b">
+          <div className="mb-5 grid grid-cols-3 overflow-hidden rounded-xl border border-slate-200 bg-white max-[800px]:grid-cols-1">
+            <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-b max-[800px]:border-r-0">
               <span className="text-xs font-medium text-slate-500">파손 유형</span>
               <strong className="text-sm font-medium text-slate-900">{typeLabel}</strong>
             </div>
-            <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-r-0 max-[800px]:border-b">
+            <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left max-[800px]:border-b max-[800px]:border-r-0">
               <span className="text-xs font-medium text-slate-500">위험도</span>
               <strong
                 className="text-sm font-medium"
@@ -52,15 +52,9 @@ export default function ReportDetailModal({ report, onClose }) {
                 {SEVERITY_META[report.severity].label}
               </strong>
             </div>
-            <div className="flex flex-col gap-1.5 border-r border-slate-200 p-4 text-left">
+            <div className="flex flex-col gap-1.5 p-4 text-left">
               <span className="text-xs font-medium text-slate-500">신고일</span>
               <strong className="text-sm font-medium text-slate-900">{report.reportedAt}</strong>
-            </div>
-            <div className="flex flex-col gap-1.5 p-4 text-left">
-              <span className="text-xs font-medium text-slate-500">AI 분석 신뢰도</span>
-              <strong className="text-sm font-medium text-slate-900">
-                {report.aiConfidence != null ? `${report.aiConfidence}%` : '탐지 없음'}
-              </strong>
             </div>
           </div>
 
