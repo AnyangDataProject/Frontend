@@ -72,6 +72,7 @@ export default function MainMapListPanel({
         {pins.map((pin) => {
           const sev = SEVERITY_META[pin.severity];
           const st = REPORT_STATUS_META[pin.status];
+          const damageType = DAMAGE_TYPE_META[pin.type] ?? { label: pin.type ?? '-' };
           return (
             <button
               key={pin.id}
@@ -81,7 +82,7 @@ export default function MainMapListPanel({
               <span className="w-2.5 h-2.5 rounded-full mt-[5px] shrink-0" style={{ background: sev.dotColor }} />
               <div className="flex-1 min-w-0">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-semibold text-slate-900">{DAMAGE_TYPE_META[pin.type].label}</span>
+                  <span className="font-semibold text-slate-900">{damageType.label}</span>
                   <span style={{ color: sev.dotColor, fontWeight: 700 }}>{sev.label}</span>
                 </div>
                 <div className="text-xs text-slate-500 mt-1">{pin.address}</div>

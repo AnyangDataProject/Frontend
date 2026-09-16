@@ -9,6 +9,7 @@ export default function MainMapOverlays({ pins, layer, selectedPin, onSelectPin,
     if (layer !== "current") return null;
     return pins.map((pin) => {
       const sev = SEVERITY_META[pin.severity];
+      const damageType = DAMAGE_TYPE_META[pin.type] ?? { label: pin.type ?? '-' };
       return (
         <CustomOverlayMap key={pin.id} position={{ lat: pin.lat, lng: pin.lng }} xAnchor={0.5} yAnchor={0.5}>
           <button
@@ -20,7 +21,7 @@ export default function MainMapOverlays({ pins, layer, selectedPin, onSelectPin,
               e.stopPropagation();
               onSelectPin(pin);
             }}
-            aria-label={`${DAMAGE_TYPE_META[pin.type].label} - ${sev.label} - ${pin.address}`}
+            aria-label={`${damageType.label} - ${sev.label} - ${pin.address}`}
           />
         </CustomOverlayMap>
       );

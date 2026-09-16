@@ -2,6 +2,8 @@ import Modal from "../../common/Modal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
 
 export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
+  const damageType = DAMAGE_TYPE_META[pin?.type] ?? { label: pin?.type ?? '-' };
+
   return (
     <Modal open={!!pin} onClose={onClose} className="px-[22px] pt-14 pb-5">
       {pin && (
@@ -11,14 +13,14 @@ export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
               <img
                 className="w-full h-full object-cover"
                 src={pin.photoUrl}
-                alt={`${DAMAGE_TYPE_META[pin.type].label} 현장 사진`}
+                alt={`${damageType.label} 현장 사진`}
               />
             ) : (
               <span className="text-xs text-slate-500">사진 없음</span>
             )}
           </div>
 
-          <div className="text-lg font-semibold text-slate-900 mt-0.5">{DAMAGE_TYPE_META[pin.type].label}</div>
+          <div className="text-lg font-semibold text-slate-900 mt-0.5">{damageType.label}</div>
           <div className="text-sm text-slate-500 mb-3.5">{pin.address}</div>
 
           <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">

@@ -17,7 +17,8 @@ function toMapPin(dto) {
     id: dto.id,
     lat: Number(dto.latitude),
     lng: Number(dto.longitude),
-    type: dto.type,
+    // 백엔드 응답의 type 대소문자가 일정하지 않아(POTHOLE / pothole 혼재) 소문자로 정규화
+    type: String(dto.type ?? '').toLowerCase(),
     severity: SEVERITY_TO_UI[dto.severity] ?? "low",
     status: STATUS_TO_UI[dto.status] ?? "received",
     address: dto.address,
