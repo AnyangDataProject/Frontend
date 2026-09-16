@@ -33,7 +33,7 @@ export default function ReportDetailModal({ report, onClose }) {
         {/* 이미지를 컨텐츠 안쪽에 배치해 하단 요소들과 좌우 여백을 일치시킴 */}
         <div className="flex-1 overflow-y-auto p-6 text-left max-[520px]:p-4">
           <div className="mb-5 h-[220px] w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-100 max-[520px]:mb-4 max-[520px]:h-[200px] max-[520px]:rounded-none">
-            <img src={report.image} alt="신고 사진" className="block h-full w-full object-cover" />
+            <img src={report.imageUrl} alt="신고 사진" className="block h-full w-full object-cover" />
           </div>
 
           <ReportStatusSteps status={report.status} />

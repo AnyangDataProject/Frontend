@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Camera,
   CheckCircle2,
@@ -17,38 +17,16 @@ import StatFilterCard from "../../components/citizen/my-reports/StatFilterCard";
 import ReportDetailModal from "../../components/citizen/my-reports/ReportDetailModal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
 import { getMyReports } from "../../api/report";
-import { SEVERITY_TO_UI, STATUS_TO_UI } from "../../api/enumMapping";
-
-function normalizeReport(dto) {
-  return {
-    id: dto.id,
-    type: dto.type,
-    severity: SEVERITY_TO_UI[dto.severity] ?? "low",
-    status: STATUS_TO_UI[dto.status] ?? "received",
-    address: dto.address,
-    reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",
-    description: dto.description,
-    aiConfidence: dto.aiConfidence != null ? Math.round(dto.aiConfidence) : null,
-    image: dto.images?.[0]?.imageUrl ?? "",
-    resultImageUrl: dto.images?.[0]?.resultImageUrl ?? null,
-  };
-}
+import { toReportViewModel } from "../../utils/reportViewModel";
+import { useListQuery } from "../../hooks/useListQuery";
 
 function MyReports() {
   const navigate = useNavigate();
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedReport, setSelectedReport] = useState(null);
-  const [reports, setReports] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    getMyReports()
-      .then((data) => setReports(data.map(normalizeReport)))
-      .catch((err) => setError(err.message || "신고 목록을 불러오지 못했습니다."))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: rawReports, loading, error } = useListQuery(getMyReports);
+  const reports = useMemo(() => (rawReports ?? []).map(toReportViewModel), [rawReports]);
 
   const counts = useMemo(() => {
     return {
@@ -185,7 +163,7 @@ function MyReports() {
               </div>
             ) : error ? (
               <div className="flex min-h-[280px] items-center justify-center text-red-500 text-sm">
-                {error}
+                {error.message || "신고 목록을 불러오지 못했습니다."}
               </div>
             ) : filteredReports.length === 0 ? (
               <div className="flex min-h-[280px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white text-center text-slate-400 shadow-sm">
@@ -208,7 +186,7 @@ function MyReports() {
                     onClick={() => setSelectedReport(report)}
                   >
                     <div className="relative min-h-[174px] overflow-hidden bg-slate-100 max-[800px]:min-h-[180px] max-[520px]:min-h-[170px]">
-                      <img src={report.image} alt={type.label} className="block h-full w-full object-cover" />
+                      <img src={report.imageUrl} alt={type.label} className="block h-full w-full object-cover" />
                       <span
                         className="absolute left-[10px] top-[10px] flex items-center gap-[5px] rounded-md px-[9px] py-[5px] text-xs font-semibold text-slate-900 backdrop-blur-sm"
                         style={{

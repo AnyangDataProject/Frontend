@@ -9,10 +9,10 @@ export default function MainMapDetailModal({ pin, onClose }) {
       {pin && (
         <>
           <div className="w-full h-40 rounded-xl bg-slate-50 mb-3.5 overflow-hidden flex items-center justify-center border border-slate-200">
-            {pin.photoUrl ? (
+            {pin.imageUrl ? (
               <img
                 className="w-full h-full object-cover"
-                src={pin.photoUrl}
+                src={pin.imageUrl}
                 alt={`${damageType.label} 현장 사진`}
               />
             ) : (

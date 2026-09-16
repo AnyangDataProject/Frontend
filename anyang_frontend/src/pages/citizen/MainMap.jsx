@@ -10,24 +10,7 @@ import MainMapDetailModal from "../../components/citizen/main-map/MainMapDetailM
 import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
 import { getMyReports } from "../../api/report";
-import { SEVERITY_TO_UI, STATUS_TO_UI } from "../../api/enumMapping";
-
-function toMapPin(dto) {
-  return {
-    id: dto.id,
-    lat: Number(dto.latitude),
-    lng: Number(dto.longitude),
-    type: dto.type,
-    severity: SEVERITY_TO_UI[dto.severity] ?? "low",
-    status: STATUS_TO_UI[dto.status] ?? "received",
-    address: dto.address,
-    description: dto.description,
-    aiConfidence: dto.aiConfidence, 
-    reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",   
-    reporter: dto.userName,
-    photoUrl: dto.images?.[0]?.imageUrl ?? "",
-  };
-}
+import { toReportViewModel } from "../../utils/reportViewModel";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
@@ -36,7 +19,7 @@ const [pins, setPins] = useState([]);
 
 useEffect(() => {
   getMyReports()
-    .then((data) => setPins(data.map(toMapPin)))
+    .then((data) => setPins(data.map(toReportViewModel)))
     .catch((err) => {
       console.error('신고 마커를 불러오지 못했습니다.', err);
       setPins([]);
