@@ -30,6 +30,7 @@ function normalizeReport(dto) {
     description: dto.description,
     aiConfidence: dto.aiConfidence != null ? Math.round(dto.aiConfidence) : null,
     image: dto.images?.[0]?.imageUrl ?? "",
+    resultImageUrl: dto.images?.[0]?.resultImageUrl ?? null,
   };
 }
 

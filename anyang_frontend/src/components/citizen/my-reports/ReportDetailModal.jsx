@@ -86,26 +86,21 @@ export default function ReportDetailModal({ report, onClose }) {
               AI 분석 결과
             </div>
 
-            <div className="mb-3 grid grid-cols-3 gap-2.5 max-[800px]:grid-cols-1">
-              <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
-                <span className="text-xs font-medium text-slate-500">파손 유형</span>
-                <strong className="text-sm font-semibold text-slate-900">{typeLabel}</strong>
+            {report.resultImageUrl && (
+              <div className="mb-3 h-[180px] w-full overflow-hidden rounded-lg border border-blue-100 bg-white">
+                <img
+                  src={report.resultImageUrl}
+                  alt="AI 분석 결과 이미지"
+                  className="block h-full w-full object-cover"
+                />
               </div>
-              <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
-                <span className="text-xs font-medium text-slate-500">위험도</span>
-                <strong
-                  className="text-sm font-semibold"
-                  style={{ color: SEVERITY_META[report.severity].color }}
-                >
-                  {SEVERITY_META[report.severity].label}
-                </strong>
-              </div>
-              <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
-                <span className="text-xs font-medium text-slate-500">분석 신뢰도</span>
-                <strong className="text-sm font-semibold text-slate-900">
-                  {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
-                </strong>
-              </div>
+            )}
+
+            <div className="mb-3 rounded-lg border border-blue-100 bg-white p-3 text-left">
+              <span className="text-xs font-medium text-slate-500">분석 신뢰도</span>
+              <strong className="block text-sm font-semibold text-slate-900">
+                {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
+              </strong>
             </div>
 
             <p className="text-xs leading-[1.6] text-slate-400">
