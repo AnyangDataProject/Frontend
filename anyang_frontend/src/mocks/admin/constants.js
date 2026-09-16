@@ -25,6 +25,9 @@ export const REPORT_STATUS_META = {
 };
 
 export const DAMAGE_TYPE_META = {
+  longitudinal_crack: { label: '종방향 균열', icon: Construction },
+  transverse_crack: { label: '횡방향 균열', icon: Construction },
+  alligator_crack: { label: '거북등 균열', icon: Construction },
   pothole: { label: '포트홀', icon: CircleDot },
   crack: { label: '노면 균열', icon: Construction },
   subsidence: { label: '도로 침하', icon: TrendingDown },
