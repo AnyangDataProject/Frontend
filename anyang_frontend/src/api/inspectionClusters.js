@@ -10,5 +10,5 @@ export function fetchMonthlyDamage(cluster, year) {
 
 export async function fetchPriorityClusters() {
   const data = await apiRequest('/api/admin/inspection-clusters');
-  return [...data].sort((a, b) => a.priorityRank - b.priorityRank);
+  return (data ?? []).slice().sort((a, b) => a.priorityRank - b.priorityRank);
 }
