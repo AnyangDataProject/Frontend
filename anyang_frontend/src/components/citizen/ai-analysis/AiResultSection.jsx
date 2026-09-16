@@ -24,19 +24,20 @@ export default function AiResultSection({ type, severity, confidence }) {
       <div className="mb-[18px]">
         <div className="flex justify-between mb-1.5 text-xs">
           <span className="text-slate-500">AI 분석 신뢰도</span>
-          <strong className="text-blue-600 font-semibold">{confidence}%</strong>
+          <strong className="text-blue-600 font-semibold">{confidence != null ? `${confidence}%` : '-'}</strong>
         </div>
 
         <div className="h-2 rounded-full bg-slate-50 overflow-hidden border border-slate-200">
           <div
             className="h-full rounded-full bg-blue-600"
-            style={{ width: `${confidence}%` }}
+            style={{ width: `${confidence ?? 0}%` }}
           />
         </div>
 
         <p className="mt-1.5 text-slate-400 text-xs">
-          AI 모델이 해당 파손 유형으로 판단할 가능성이
-          {` ${confidence}%`}입니다.
+          {confidence != null
+            ? `AI 모델이 해당 파손 유형으로 판단할 가능성이 ${confidence}%입니다.`
+            : 'AI 분석이 아직 완료되지 않았습니다. 잠시 후 다시 확인해주세요.'}
         </p>
       </div>
 

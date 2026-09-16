@@ -25,7 +25,7 @@ export default function AiVisionSection({ typeLabel, confidence }) {
             </span>
 
             <span className="text-slate-400 text-[9px]">
-              신뢰도 {confidence}%
+              신뢰도 {confidence != null ? `${confidence}%` : '분석 대기중'}
             </span>
           </div>
         </div>

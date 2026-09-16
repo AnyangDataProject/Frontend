@@ -30,10 +30,9 @@ export default function AiAnalysis() {
 
   const analysisResult = {
     ...mockResult,
-    confidence: selectedReport.aiConfidence != null
-      ? Math.round(selectedReport.aiConfidence)
-      : mockResult.confidence,
+    confidence: selectedReport.aiConfidence != null ? Math.round(selectedReport.aiConfidence) : null,
   };
+  const analysisDone = analysisResult.confidence != null;
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pt-[72px] max-[768px]:pt-16 text-left">
@@ -58,9 +57,15 @@ export default function AiAnalysis() {
             </p>
           </div>
 
-          <div className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium max-[700px]:mt-3">
+          <div
+            className={`shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium max-[700px]:mt-3 ${
+              analysisDone
+                ? 'bg-emerald-50 border border-emerald-100 text-emerald-700'
+                : 'bg-amber-50 border border-amber-100 text-amber-700'
+            }`}
+          >
             <BrainCircuit size={17} />
-            AI 분석 완료
+            {analysisDone ? 'AI 분석 완료' : 'AI 분석 대기중'}
           </div>
         </section>
 
