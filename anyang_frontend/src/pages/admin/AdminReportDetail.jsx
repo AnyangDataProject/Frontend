@@ -99,8 +99,8 @@ export default function AdminReportDetail() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-        <div className="flex flex-col gap-4 lg:col-span-2">
-          <Card title="신고 사진">
+        <div className="lg:col-span-2 lg:row-span-2">
+          <Card title="신고 사진" className="h-full">
             {report.images?.length > 0 ? (
               <div className="flex flex-col gap-2">
                 {report.images.map((img) => (
@@ -116,7 +116,9 @@ export default function AdminReportDetail() {
               <PhotoPlaceholder seed={Number(report.id)} />
             )}
           </Card>
+        </div>
 
+        <div className="lg:col-span-3">
           <Card title="신고 정보">
             <dl className="flex flex-col gap-3 text-sm">
               <div className="flex items-start gap-2">
@@ -154,7 +156,7 @@ export default function AdminReportDetail() {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-4 lg:col-span-3">
+        <div className="lg:col-span-3">
           <Card
             title="AI 분석 결과"
             description="AI 기반 자동 판정 결과입니다."
