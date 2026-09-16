@@ -266,7 +266,7 @@ function MyReports() {
                           <Sparkles size={14} className="shrink-0 text-blue-600" />
                           AI 분석 신뢰도{' '}
                           <strong className="text-slate-900">
-                            {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
+                            {report.aiConfidence != null ? `${report.aiConfidence}%` : '탐지 없음'}
                           </strong>
                         </div>
 

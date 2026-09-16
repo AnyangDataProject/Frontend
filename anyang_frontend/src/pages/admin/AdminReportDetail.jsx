@@ -213,9 +213,13 @@ export default function AdminReportDetail() {
 
             <div className="mt-4">
               <p className="text-xs text-slate-400">탐지 신뢰도</p>
-              <p className="mt-1 font-medium text-slate-900">
-                {report.aiConfidence != null ? `${Math.round(report.aiConfidence)}%` : '-'}
-              </p>
+              {report.aiConfidence != null ? (
+                <p className="mt-1 font-medium text-slate-900">{Math.round(report.aiConfidence)}%</p>
+              ) : (
+                <p className="mt-1 text-sm text-slate-500">
+                  AI가 파손을 탐지하지 못했습니다. (미지원 파손 유형이거나 탐지된 파손 없음)
+                </p>
+              )}
             </div>
           </Card>
         </div>

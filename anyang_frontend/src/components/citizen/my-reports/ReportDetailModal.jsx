@@ -59,7 +59,7 @@ export default function ReportDetailModal({ report, onClose }) {
             <div className="flex flex-col gap-1.5 p-4 text-left">
               <span className="text-xs font-medium text-slate-500">AI 분석 신뢰도</span>
               <strong className="text-sm font-medium text-slate-900">
-                {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
+                {report.aiConfidence != null ? `${report.aiConfidence}%` : '탐지 없음'}
               </strong>
             </div>
           </div>
@@ -98,14 +98,21 @@ export default function ReportDetailModal({ report, onClose }) {
 
             <div className="mb-3 rounded-lg border border-blue-100 bg-white p-3 text-left">
               <span className="text-xs font-medium text-slate-500">분석 신뢰도</span>
-              <strong className="block text-sm font-semibold text-slate-900">
-                {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
-              </strong>
+              {report.aiConfidence != null ? (
+                <strong className="block text-sm font-semibold text-slate-900">
+                  {report.aiConfidence}%
+                </strong>
+              ) : (
+                <strong className="block text-sm font-semibold text-slate-500">
+                  AI가 파손을 탐지하지 못했습니다.
+                </strong>
+              )}
             </div>
 
             <p className="text-xs leading-[1.6] text-slate-400">
-              AI 분석 결과는 도로 파손 여부와 위험도를 판단하기 위한 참고 정보이며, 최종
-              처리 여부는 담당 부서의 확인 후 결정됩니다.
+              {report.aiConfidence != null
+                ? 'AI 분석 결과는 도로 파손 여부와 위험도를 판단하기 위한 참고 정보이며, 최종 처리 여부는 담당 부서의 확인 후 결정됩니다.'
+                : 'AI가 지원하는 파손 유형이 아니거나 사진에서 파손이 탐지되지 않아 분석 결과가 없을 수 있습니다. 최종 처리 여부는 담당 부서의 확인 후 결정됩니다.'}
             </p>
           </div>
         </div>
