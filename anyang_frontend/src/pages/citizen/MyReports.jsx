@@ -1,24 +1,21 @@
 import { useMemo, useState } from "react";
-import {
-  Camera,
-  CheckCircle2,
-  Clock,
-  Wrench,
-  MapPin,
-  ChevronRight,
-  Sparkles,
-  CalendarDays,
-  FileText,
-} from "lucide-react";
+import { Camera, CheckCircle2, Clock, Wrench, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/citizen/BackButton";
 import PageHeader from "../../components/citizen/PageHeader";
 import StatFilterCard from "../../components/citizen/my-reports/StatFilterCard";
+import ReportCard from "../../components/citizen/my-reports/ReportCard";
 import ReportDetailModal from "../../components/citizen/my-reports/ReportDetailModal";
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
 import { getMyReports } from "../../api/report";
 import { toReportViewModel } from "../../utils/reportViewModel";
 import { useListQuery } from "../../hooks/useListQuery";
+
+const STATUS_FILTER_TABS = [
+  { value: "all", label: "전체" },
+  { value: "received", label: "접수됨" },
+  { value: "progress", label: "처리중" },
+  { value: "done", label: "완료" },
+];
 
 function MyReports() {
   const navigate = useNavigate();
@@ -121,38 +118,17 @@ function MyReports() {
             </div>
 
             <div className="flex items-center gap-[3px] rounded-lg bg-slate-100 p-[3px] max-[800px]:w-full">
-              <button
-                className={`rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-all max-[800px]:flex-1 ${
-                  statusFilter === "all" ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : ""
-                }`}
-                onClick={() => setStatusFilter("all")}
-              >
-                전체
-              </button>
-              <button
-                className={`rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-all max-[800px]:flex-1 ${
-                  statusFilter === "received" ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : ""
-                }`}
-                onClick={() => setStatusFilter("received")}
-              >
-                접수됨
-              </button>
-              <button
-                className={`rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-all max-[800px]:flex-1 ${
-                  statusFilter === "progress" ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : ""
-                }`}
-                onClick={() => setStatusFilter("progress")}
-              >
-                처리중
-              </button>
-              <button
-                className={`rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-all max-[800px]:flex-1 ${
-                  statusFilter === "done" ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : ""
-                }`}
-                onClick={() => setStatusFilter("done")}
-              >
-                완료
-              </button>
+              {STATUS_FILTER_TABS.map((tab) => (
+                <button
+                  key={tab.value}
+                  className={`rounded-md px-3 py-1.5 text-xs font-medium text-slate-500 transition-all max-[800px]:flex-1 ${
+                    statusFilter === tab.value ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(0,0,0,0.08)]" : ""
+                  }`}
+                  onClick={() => setStatusFilter(tab.value)}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -172,91 +148,9 @@ function MyReports() {
                 <p className="text-xs">아직 해당 상태의 신고가 없습니다.</p>
               </div>
             ) : (
-              filteredReports.map((report) => {
-                const type = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? "-", icon: FileText };
-                const severity = SEVERITY_META[report.severity];
-                const status = REPORT_STATUS_META[report.status];
-                const TypeIcon = type.icon;
-                const StatusIcon = status.icon;
-
-                return (
-                  <article
-                    className="grid min-h-[174px] cursor-pointer grid-cols-[190px_1fr] overflow-hidden rounded-xl border border-slate-200 bg-white text-left shadow-sm transition-colors hover:border-blue-300 max-[800px]:grid-cols-[135px_1fr] max-[520px]:grid-cols-[105px_1fr]"
-                    key={report.id}
-                    onClick={() => setSelectedReport(report)}
-                  >
-                    <div className="relative min-h-[174px] overflow-hidden bg-slate-100 max-[800px]:min-h-[180px] max-[520px]:min-h-[170px]">
-                      <img src={report.imageUrl} alt={type.label} className="block h-full w-full object-cover" />
-                      <span
-                        className="absolute left-[10px] top-[10px] flex items-center gap-[5px] rounded-md px-[9px] py-[5px] text-xs font-semibold text-slate-900 backdrop-blur-sm"
-                        style={{
-                          color: severity.color,
-                          backgroundColor: "rgba(255, 255, 255, 0.92)",
-                        }}
-                      >
-                        <span
-                          className="h-1.5 w-1.5 shrink-0 rounded-full"
-                          style={{ backgroundColor: severity.color }}
-                        />
-                        위험도 {severity.label}
-                      </span>
-                    </div>
-
-                    <div className="flex min-w-0 flex-col py-5 px-[22px] text-left max-[800px]:p-[15px] max-[520px]:p-3">
-                      <div className="mb-3 flex items-center justify-between gap-2.5 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-2">
-                        <div className="flex items-center gap-[9px]">
-                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                            <TypeIcon size={16} />
-                          </span>
-                          <strong className="text-sm font-semibold text-slate-900">
-                            {type.label}
-                          </strong>
-                        </div>
-
-                        <div
-                          className="inline-flex items-center gap-[5px] whitespace-nowrap rounded-md px-2.5 py-[5px] text-xs font-medium max-[800px]:self-start"
-                          style={{
-                            color: status.color,
-                            backgroundColor: `${status.color}1F`,
-                          }}
-                        >
-                          <StatusIcon size={15} />
-                          {status.label}
-                        </div>
-                      </div>
-
-                      <div className="mb-1.5 flex items-center gap-[5px] text-left text-sm font-medium text-slate-900 max-[520px]:items-start max-[520px]:leading-[1.4]">
-                        <MapPin size={15} className="shrink-0 text-blue-600" />
-                        {report.address}
-                      </div>
-
-                      <div className="flex items-center gap-[5px] text-left text-xs text-slate-400">
-                        <CalendarDays size={14} />
-                        신고일 {report.reportedAt}
-                      </div>
-
-                      <p className="my-[10px] mb-[14px] line-clamp-2 text-left text-xs leading-[1.6] text-slate-500 max-[800px]:hidden">
-                        {report.description}
-                      </p>
-
-                      <div className="mt-auto flex items-center justify-between max-[800px]:mt-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-2">
-                        <div className="flex items-center gap-[5px] text-xs text-slate-400">
-                          <Sparkles size={14} className="shrink-0 text-blue-600" />
-                          AI 분석 신뢰도{' '}
-                          <strong className="text-slate-900">
-                            {report.aiConfidence != null ? `${report.aiConfidence}%` : '탐지 없음'}
-                          </strong>
-                        </div>
-
-                        <span className="flex items-center gap-0.5 text-xs font-medium text-blue-600">
-                          상세보기
-                          <ChevronRight size={16} />
-                        </span>
-                      </div>
-                    </div>
-                  </article>
-                );
-              })
+              filteredReports.map((report) => (
+                <ReportCard key={report.id} report={report} onClick={() => setSelectedReport(report)} />
+              ))
             )}
           </div>
         </section>
