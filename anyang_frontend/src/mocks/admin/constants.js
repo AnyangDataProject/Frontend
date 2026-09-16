@@ -39,12 +39,6 @@ export const SEVERITY_META = {
   severe: { label: '심각', tone: 'danger' },
 };
 
-export const RISK_LEVEL_META = {
-  high: { label: 'HIGH', tone: 'danger' },
-  mid: { label: 'MID', tone: 'warning' },
-  low: { label: 'LOW', tone: 'success' },
-};
-
 export const TRAFFIC_LEVEL_META = {
   high: { label: '높음' },
   mid: { label: '보통' },

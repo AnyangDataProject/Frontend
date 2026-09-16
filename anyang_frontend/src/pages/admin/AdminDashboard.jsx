@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileWarning, Clock3, TriangleAlert, CheckCircle2, ChevronRight, Trophy } from 'lucide-react';
 
@@ -9,9 +10,10 @@ import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
-import { fetchDashboardSummary } from '../../mocks/admin/api';
+import { fetchAllReports } from '../../api/report';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
+import { STATUS_TO_UI } from '../../api/enumMapping';
 
 function formatScore(value) {
   return value == null ? '-' : Number(value).toFixed(2);
@@ -24,52 +26,91 @@ function shortenRoadAddress(address) {
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { data: summary } = useAdminListQuery(fetchDashboardSummary);
+  const { data: reports, error: reportsError } = useAdminListQuery(fetchAllReports);
   const { data: priorityClusters, error: priorityError } = useAdminListQuery(fetchPriorityClusters);
   const topPriorityClusters = priorityClusters?.slice(0, 5) ?? [];
 
-  if (!summary) {
-    return (
-      <AdminLayout title="대시보드" description="안양시 도로파손 신고 및 위험도 현황을 확인하세요.">
-        <LoadingState />
-      </AdminLayout>
-    );
-  }
+  const reportStats = useMemo(() => {
+    if (!reports) return null;
+    const doneCount = reports.filter((r) => STATUS_TO_UI[r.status] === 'done').length;
+    return {
+      total: reports.length,
+      unresolved: reports.length - doneCount,
+      resolutionRate: reports.length === 0 ? 0 : Math.round((doneCount / reports.length) * 100),
+    };
+  }, [reports]);
+
+  const highRiskRoadCount = priorityClusters?.filter((c) => c.priorityGrade === '최우선').length;
+
+  const mapPoints = useMemo(() => {
+    if (!priorityClusters) return [];
+    return priorityClusters.map((c) => ({
+      id: c.cluster,
+      lat: c.latitude,
+      lng: c.longitude,
+      label: shortenRoadAddress(c.roadAddress),
+      tone: (PRIORITY_GRADE_META[c.priorityGrade] ?? PRIORITY_GRADE_META.일반).tone,
+    }));
+  }, [priorityClusters]);
 
   return (
     <AdminLayout title="대시보드" description="안양시 도로파손 신고 및 위험도 현황을 확인하세요.">
+      {(reportsError || priorityError) && (
+        <p className="mb-4 text-sm text-red-500">
+          {reportsError && `신고 데이터를 불러오지 못했습니다. (${reportsError.message}) `}
+          {priorityError && `점검 우선순위 데이터를 불러오지 못했습니다. (${priorityError.message})`}
+        </p>
+      )}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard icon={FileWarning} label="전체 신고 건수" value={summary.totalReports} suffix="건" tone="info" />
+        <StatCard
+          icon={FileWarning}
+          label="전체 신고 건수"
+          value={reportStats ? reportStats.total : '-'}
+          suffix="건"
+          tone="info"
+        />
         <StatCard
           icon={Clock3}
           label="미처리 건수"
-          value={summary.unresolvedReports}
+          value={reportStats ? reportStats.unresolved : '-'}
           suffix="건"
           tone="warning"
-          hint="접수 · 담당부서확인 · 현장점검"
+          hint="접수 · 처리중"
         />
         <StatCard
           icon={TriangleAlert}
           label="고위험 구간 수"
-          value={summary.highRiskRoadCount}
+          value={highRiskRoadCount ?? '-'}
           suffix="곳"
           tone="danger"
+          hint="최우선 등급 구간"
         />
-        <StatCard icon={CheckCircle2} label="처리율" value={summary.resolutionRate} suffix="%" tone="success" />
+        <StatCard
+          icon={CheckCircle2}
+          label="처리율"
+          value={reportStats ? reportStats.resolutionRate : '-'}
+          suffix="%"
+          tone="success"
+        />
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
         <Card
           className="xl:col-span-2"
           title="위험 구간 지도"
-          description="파손 위험도에 따라 구간을 빨강(위험)·주황(점검필요)·초록(안전)으로 표시합니다."
+          description="점검 우선순위 등급이 높은 구간부터 지도에 표시합니다."
         >
-          <KakaoMap
-            points={summary.mapPoints}
-            onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
-            height={380}
-            level={8}
-          />
+          {priorityClusters ? (
+            <KakaoMap
+              points={mapPoints}
+              onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
+              height={380}
+              level={8}
+            />
+          ) : (
+            <LoadingState />
+          )}
         </Card>
 
         <Card

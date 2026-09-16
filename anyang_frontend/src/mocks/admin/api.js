@@ -2,11 +2,11 @@
 // 나중에 실제 백엔드가 준비되면 이 파일의 함수 내부만 실제 fetch(...) 호출로 교체하면 된다.
 // 호출부(컴포넌트)는 이 함수들의 시그니처만 알면 되도록 설계.
 
-import { REPORTS, getReportStats } from './reportsData';
-import { ROADS, getPriorityRoads, getRoadById as findRoadById, HIGH_RISK_ROAD_COUNT } from './roadsData';
+import { REPORTS } from './reportsData';
+import { getPriorityRoads, getRoadById as findRoadById } from './roadsData';
 import { MEMBERS, getMemberById as findMemberById } from './membersData';
 import { INQUIRIES } from './inquiriesData';
-import { REPORT_STATUS_STEPS, RISK_LEVEL_META } from './constants';
+import { REPORT_STATUS_STEPS } from './constants';
 
 const NETWORK_DELAY = 300;
 
@@ -35,30 +35,6 @@ function rebuildTimeline(status, previousTimeline) {
     // StatusTimeline이 체크 표시가 아닌 진행 중 링으로 구분해서 보여준다.
     const done = i < stageIndex || isFinalStage;
     return { key: step.key, label: step.label, at: nowStr, done };
-  });
-}
-
-// ---------- 대시보드 ----------
-
-export async function fetchDashboardSummary() {
-  const stats = getReportStats();
-  const priorityRoads = getPriorityRoads().slice(0, 5);
-
-  const mapPoints = ROADS.map((road) => ({
-    id: road.id,
-    lat: road.coordinate.lat,
-    lng: road.coordinate.lng,
-    label: road.name,
-    tone: RISK_LEVEL_META[road.riskLevel].tone,
-  }));
-
-  return delay({
-    totalReports: stats.total,
-    unresolvedReports: stats.unresolved,
-    highRiskRoadCount: HIGH_RISK_ROAD_COUNT,
-    resolutionRate: stats.resolutionRate,
-    topPriorityRoads: priorityRoads,
-    mapPoints,
   });
 }
 
