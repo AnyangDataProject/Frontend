@@ -11,6 +11,7 @@ import EmptyState from '../../components/admin/EmptyState';
 import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/inspectionClusters';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
 import { formatDecimal } from '../../utils/number';
+import { clusterToMapPoint } from '../../utils/clusterMapPoint';
 
 function formatInteger(value) {
   return value == null ? '-' : Number(value).toLocaleString();
@@ -55,15 +56,7 @@ export default function AdminRoadDetail() {
 
   const mapPoints = useMemo(() => {
     if (!road) return [];
-    return [
-      {
-        id: road.cluster,
-        lat: road.latitude,
-        lng: road.longitude,
-        label: road.roadAddress,
-        tone: (PRIORITY_GRADE_META[road.priorityGrade] ?? PRIORITY_GRADE_META.일반).tone,
-      },
-    ];
+    return [clusterToMapPoint(road)];
   }, [road]);
 
   if (notFound) {
