@@ -51,7 +51,6 @@ export default function AiAnalysis() {
       ? Math.round(selectedReport.aiConfidence)
       : mockResult.confidence,
     resultImageUrl: firstAnalysis?.resultImageUrl ?? null,
-    detections: firstAnalysis?.detections ?? [],
   };
 
   return (
