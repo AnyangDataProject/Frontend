@@ -10,20 +10,6 @@ export const ANYANG_BOUNDS = {
   maxLng: 127.008,
 };
 
-export const REPORT_STATUS_STEPS = [
-  { key: 'received', label: '신고접수' },
-  { key: 'assigned', label: '담당부서확인' },
-  { key: 'inspecting', label: '현장점검' },
-  { key: 'done', label: '처리완료' },
-];
-
-export const REPORT_STATUS_META = {
-  received: { label: '신고접수', tone: 'info' },
-  assigned: { label: '담당부서확인', tone: 'warning' },
-  inspecting: { label: '현장점검', tone: 'warning' },
-  done: { label: '처리완료', tone: 'success' },
-};
-
 export const DAMAGE_TYPE_META = {
   longitudinal_crack: { label: '종방향 균열', icon: Construction },
   transverse_crack: { label: '횡방향 균열', icon: Construction },
@@ -34,12 +20,6 @@ export const DAMAGE_TYPE_META = {
   manhole: { label: '맨홀 파손', icon: CircleAlert },
   sign: { label: '표지판 파손', icon: Signpost },
   lane: { label: '차선 마모', icon: Minus },
-};
-
-export const SEVERITY_META = {
-  minor: { label: '경미', tone: 'success' },
-  moderate: { label: '보통', tone: 'warning' },
-  severe: { label: '심각', tone: 'danger' },
 };
 
 export const TRAFFIC_LEVEL_META = {
@@ -56,8 +36,7 @@ export const CONGESTION_META = {
 };
 
 // 아래 세 개는 실제 백엔드 연동(클러스터 기반 점검 우선순위, 신고 UI 3단계) 이후
-// 여러 관리자 페이지에서 반복 정의되던 것을 여기로 모았다. 위의 SEVERITY_META,
-// REPORT_STATUS_META(4단계)는 목데이터 시절 값이라 스케일이 달라 이름을 분리했다.
+// 여러 관리자 페이지에서 반복 정의되던 것을 여기로 모았다.
 
 export const PRIORITY_GRADE_META = {
   최우선: { label: '최우선', tone: 'danger' },
