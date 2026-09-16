@@ -1,7 +1,7 @@
 import Modal from "../../common/Modal";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
 
-export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
+export default function MainMapDetailModal({ pin, onClose }) {
   const damageType = DAMAGE_TYPE_META[pin?.type] ?? { label: pin?.type ?? '-' };
 
   return (
@@ -35,17 +35,10 @@ export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
               {REPORT_STATUS_META[pin.status].label}
             </span>
           </div>
-          <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+          <div className="flex justify-between py-[9px] text-sm text-slate-900">
             <span className="text-slate-500">신고일</span>
             <span>{pin.reportedAt}</span>
           </div>
-
-          <button
-            className="w-full mt-[18px] bg-blue-600 text-white border-none py-[13px] rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 hover:bg-blue-700"
-            onClick={() => onViewAnalysis(pin)}
-          >
-            AI 분석 결과 자세히 보기
-          </button>
         </>
       )}
     </Modal>

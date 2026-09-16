@@ -1,6 +1,6 @@
 import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2 } from "lucide-react";
 
-// 파손 유형 (Report/MainMap/MyReports/AiAnalysis 공통)
+// 파손 유형 (Report/MainMap/MyReports 공통)
 export const DAMAGE_TYPE_META = {
   pothole: {
     label: "포트홀",

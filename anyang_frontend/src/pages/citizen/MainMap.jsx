@@ -164,11 +164,7 @@ useEffect(() => {
         />
       </div>
 
-      <MainMapDetailModal
-        pin={selected}
-        onClose={() => setSelected(null)}
-        onViewAnalysis={(pin) => navigate("/ai-analysis", { state: { report: pin } })}
-      />
+      <MainMapDetailModal pin={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
