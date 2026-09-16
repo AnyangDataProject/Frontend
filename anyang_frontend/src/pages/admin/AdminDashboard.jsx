@@ -101,7 +101,11 @@ export default function AdminDashboard() {
           title="위험 구간 지도"
           description="점검 우선순위 등급이 높은 구간부터 지도에 표시합니다."
         >
-          {priorityClusters ? (
+          {priorityError ? (
+            <p className="py-6 text-center text-sm text-red-500">
+              지도 데이터를 불러오지 못했습니다. ({priorityError.message})
+            </p>
+          ) : priorityClusters ? (
             <KakaoMap
               points={mapPoints}
               onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
