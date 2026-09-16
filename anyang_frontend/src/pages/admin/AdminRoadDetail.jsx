@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Car, Gauge, TrafficCone, FileWarning, Wrench, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Gauge, TrafficCone, FileWarning, Wrench } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
@@ -8,38 +8,69 @@ import Badge from '../../components/admin/Badge';
 import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
-import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
-import { fetchRoadById } from '../../mocks/admin/api';
-import {
-  CAUSE_FACTOR_LABEL,
-  CONGESTION_META,
-  RISK_LEVEL_META,
-  SEVERITY_META,
-  TRAFFIC_LEVEL_META,
-} from '../../mocks/admin/constants';
+import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/inspectionClusters';
 
-const CAUSE_BAR_COLOR = {
-  traffic: 'bg-blue-500',
-  rainfall: 'bg-sky-500',
-  temperature: 'bg-orange-500',
-  accidents: 'bg-red-500',
-  other: 'bg-slate-400',
+const PRIORITY_GRADE_META = {
+  최우선: { label: '최우선', tone: 'danger' },
+  우선: { label: '우선', tone: 'warning' },
+  관심: { label: '관심', tone: 'info' },
+  일반: { label: '일반', tone: 'success' },
 };
 
+function formatNumber(value) {
+  return value == null ? '-' : Number(value).toFixed(2);
+}
+
+function formatInteger(value) {
+  return value == null ? '-' : Number(value).toLocaleString();
+}
+
 export default function AdminRoadDetail() {
-  const { id } = useParams();
+  const { id: cluster } = useParams();
   const navigate = useNavigate();
-  const { data: road, notFound } = useAdminDetailQuery(fetchRoadById, id);
+
+  const [road, setRoad] = useState(null);
+  const [monthlyDamage, setMonthlyDamage] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!cluster) return;
+    let active = true;
+
+    fetchClusterDetail(cluster)
+      .then((data) => {
+        if (active) setRoad(data);
+      })
+      .catch(() => {
+        if (active) setNotFound(true);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    fetchMonthlyDamage(cluster, new Date().getFullYear())
+      .then((data) => {
+        if (active) setMonthlyDamage(data);
+      })
+      .catch(() => {
+        if (active) setMonthlyDamage([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [cluster]);
 
   const mapPoints = useMemo(() => {
     if (!road) return [];
     return [
       {
-        id: road.id,
-        lat: road.coordinate.lat,
-        lng: road.coordinate.lng,
-        label: road.name,
-        tone: RISK_LEVEL_META[road.riskLevel].tone,
+        id: road.cluster,
+        lat: road.latitude,
+        lng: road.longitude,
+        label: road.roadAddress,
+        tone: (PRIORITY_GRADE_META[road.priorityGrade] ?? PRIORITY_GRADE_META.일반).tone,
       },
     ];
   }, [road]);
@@ -54,7 +85,7 @@ export default function AdminRoadDetail() {
     );
   }
 
-  if (!road || road.id !== id) {
+  if (loading || !road) {
     return (
       <AdminLayout title="도로 상세 분석">
         <LoadingState />
@@ -62,7 +93,10 @@ export default function AdminRoadDetail() {
     );
   }
 
-  const maxYearlyCount = Math.max(...road.yearlyDamage.map((y) => y.count), 1);
+  const grade = PRIORITY_GRADE_META[road.priorityGrade] ?? PRIORITY_GRADE_META.일반;
+  const maxMonthlyCount = monthlyDamage?.length
+    ? Math.max(...monthlyDamage.map((m) => m.count), 1)
+    : 1;
 
   return (
     <AdminLayout>
@@ -75,136 +109,141 @@ export default function AdminRoadDetail() {
 
       <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-semibold text-slate-900">{road.name}</h1>
-          <span className="text-sm text-slate-400">{road.district}</span>
-          <Badge tone={RISK_LEVEL_META[road.riskLevel].tone} dot>
-            {RISK_LEVEL_META[road.riskLevel].label}
+          <h1 className="text-xl font-semibold text-slate-900">{road.roadAddress || '도로명 정보 없음'}</h1>
+          <Badge tone={grade.tone} dot>
+            {grade.label}
           </Badge>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-500">
-          종합 위험도 점수
-          <span className="text-2xl font-bold text-slate-900">{road.riskScore}</span>
+          점검 우선순위 점수
+          <span className="text-2xl font-bold text-slate-900">{formatNumber(road.currentPriorityScore)}</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <Card className="xl:col-span-2" title="구간 위치">
-          <KakaoMap points={mapPoints} selectedId={road.id} height={320} level={4} />
+          <KakaoMap points={mapPoints} selectedId={road.cluster} height={320} level={4} />
         </Card>
 
         <Card title="현재 상태 요약">
           <dl className="flex h-full flex-col justify-between gap-4">
             <div className="flex items-center justify-between">
               <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <FileWarning size={15} /> 최근 신고 건수
+                <FileWarning size={15} /> 시민 신고 건수
               </dt>
-              <dd className="text-sm font-semibold text-slate-900">{road.recentReportCount}건</dd>
+              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.reportCount)}건</dd>
             </div>
             <div className="flex items-center justify-between">
               <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <Wrench size={15} /> 현재 파손 건수
+                <Wrench size={15} /> 확인된 도로 파손
               </dt>
-              <dd className="text-sm font-semibold text-slate-900">{road.currentDamageCount}건</dd>
+              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.damageCount)}건</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-sm text-slate-500">파손 심각도</dt>
-              <dd>
-                <Badge tone={SEVERITY_META[road.currentDamageLevel].tone}>
-                  {SEVERITY_META[road.currentDamageLevel].label}
-                </Badge>
-              </dd>
+              <dt className="text-sm text-slate-500">포트홀 비율</dt>
+              <dd className="text-sm font-semibold text-slate-900">{formatNumber(road.potholeRatio)}%</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <TrendingUp size={15} /> 파손 발생 예측 확률
-              </dt>
-              <dd className="text-sm font-semibold text-slate-900">{road.damageForecastProb}%</dd>
+              <dt className="text-sm text-slate-500">전체 순위</dt>
+              <dd className="text-sm font-semibold text-slate-900">{road.priorityRank}위</dd>
             </div>
           </dl>
         </Card>
       </div>
 
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card title="평균 교통량">
-          <p className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
-            <Car size={18} className="text-blue-500" />
-            {road.avgTrafficVolume.toLocaleString()}
-            <span className="text-sm font-normal text-slate-400">대/일</span>
-          </p>
-          <p className="mt-1 text-xs text-slate-400">교통량 수준: {TRAFFIC_LEVEL_META[road.trafficLevel].label}</p>
-        </Card>
         <Card title="평균 속도">
           <p className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
             <Gauge size={18} className="text-blue-500" />
-            {road.avgSpeed}
+            {formatNumber(road.avgSpeed)}
             <span className="text-sm font-normal text-slate-400">km/h</span>
           </p>
         </Card>
+
+        <Card title="평균 통행 시간">
+          <p className="flex items-center gap-2 text-2xl font-semibold text-slate-900">
+            {formatNumber(road.avgTravelTime)}
+            <span className="text-sm font-normal text-slate-400">초</span>
+          </p>
+        </Card>
+
         <Card title="혼잡도">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
             <TrafficCone size={18} className="text-blue-500" />
-            <Badge tone={CONGESTION_META[road.congestion].tone}>{CONGESTION_META[road.congestion].label}</Badge>
+            정체 구간 비율 {formatNumber(road.congestionRatio)}%
           </div>
-          <p className="mt-1 text-xs text-slate-400">사고 이력 {road.accidentCount}건 · 시민신고 {road.citizenReportCount}건</p>
+          <p className="mt-1 text-xs text-slate-400">
+            지체·정체 구간 비율 {formatNumber(road.delayCongestionRatio)}% · 교통정보 확보율{' '}
+            {formatNumber(road.trafficDataCoverage)}%
+          </p>
         </Card>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card title="연도별 파손 이력">
-          <div className="flex h-48 gap-6 px-2">
-            {road.yearlyDamage.map((y) => (
-              <div key={y.year} className="flex flex-1 flex-col items-center gap-2">
-                <span className="text-sm font-semibold text-slate-700">{y.count}건</span>
-                <div className="flex w-full flex-1 items-end">
-                  <div
-                    className="w-full rounded-t-md bg-blue-500"
-                    style={{ height: `${(y.count / maxYearlyCount) * 100}%` }}
-                  />
-                </div>
-                <span className="text-xs text-slate-400">{y.year}</span>
-              </div>
-            ))}
+      <Card className="mt-4" title="점검 우선순위 산정 근거" description="파손 상태와 교통 부담을 종합하여 산정했습니다.">
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span className="w-24 shrink-0 text-xs font-medium text-slate-500">파손 심각도</span>
+            <div className="h-2 flex-1 rounded-full bg-slate-100">
+              <div
+                className="h-2 rounded-full bg-red-500"
+                style={{ width: `${Math.min(Math.max(road.damageScore || 0, 0), 50) * 2}%` }}
+              />
+            </div>
+            <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
+              {formatNumber(road.damageScore)}
+            </span>
           </div>
-        </Card>
 
-        <Card title="파손 발생 원인 분석" description="요인별 기여도 추정치">
-          <div className="flex flex-col gap-3">
-            {road.causeAnalysis.map((c) => (
-              <div key={c.factor} className="flex items-center gap-3">
-                <span className="w-16 shrink-0 text-xs font-medium text-slate-500">
-                  {CAUSE_FACTOR_LABEL[c.factor]}
-                </span>
+          <div className="flex items-center gap-3">
+            <span className="w-24 shrink-0 text-xs font-medium text-slate-500">교통 부담도</span>
+            <div className="h-2 flex-1 rounded-full bg-slate-100">
+              <div
+                className="h-2 rounded-full bg-blue-500"
+                style={{ width: `${(Math.min(Math.max(road.trafficScore || 0, 0), 30) / 30) * 100}%` }}
+              />
+            </div>
+            <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
+              {formatNumber(road.trafficScore)}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
+          <span className="text-slate-500">최종 점검 우선순위 점수</span>
+          <strong className="text-lg text-slate-900">
+            {formatNumber(road.currentPriorityScore)} <span className="text-xs font-normal text-slate-400">/ 100</span>
+          </strong>
+        </div>
+      </Card>
+
+      <Card
+        className="mt-4"
+        title="월별 도로 파손 현황"
+        description="해당 분석 구간 반경 150m 이내 시민 신고 기준"
+      >
+        {!monthlyDamage ? (
+          <LoadingState />
+        ) : monthlyDamage.length === 0 ? (
+          <EmptyState title="월별 파손 이력이 없습니다" />
+        ) : (
+          <div className="flex flex-col gap-2">
+            {monthlyDamage.map((item) => (
+              <div key={item.month} className="flex items-center gap-3">
+                <span className="w-10 shrink-0 text-xs text-slate-500">{item.month}월</span>
                 <div className="h-2 flex-1 rounded-full bg-slate-100">
                   <div
-                    className={`h-2 rounded-full ${CAUSE_BAR_COLOR[c.factor]}`}
-                    style={{ width: `${c.percent}%` }}
+                    className="h-2 rounded-full bg-blue-500"
+                    style={{ width: `${(item.count / maxMonthlyCount) * 100}%` }}
                   />
                 </div>
-                <span className="w-9 shrink-0 text-right text-xs font-semibold text-slate-700">{c.percent}%</span>
+                <span className="w-10 shrink-0 text-right text-xs font-semibold text-slate-700">
+                  {item.count}건
+                </span>
               </div>
             ))}
           </div>
-        </Card>
-      </div>
-
-      {road.relatedReports?.length > 0 && (
-        <Card className="mt-4" title="이 구간의 최근 신고" description={`총 ${road.relatedReports.length}건`}>
-          <ul className="flex flex-col divide-y divide-slate-100">
-            {road.relatedReports.slice(0, 5).map((r) => (
-              <li key={r.id}>
-                <button
-                  onClick={() => navigate(`/admin/reports/${r.id}`)}
-                  className="flex w-full items-center justify-between gap-3 py-2.5 text-left text-sm hover:bg-slate-50"
-                >
-                  <span className="font-medium text-slate-700">#{r.id}</span>
-                  <span className="flex-1 truncate text-slate-500">{r.address}</span>
-                  <span className="text-xs text-slate-400">{r.createdAt}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      )}
+        )}
+      </Card>
     </AdminLayout>
   );
 }

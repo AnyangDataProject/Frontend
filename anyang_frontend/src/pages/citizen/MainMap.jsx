@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import {useEffect, useMemo, useState } from "react";
 import { LocateFixed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map } from "react-kakao-maps-sdk";
@@ -7,13 +7,42 @@ import MainMapOverlays from "../../components/citizen/main-map/MainMapOverlays";
 import MainMapLegend from "../../components/citizen/main-map/MainMapLegend";
 import MainMapListPanel from "../../components/citizen/main-map/MainMapListPanel";
 import MainMapDetailModal from "../../components/citizen/main-map/MainMapDetailModal";
-import { MAP_PINS } from "../../mocks/citizen/reportsData";
 import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
+import { getMyReports } from "../../api/report";
+import { SEVERITY_TO_UI, STATUS_TO_UI } from "../../api/enumMapping";
+
+function toMapPin(dto) {
+  return {
+    id: dto.id,
+    lat: Number(dto.latitude),
+    lng: Number(dto.longitude),
+    type: dto.type,
+    severity: SEVERITY_TO_UI[dto.severity] ?? "low",
+    status: STATUS_TO_UI[dto.status] ?? "received",
+    address: dto.address,
+    description: dto.description,
+    aiConfidence: dto.aiConfidence, 
+    reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",   
+    reporter: dto.userName,
+    photoUrl: dto.images?.[0]?.imageUrl ?? "",
+  };
+}
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
 export default function MainMap() {
+const [pins, setPins] = useState([]);
+
+useEffect(() => {
+  getMyReports()
+    .then((data) => setPins(data.map(toMapPin)))
+    .catch((err) => {
+      console.error('신고 마커를 불러오지 못했습니다.', err);
+      setPins([]);
+    });
+}, []);
+
   const navigate = useNavigate();
   const [listOpen, setListOpen] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -27,20 +56,20 @@ export default function MainMap() {
 
   const counts = useMemo(
     () => ({
-      all: MAP_PINS.length,
-      open: MAP_PINS.filter((p) => p.status !== "done").length,
-      done: MAP_PINS.filter((p) => p.status === "done").length,
+      all: pins.length,
+      open: pins.filter((p) => p.status !== "done").length,
+      done: pins.filter((p) => p.status === "done").length,
     }),
-    []
+    [pins]
   );
 
   const filteredPins = useMemo(() => {
-    let list = MAP_PINS;
+    let list = pins;
     if (statusFilter === "open") list = list.filter((p) => p.status !== "done");
     if (statusFilter === "done") list = list.filter((p) => p.status === "done");
     if (typeFilter !== "all") list = list.filter((p) => p.type === typeFilter);
     return list;
-  }, [statusFilter, typeFilter]);
+  }, [statusFilter, typeFilter, pins]);
 
   const { searchAddress } = useKakaoGeocoder();
   const { requestLocation } = useCurrentLocation();
@@ -104,6 +133,7 @@ export default function MainMap() {
           >
             <MainMapOverlays
               layer={layer}
+              pins={filteredPins}
               selectedPin={selected}
               onSelectPin={setSelected}
               selectedRisk={selectedRisk}

@@ -2,12 +2,12 @@ import React, { useMemo } from "react";
 import { X } from "lucide-react";
 import { CustomOverlayMap, Polyline } from "react-kakao-maps-sdk";
 import { DAMAGE_TYPE_META, SEVERITY_META, ROAD_RISK_META } from "../../../mocks/citizen/constants";
-import { MAP_PINS, RISK_SEGMENTS } from "../../../mocks/citizen/reportsData";
+import { RISK_SEGMENTS } from "../../../mocks/citizen/reportsData";
 
-export default function MainMapOverlays({ layer, selectedPin, onSelectPin, selectedRisk, onSelectRisk }) {
+export default function MainMapOverlays({ pins, layer, selectedPin, onSelectPin, selectedRisk, onSelectRisk }) {
   const currentMarkers = useMemo(() => {
     if (layer !== "current") return null;
-    return MAP_PINS.map((pin) => {
+    return pins.map((pin) => {
       const sev = SEVERITY_META[pin.severity];
       return (
         <CustomOverlayMap key={pin.id} position={{ lat: pin.lat, lng: pin.lng }} xAnchor={0.5} yAnchor={0.5}>
@@ -25,7 +25,7 @@ export default function MainMapOverlays({ layer, selectedPin, onSelectPin, selec
         </CustomOverlayMap>
       );
     });
-  }, [layer, selectedPin, onSelectPin]);
+  }, [pins, layer, selectedPin, onSelectPin]);
 
   const predictionOverlays = useMemo(() => {
     if (layer !== "prediction") return null;

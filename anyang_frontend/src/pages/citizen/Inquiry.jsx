@@ -13,16 +13,18 @@ import InquirySubmittedView from "../../components/citizen/inquiry/InquirySubmit
 import MessageModal from "../../components/common/MessageModal";
 import { useMessageModal } from "../../hooks/useMessageModal";
 import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
+import { submitInquiry } from "../../api/inquiry";
+import { INQUIRY_TYPE_TO_BACKEND } from "../../api/enumMapping";
 
 function Inquiry() {
   const navigate = useNavigate();
-
   const [inquiryType, setInquiryType] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [email, setEmail] = useState("");
   const [agree, setAgree] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const { modal, showError, showInfo, close: closeModal } = useMessageModal();
   const { items: files, addFiles, removeItem: removeFile, clear: clearFiles } = useFileAttachments({ max: 5 });
 
@@ -33,7 +35,7 @@ function Inquiry() {
     });
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!inquiryType) {
@@ -57,7 +59,21 @@ function Inquiry() {
       return;
     }
 
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      await submitInquiry({
+        inquiryType: INQUIRY_TYPE_TO_BACKEND[inquiryType],
+        title,
+        content,
+        email,
+        files,
+      });
+      setSubmitted(true);
+    } catch (err) {
+      showError(err.message || "문의 접수 중 오류가 발생했습니다.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -118,10 +134,10 @@ function Inquiry() {
                 </button>
                 <button
                   type="submit"
-                  className="flex h-12 min-w-[145px] items-center justify-center gap-[7px] rounded-lg border-0 bg-blue-600 px-[22px] max-[650px]:flex-1 max-[650px]:px-2.5 font-[inherit] text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                >
+                  disabled={submitting}
+                  className="flex h-12 min-w-[145px] items-center justify-center gap-[7px] rounded-lg border-0 bg-blue-600 px-[22px] max-[650px]:flex-1 max-[650px]:px-2.5 font-[inherit] text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-70 disabled:cursor-not-allowed">
                   <Send size={17} />
-                  민원 · 문의 접수하기
+                  {submitting ? "접수 중..." : "민원 · 문의 접수하기"}
                 </button>
               </div>
             </form>

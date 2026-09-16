@@ -1,13 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   MapPin,
   CalendarDays,
   User,
-  Building2,
   Brain,
-  PencilLine,
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
@@ -18,44 +16,34 @@ import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
-import StatusTimeline from '../../components/admin/StatusTimeline';
-import ReportClassificationEditor from '../../components/admin/report-detail/ReportClassificationEditor';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
-import { fetchReportById, fetchRoadById, fetchMemberById, updateReportStatus } from '../../mocks/admin/api';
-import { DAMAGE_TYPE_META, REPORT_STATUS_STEPS, SEVERITY_META, REPORT_STATUS_META } from '../../mocks/admin/constants';
+import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
+import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
+import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
+
+const SEVERITY_META = {
+  low: { label: '낮음', tone: 'success' },
+  mid: { label: '보통', tone: 'warning' },
+  high: { label: '높음', tone: 'danger' },
+};
+
+const REPORT_STATUS_META = {
+  received: { label: '접수됨', tone: 'info' },
+  progress: { label: '처리중', tone: 'warning' },
+  done: { label: '처리완료', tone: 'success' },
+};
+
+const NEXT_STATUS = {
+  received: { key: 'CONFIRMED', label: '처리중' },
+  progress: { key: 'COMPLETED', label: '처리완료' },
+};
 
 export default function AdminReportDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data: report, setData: setReport, notFound } = useAdminDetailQuery(fetchReportById, id);
-  const [road, setRoad] = useState(null);
-  const [reporter, setReporter] = useState(null);
   const [advancing, setAdvancing] = useState(false);
-
-  useEffect(() => {
-    if (!report) return;
-    let active = true;
-    fetchRoadById(report.roadId).then((data) => {
-      if (active) setRoad(data);
-    });
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [report?.roadId]);
-
-  useEffect(() => {
-    if (!report) return;
-    let active = true;
-    fetchMemberById(report.reporterId).then((data) => {
-      if (active) setReporter(data);
-    });
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [report?.reporterId]);
 
   if (notFound) {
     return (
@@ -67,7 +55,7 @@ export default function AdminReportDetail() {
     );
   }
 
-  if (!report || report.id !== id) {
+  if (!report || String(report.id) !== String(id)) {
     return (
       <AdminLayout title="신고 상세">
         <LoadingState />
@@ -75,15 +63,22 @@ export default function AdminReportDetail() {
     );
   }
 
-  const currentIndex = REPORT_STATUS_STEPS.findIndex((s) => s.key === report.status);
-  const nextStep = REPORT_STATUS_STEPS[currentIndex + 1];
+  const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
+  const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
+  const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
+  const nextStep = NEXT_STATUS[uiStatus];
 
   const handleAdvance = async () => {
     if (!nextStep) return;
     setAdvancing(true);
-    const updated = await updateReportStatus(report.id, nextStep.key);
-    setReport(updated);
-    setAdvancing(false);
+    try {
+      await updateReportStatusAdmin(report.id, nextStep.key);
+      setReport({ ...report, status: nextStep.key.toLowerCase() });
+    } catch (err) {
+      alert(err.message || '신고 상태 변경에 실패했습니다.');
+    } finally {
+      setAdvancing(false);
+    }
   };
 
   return (
@@ -99,11 +94,9 @@ export default function AdminReportDetail() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold text-slate-900">신고 #{report.id}</h1>
-            <Badge tone={REPORT_STATUS_META[report.status].tone}>{REPORT_STATUS_META[report.status].label}</Badge>
+            <Badge tone={REPORT_STATUS_META[uiStatus].tone}>{REPORT_STATUS_META[uiStatus].label}</Badge>
           </div>
-          <p className="mt-1 text-sm text-slate-500">
-            {DAMAGE_TYPE_META[report.manualOverride?.type ?? report.type].label} 신고 상세 및 AI 검수
-          </p>
+          <p className="mt-1 text-sm text-slate-500">{damageType.label} 신고 상세 및 AI 검수</p>
         </div>
         {nextStep && (
           <button
@@ -117,14 +110,23 @@ export default function AdminReportDetail() {
         )}
       </div>
 
-      <Card className="mb-4" title="처리 진행 상태">
-        <StatusTimeline steps={report.timeline} currentKey={report.status} />
-      </Card>
-
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
         <div className="flex flex-col gap-4 lg:col-span-2">
           <Card title="신고 사진">
-            <PhotoPlaceholder seed={Number(report.id)} />
+            {report.images?.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {report.images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.resultImageUrl || img.imageUrl}
+                    alt="신고 사진"
+                    className="w-full rounded-lg border border-slate-200 object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <PhotoPlaceholder seed={Number(report.id)} />
+            )}
           </Card>
 
           <Card title="신고 정보">
@@ -140,29 +142,24 @@ export default function AdminReportDetail() {
                 <CalendarDays size={15} className="mt-0.5 shrink-0 text-slate-400" />
                 <div>
                   <dt className="text-xs text-slate-400">등록일</dt>
-                  <dd className="font-medium text-slate-800">{report.createdAt}</dd>
+                  <dd className="font-medium text-slate-800">
+                    {report.reportedAt ? report.reportedAt.slice(0, 10) : '-'}
+                  </dd>
                 </div>
               </div>
               <div className="flex items-start gap-2">
                 <User size={15} className="mt-0.5 shrink-0 text-slate-400" />
                 <div>
                   <dt className="text-xs text-slate-400">신고자</dt>
-                  <dd className="font-medium text-slate-800">{reporter?.name ?? '알 수 없음'}</dd>
+                  <dd className="font-medium text-slate-800">{report.userName ?? '알 수 없음'}</dd>
                 </div>
               </div>
-              <div className="flex items-start gap-2">
-                <Building2 size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="text-xs text-slate-400">담당 부서</dt>
-                  <dd className="font-medium text-slate-800">{report.department ?? '미배정'}</dd>
-                </div>
-              </div>
-              {road && (
+              {report.inspectionClusterId && (
                 <button
-                  onClick={() => navigate(`/admin/roads/${road.id}`)}
+                  onClick={() => navigate(`/admin/roads/${report.inspectionClusterId}`)}
                   className="mt-1 flex items-center gap-1 self-start text-xs font-medium text-blue-600 hover:text-blue-700"
                 >
-                  {road.name} 도로 상세 분석 보기 <ExternalLink size={12} />
+                  해당 구간 도로 상세 분석 보기 <ExternalLink size={12} />
                 </button>
               )}
             </dl>
@@ -174,43 +171,38 @@ export default function AdminReportDetail() {
             title="AI 분석 결과"
             description="YOLO 기반 자동 판정 결과입니다."
             actions={
-              <span className="flex items-center gap-1 text-xs font-medium text-blue-600">
-                <Brain size={13} /> 탐지 신뢰도 {report.aiConfidence}%
-              </span>
+              report.aiConfidence != null && (
+                <span className="flex items-center gap-1 text-xs font-medium text-blue-600">
+                  <Brain size={13} /> 탐지 신뢰도 {Math.round(report.aiConfidence)}%
+                </span>
+              )
             }
           >
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div>
                 <p className="text-xs text-slate-400">파손 유형 (AI)</p>
-                <p className="mt-1 font-medium text-slate-900">{DAMAGE_TYPE_META[report.type].label}</p>
+                <p className="mt-1 font-medium text-slate-900">{damageType.label}</p>
               </div>
               <div>
                 <p className="text-xs text-slate-400">파손 정도 (AI)</p>
-                <Badge tone={SEVERITY_META[report.severity].tone} className="mt-1">
-                  {SEVERITY_META[report.severity].label}
+                <Badge tone={SEVERITY_META[uiSeverity].tone} className="mt-1">
+                  {SEVERITY_META[uiSeverity].label}
                 </Badge>
               </div>
               <div>
                 <p className="text-xs text-slate-400">탐지 신뢰도</p>
-                <p className="mt-1 font-medium text-slate-900">{report.aiConfidence}%</p>
+                <p className="mt-1 font-medium text-slate-900">
+                  {report.aiConfidence != null ? `${Math.round(report.aiConfidence)}%` : '-'}
+                </p>
               </div>
             </div>
 
-            {report.manualOverride && (
-              <div className="mt-4 rounded-lg bg-blue-50 p-3 text-sm">
-                <p className="flex items-center gap-1 font-medium text-blue-700">
-                  <PencilLine size={13} /> 관리자 수정 결과 ({report.manualOverride.at})
-                </p>
-                <p className="mt-1 text-slate-700">
-                  {DAMAGE_TYPE_META[report.manualOverride.type].label} ·{' '}
-                  {SEVERITY_META[report.manualOverride.severity].label}
-                  {report.manualOverride.note && ` — ${report.manualOverride.note}`}
-                </p>
+            {report.description && (
+              <div className="mt-4 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+                {report.description}
               </div>
             )}
           </Card>
-
-          <ReportClassificationEditor key={report.id} report={report} onSaved={setReport} />
         </div>
       </div>
     </AdminLayout>

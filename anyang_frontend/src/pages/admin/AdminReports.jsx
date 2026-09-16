@@ -7,11 +7,12 @@ import AdminReportsFilters from '../../components/admin/reports/AdminReportsFilt
 import AdminReportsTable from '../../components/admin/reports/AdminReportsTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchReports, updateReportStatus } from '../../mocks/admin/api';
+import { fetchAllReports, updateReportStatusAdmin } from '../../api/report';
+import { STATUS_TO_UI } from '../../api/enumMapping';
 
 export default function AdminReports() {
   const navigate = useNavigate();
-  const { data: reports, setData: setReports } = useAdminListQuery(fetchReports);
+  const { data: reports, setData: setReports, error } = useAdminListQuery(fetchAllReports);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
@@ -19,9 +20,11 @@ export default function AdminReports() {
 
   const filtered = useListFilter(reports, (r) => {
     const kw = keyword.trim().toLowerCase();
-    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+    const uiStatus = STATUS_TO_UI[r.status] ?? 'received';
+    const matchesStatus = statusFilter === 'all' || uiStatus === statusFilter;
     const matchesType = typeFilter === 'all' || r.type === typeFilter;
-    const matchesKeyword = !kw || r.id.includes(kw) || r.address.toLowerCase().includes(kw);
+    const matchesKeyword =
+      !kw || String(r.id).includes(kw) || (r.address ?? '').toLowerCase().includes(kw);
     return matchesStatus && matchesType && matchesKeyword;
   });
 
@@ -39,8 +42,14 @@ export default function AdminReports() {
   };
 
   const handleStatusChange = async (id, nextStatus) => {
-    const updated = await updateReportStatus(id, nextStatus);
-    setReports((prev) => prev.map((r) => (r.id === id ? updated : r)));
+    try {
+      await updateReportStatusAdmin(id, nextStatus);
+      setReports((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: nextStatus.toLowerCase() } : r))
+      );
+    } catch (err) {
+      alert(err.message || '신고 상태 변경에 실패했습니다.');
+    }
   };
 
   return (
@@ -58,6 +67,7 @@ export default function AdminReports() {
       >
         <AdminReportsTable
           loading={!reports}
+          error={error}
           reports={filtered}
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilterAndResetPage}
