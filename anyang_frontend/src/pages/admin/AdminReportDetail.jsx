@@ -15,6 +15,7 @@ import {
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
+import InfoRow from '../../components/admin/InfoRow';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
@@ -121,55 +122,25 @@ export default function AdminReportDetail() {
 
           <Card title="신고 정보">
             <dl className="flex flex-col gap-3 text-sm">
-              <div className="flex items-start gap-2">
-                <MapPin size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="text-xs text-slate-400">신고 위치</dt>
-                  <dd className="font-medium text-slate-800">{report.address}</dd>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <CalendarDays size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="text-xs text-slate-400">등록일</dt>
-                  <dd className="font-medium text-slate-800">
-                    {report.reportedAt ? report.reportedAt.slice(0, 10) : '-'}
-                  </dd>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <User size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="text-xs text-slate-400">신고자</dt>
-                  <dd className="font-medium text-slate-800">{report.userName ?? '알 수 없음'}</dd>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <AlertTriangle size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="text-xs text-slate-400">파손 유형</dt>
-                  <dd className="font-medium text-slate-800">{damageType.label}</dd>
-                </div>
-              </div>
-              <div className="flex items-start gap-2">
-                <Gauge size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                <div>
-                  <dt className="mb-1 text-xs text-slate-400">파손 정도</dt>
-                  <dd>
-                    <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>
-                      {SEVERITY_UI_META[uiSeverity].label}
-                    </Badge>
-                  </dd>
-                </div>
-              </div>
+              <InfoRow icon={MapPin} label="신고 위치">
+                {report.address}
+              </InfoRow>
+              <InfoRow icon={CalendarDays} label="등록일">
+                {report.reportedAt ? report.reportedAt.slice(0, 10) : '-'}
+              </InfoRow>
+              <InfoRow icon={User} label="신고자">
+                {report.userName ?? '알 수 없음'}
+              </InfoRow>
+              <InfoRow icon={AlertTriangle} label="파손 유형">
+                {damageType.label}
+              </InfoRow>
+              <InfoRow icon={Gauge} label="파손 정도">
+                <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>{SEVERITY_UI_META[uiSeverity].label}</Badge>
+              </InfoRow>
               {report.description && (
-                <div className="flex items-start gap-2">
-                  <FileText size={15} className="mt-0.5 shrink-0 text-slate-400" />
-                  <div>
-                    <dt className="text-xs text-slate-400">신고 내용</dt>
-                    <dd className="font-medium text-slate-800">{report.description}</dd>
-                  </div>
-                </div>
+                <InfoRow icon={FileText} label="신고 내용">
+                  {report.description}
+                </InfoRow>
               )}
               {report.inspectionClusterId && (
                 <button
