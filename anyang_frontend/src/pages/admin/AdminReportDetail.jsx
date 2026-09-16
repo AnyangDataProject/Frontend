@@ -157,7 +157,7 @@ export default function AdminReportDetail() {
         <div className="flex flex-col gap-4 lg:col-span-3">
           <Card
             title="AI 분석 결과"
-            description="YOLO 기반 자동 판정 결과입니다."
+            description="AI 기반 자동 판정 결과입니다."
             actions={
               report.aiConfidence != null && (
                 <span className="flex items-center gap-1 text-xs font-medium text-blue-600">
