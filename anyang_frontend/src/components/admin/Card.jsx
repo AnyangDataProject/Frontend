@@ -10,7 +10,7 @@ export default function Card({ title, description, actions, children, className 
           {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className={`p-5 ${bodyClassName}`}>{children}</div>
+      <div className={bodyClassName || 'p-5'}>{children}</div>
     </section>
   );
 }
