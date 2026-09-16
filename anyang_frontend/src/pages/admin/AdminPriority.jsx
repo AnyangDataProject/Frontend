@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AlertOctagon, Clock3, Eye, CheckCircle2 } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
+import StatCard from '../../components/admin/StatCard';
 import AdminPriorityFilters from '../../components/admin/priority/AdminPriorityFilters';
 import AdminPriorityTable from '../../components/admin/priority/AdminPriorityTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
@@ -10,12 +12,27 @@ import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
 
+const GRADE_STAT_META = [
+  { key: '최우선', label: '최우선 점검', icon: AlertOctagon, tone: 'danger' },
+  { key: '우선', label: '우선 점검', icon: Clock3, tone: 'warning' },
+  { key: '관심', label: '관심 구간', icon: Eye, tone: 'info' },
+  { key: '일반', label: '일반 구간', icon: CheckCircle2, tone: 'success' },
+];
+
 export default function AdminPriority() {
   const navigate = useNavigate();
   const { data: roads, error: roadsError } = useAdminListQuery(fetchPriorityClusters);
   const { data: unclassifiedReports, error: unclassifiedError } = useAdminListQuery(fetchUnclassifiedReports);
   const [riskFilter, setRiskFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
+
+  const gradeCounts = useMemo(() => {
+    const counts = { 최우선: 0, 우선: 0, 관심: 0, 일반: 0 };
+    (roads ?? []).forEach((road) => {
+      if (counts[road.priorityGrade] != null) counts[road.priorityGrade] += 1;
+    });
+    return counts;
+  }, [roads]);
 
   const filtered = useListFilter(roads, (road) => {
     const kw = keyword.trim().toLowerCase();
@@ -29,6 +46,21 @@ export default function AdminPriority() {
       title="점검 우선순위"
       description="종합 위험도 점수가 높은 구간부터 우선적으로 점검하세요."
     >
+      {roads && (
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {GRADE_STAT_META.map((meta) => (
+            <StatCard
+              key={meta.key}
+              icon={meta.icon}
+              label={meta.label}
+              value={gradeCounts[meta.key]}
+              suffix="개 구간"
+              tone={meta.tone}
+            />
+          ))}
+        </div>
+      )}
+
       <Card
         bodyClassName="p-0"
         title={roads ? `총 ${roads.length}개 구간` : undefined}
