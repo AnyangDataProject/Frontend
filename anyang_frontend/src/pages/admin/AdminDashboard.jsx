@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileWarning, Clock3, TriangleAlert, CheckCircle2, ChevronRight, Trophy } from 'lucide-react';
 
@@ -8,14 +7,27 @@ import StatCard from '../../components/admin/StatCard';
 import KakaoMap from '../../components/admin/KakaoMap';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
+import EmptyState from '../../components/admin/EmptyState';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { fetchDashboardSummary } from '../../mocks/admin/api';
-import { RISK_LEVEL_META } from '../../mocks/admin/constants';
+import { fetchPriorityClusters } from '../../api/inspectionClusters';
+
+const PRIORITY_GRADE_META = {
+  최우선: { label: '최우선', tone: 'danger' },
+  우선: { label: '우선', tone: 'warning' },
+  관심: { label: '관심', tone: 'info' },
+  일반: { label: '일반', tone: 'success' },
+};
+
+function formatScore(value) {
+  return value == null ? '-' : Number(value).toFixed(2);
+}
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { data: summary } = useAdminListQuery(fetchDashboardSummary);
-  const [selectedRoadId, setSelectedRoadId] = useState(null);
+  const { data: priorityClusters, error: priorityError } = useAdminListQuery(fetchPriorityClusters);
+  const topPriorityClusters = priorityClusters?.slice(0, 5) ?? [];
 
   if (!summary) {
     return (
@@ -55,7 +67,6 @@ export default function AdminDashboard() {
         >
           <KakaoMap
             points={summary.mapPoints}
-            selectedId={selectedRoadId}
             onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
             height={380}
             level={8}
@@ -74,36 +85,48 @@ export default function AdminDashboard() {
             </button>
           }
         >
-          <ul className="flex flex-col divide-y divide-slate-100">
-            {summary.topPriorityRoads.map((road, i) => (
-              <li key={road.id}>
-                <button
-                  onClick={() => navigate(`/admin/roads/${road.id}`)}
-                  onMouseEnter={() => setSelectedRoadId(road.id)}
-                  onMouseLeave={() => setSelectedRoadId(null)}
-                  className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-slate-50"
-                >
-                  <span
-                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
-                      i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
-                    }`}
-                  >
-                    {i === 0 ? <Trophy size={14} /> : i + 1}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-slate-900">{road.name}</span>
-                    <span className="block text-xs text-slate-400">{road.district}</span>
-                  </span>
-                  <Badge tone={RISK_LEVEL_META[road.riskLevel].tone} dot>
-                    {RISK_LEVEL_META[road.riskLevel].label}
-                  </Badge>
-                  <span className="w-9 shrink-0 text-right text-sm font-semibold text-slate-700">
-                    {road.riskScore}
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          {priorityError ? (
+            <p className="py-6 text-center text-sm text-red-500">
+              점검 우선순위를 불러오지 못했습니다. ({priorityError.message})
+            </p>
+          ) : !priorityClusters ? (
+            <LoadingState />
+          ) : topPriorityClusters.length === 0 ? (
+            <EmptyState title="점검할 구간이 없습니다" />
+          ) : (
+            <ul className="flex flex-col divide-y divide-slate-100">
+              {topPriorityClusters.map((cluster, i) => {
+                const grade = PRIORITY_GRADE_META[cluster.priorityGrade] ?? PRIORITY_GRADE_META.일반;
+                return (
+                  <li key={cluster.cluster}>
+                    <button
+                      onClick={() => navigate(`/admin/roads/${cluster.cluster}`)}
+                      className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-slate-50"
+                    >
+                      <span
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
+                          i === 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        {i === 0 ? <Trophy size={14} /> : i + 1}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-medium text-slate-900">
+                          {cluster.roadAddress || '도로명 정보 없음'}
+                        </span>
+                      </span>
+                      <Badge tone={grade.tone} dot>
+                        {grade.label}
+                      </Badge>
+                      <span className="w-9 shrink-0 text-right text-sm font-semibold text-slate-700">
+                        {formatScore(cluster.currentPriorityScore)}
+                      </span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </Card>
       </div>
     </AdminLayout>
