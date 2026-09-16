@@ -14,10 +14,7 @@ import { fetchAllReports } from '../../api/report';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
 import { STATUS_TO_UI } from '../../api/enumMapping';
-
-function formatScore(value) {
-  return value == null ? '-' : Number(value).toFixed(2);
-}
+import { formatDecimal } from '../../utils/number';
 
 // 전 구간이 "경기도 안양시"라 반복돼서, 좁은 목록에서는 구/도로명만 보여준다.
 function shortenRoadAddress(address) {
@@ -167,7 +164,7 @@ export default function AdminDashboard() {
                         {grade.label}
                       </Badge>
                       <span className="w-9 shrink-0 text-right text-sm font-semibold text-slate-700">
-                        {formatScore(cluster.currentPriorityScore)}
+                        {formatDecimal(cluster.currentPriorityScore)}
                       </span>
                     </button>
                   </li>

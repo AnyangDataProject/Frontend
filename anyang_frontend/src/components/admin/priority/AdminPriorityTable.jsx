@@ -4,10 +4,7 @@ import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import { TONE_DOT_CLASSES } from '../toneClasses';
 import { PRIORITY_GRADE_META } from '../../../mocks/admin/constants';
-
-function formatNumber(value) {
-  return value == null ? '-' : Number(value).toFixed(2);
-}
+import { formatDecimal } from '../../../utils/number';
 
 export default function AdminPriorityTable({ loading, error, roads, onRowClick }) {
   if (error) {
@@ -57,7 +54,7 @@ export default function AdminPriorityTable({ loading, error, roads, onRowClick }
                       />
                     </div>
                     <span className="w-9 text-right text-sm font-semibold text-slate-700">
-                      {formatNumber(road.currentPriorityScore)}
+                      {formatDecimal(road.currentPriorityScore)}
                     </span>
                   </div>
                 </td>
@@ -67,8 +64,8 @@ export default function AdminPriorityTable({ loading, error, roads, onRowClick }
                   </Badge>
                 </td>
                 <td className="py-3 text-slate-600">{road.damageCount ?? '-'}건</td>
-                <td className="py-3 text-slate-600">{formatNumber(road.potholeRatio)}%</td>
-                <td className="py-3 pr-5 text-slate-600">{formatNumber(road.avgSpeed)} km/h</td>
+                <td className="py-3 text-slate-600">{formatDecimal(road.potholeRatio)}%</td>
+                <td className="py-3 pr-5 text-slate-600">{formatDecimal(road.avgSpeed)} km/h</td>
               </tr>
             );
           })}
