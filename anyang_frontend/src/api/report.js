@@ -1,7 +1,13 @@
 import { apiRequest, apiRequestMultipart } from './client';
 
-export function getMyReports() {
-  return apiRequest('/api/report/my');
+// 백엔드가 파손 유형(type) 값을 대소문자 혼재로 내려줘서(POTHOLE / pothole) 소문자로 정규화
+function normalizeReport(dto) {
+  return { ...dto, type: String(dto.type ?? '').toLowerCase() };
+}
+
+export async function getMyReports() {
+  const reports = await apiRequest('/api/report/my');
+  return (reports ?? []).map(normalizeReport);
 }
 
 export function submitReport({ detail, latitude, longitude, address, damageType, severity, images }) {
@@ -22,16 +28,18 @@ export function submitReport({ detail, latitude, longitude, address, damageType,
 
 // ---------- 관리자 ----------
 
-export function fetchAllReports() {
-  return apiRequest('/api/admin/report');
+export async function fetchAllReports() {
+  const reports = await apiRequest('/api/admin/report');
+  return (reports ?? []).map(normalizeReport);
 }
 
-export function fetchUnclassifiedReports() {
-  return apiRequest('/api/admin/report/unclassified');
+export async function fetchUnclassifiedReports() {
+  const reports = await apiRequest('/api/admin/report/unclassified');
+  return (reports ?? []).map(normalizeReport);
 }
 
 export async function fetchReportById(id) {
-  const reports = await apiRequest('/api/admin/report');
+  const reports = await fetchAllReports();
   return reports.find((r) => String(r.id) === String(id)) ?? null;
 }
 
