@@ -58,7 +58,9 @@ export default function ReportDetailModal({ report, onClose }) {
             </div>
             <div className="flex flex-col gap-1.5 p-4 text-left">
               <span className="text-xs font-medium text-slate-500">AI 분석 신뢰도</span>
-              <strong className="text-sm font-medium text-slate-900">{report.aiConfidence}%</strong>
+              <strong className="text-sm font-medium text-slate-900">
+                {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
+              </strong>
             </div>
           </div>
 
@@ -91,12 +93,17 @@ export default function ReportDetailModal({ report, onClose }) {
               </div>
               <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
                 <span className="text-xs font-medium text-slate-500">위험도</span>
-                <strong className="text-sm font-semibold text-slate-900">{report.aiRisk}</strong>
+                <strong
+                  className="text-sm font-semibold"
+                  style={{ color: SEVERITY_META[report.severity].color }}
+                >
+                  {SEVERITY_META[report.severity].label}
+                </strong>
               </div>
               <div className="flex flex-col gap-1 rounded-lg border border-blue-100 bg-white p-3 text-left">
                 <span className="text-xs font-medium text-slate-500">분석 신뢰도</span>
                 <strong className="text-sm font-semibold text-slate-900">
-                  {report.aiConfidence}%
+                  {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
                 </strong>
               </div>
             </div>

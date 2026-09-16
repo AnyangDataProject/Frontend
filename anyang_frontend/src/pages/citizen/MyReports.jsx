@@ -263,7 +263,10 @@ function MyReports() {
                       <div className="mt-auto flex items-center justify-between max-[800px]:mt-3 max-[800px]:flex-col max-[800px]:items-start max-[800px]:gap-2">
                         <div className="flex items-center gap-[5px] text-xs text-slate-400">
                           <Sparkles size={14} className="shrink-0 text-blue-600" />
-                          AI 분석 신뢰도 <strong className="text-slate-900">{report.aiConfidence}%</strong>
+                          AI 분석 신뢰도{' '}
+                          <strong className="text-slate-900">
+                            {report.aiConfidence != null ? `${report.aiConfidence}%` : '-'}
+                          </strong>
                         </div>
 
                         <span className="flex items-center gap-0.5 text-xs font-medium text-blue-600">
