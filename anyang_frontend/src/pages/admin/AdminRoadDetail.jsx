@@ -5,6 +5,8 @@ import { ArrowLeft, Gauge, TrafficCone, FileWarning, Route, Wrench } from 'lucid
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import Badge from '../../components/admin/Badge';
+import StatRow from '../../components/admin/StatRow';
+import ProgressBarRow from '../../components/admin/ProgressBarRow';
 import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
@@ -111,32 +113,17 @@ export default function AdminRoadDetail() {
 
         <Card title="현재 상태 요약">
           <dl className="flex h-full flex-col justify-between gap-4">
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <Route size={15} /> 분석 구간 수
-              </dt>
-              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.linkCount)}개</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <FileWarning size={15} /> 시민 신고 건수
-              </dt>
-              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.reportCount)}건</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
-                <Wrench size={15} /> 확인된 도로 파손
-              </dt>
-              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.damageCount)}건</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-sm text-slate-500">포트홀 비율</dt>
-              <dd className="text-sm font-semibold text-slate-900">{formatDecimal(road.potholeRatio)}%</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-sm text-slate-500">전체 순위</dt>
-              <dd className="text-sm font-semibold text-slate-900">{road.priorityRank}위</dd>
-            </div>
+            <StatRow icon={Route} label="분석 구간 수">
+              {formatInteger(road.linkCount)}개
+            </StatRow>
+            <StatRow icon={FileWarning} label="시민 신고 건수">
+              {formatInteger(road.reportCount)}건
+            </StatRow>
+            <StatRow icon={Wrench} label="확인된 도로 파손">
+              {formatInteger(road.damageCount)}건
+            </StatRow>
+            <StatRow label="포트홀 비율">{formatDecimal(road.potholeRatio)}%</StatRow>
+            <StatRow label="전체 순위">{road.priorityRank}위</StatRow>
           </dl>
         </Card>
       </div>
@@ -171,31 +158,17 @@ export default function AdminRoadDetail() {
 
       <Card className="mt-4" title="점검 우선순위 산정 근거" description="파손 상태와 교통 부담을 종합하여 산정했습니다.">
         <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <span className="w-24 shrink-0 text-xs font-medium text-slate-500">파손 심각도</span>
-            <div className="h-2 flex-1 rounded-full bg-slate-100">
-              <div
-                className="h-2 rounded-full bg-red-500"
-                style={{ width: `${Math.min(Math.max(road.damageScore || 0, 0), 50) * 2}%` }}
-              />
-            </div>
-            <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
-              {formatDecimal(road.damageScore)}
-            </span>
-          </div>
+          <ProgressBarRow
+            label="파손 심각도"
+            percent={Math.min(Math.max(road.damageScore || 0, 0), 50) * 2}
+            barColorClass="bg-red-500"
+          >
+            {formatDecimal(road.damageScore)}
+          </ProgressBarRow>
 
-          <div className="flex items-center gap-3">
-            <span className="w-24 shrink-0 text-xs font-medium text-slate-500">교통 부담도</span>
-            <div className="h-2 flex-1 rounded-full bg-slate-100">
-              <div
-                className="h-2 rounded-full bg-blue-500"
-                style={{ width: `${(Math.min(Math.max(road.trafficScore || 0, 0), 30) / 30) * 100}%` }}
-              />
-            </div>
-            <span className="w-12 shrink-0 text-right text-xs font-semibold text-slate-700">
-              {formatDecimal(road.trafficScore)}
-            </span>
-          </div>
+          <ProgressBarRow label="교통 부담도" percent={(Math.min(Math.max(road.trafficScore || 0, 0), 30) / 30) * 100}>
+            {formatDecimal(road.trafficScore)}
+          </ProgressBarRow>
         </div>
 
         <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-sm">
@@ -218,18 +191,15 @@ export default function AdminRoadDetail() {
         ) : (
           <div className="flex flex-col gap-2">
             {monthlyDamage.map((item) => (
-              <div key={item.month} className="flex items-center gap-3">
-                <span className="w-10 shrink-0 text-xs text-slate-500">{item.month}월</span>
-                <div className="h-2 flex-1 rounded-full bg-slate-100">
-                  <div
-                    className="h-2 rounded-full bg-blue-500"
-                    style={{ width: `${(item.count / maxMonthlyCount) * 100}%` }}
-                  />
-                </div>
-                <span className="w-10 shrink-0 text-right text-xs font-semibold text-slate-700">
-                  {item.count}건
-                </span>
-              </div>
+              <ProgressBarRow
+                key={item.month}
+                label={`${item.month}월`}
+                percent={(item.count / maxMonthlyCount) * 100}
+                labelWidthClass="w-10"
+                valueWidthClass="w-10"
+              >
+                {item.count}건
+              </ProgressBarRow>
             ))}
           </div>
         )}
