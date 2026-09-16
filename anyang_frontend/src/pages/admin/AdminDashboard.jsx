@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileWarning, Clock3, TriangleAlert, CheckCircle2, ChevronRight, Trophy } from 'lucide-react';
 
@@ -29,6 +29,7 @@ export default function AdminDashboard() {
   const { data: reports, error: reportsError } = useAdminListQuery(fetchAllReports);
   const { data: priorityClusters, error: priorityError } = useAdminListQuery(fetchPriorityClusters);
   const topPriorityClusters = priorityClusters?.slice(0, 5) ?? [];
+  const [selectedClusterId, setSelectedClusterId] = useState(null);
 
   const reportStats = useMemo(() => {
     if (!reports) return null;
@@ -108,6 +109,7 @@ export default function AdminDashboard() {
           ) : priorityClusters ? (
             <KakaoMap
               points={mapPoints}
+              selectedId={selectedClusterId}
               onSelectPoint={(p) => navigate(`/admin/roads/${p.id}`)}
               height={380}
               level={8}
@@ -145,6 +147,8 @@ export default function AdminDashboard() {
                   <li key={cluster.cluster}>
                     <button
                       onClick={() => navigate(`/admin/roads/${cluster.cluster}`)}
+                      onMouseEnter={() => setSelectedClusterId(cluster.cluster)}
+                      onMouseLeave={() => setSelectedClusterId(null)}
                       className="flex w-full items-center gap-3 py-3 text-left transition-colors hover:bg-slate-50"
                     >
                       <span
