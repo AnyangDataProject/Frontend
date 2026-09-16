@@ -10,8 +10,6 @@ import AiResultSection from "../../components/citizen/ai-analysis/AiResultSectio
 import DetailedAnalysisSection from "../../components/citizen/ai-analysis/DetailedAnalysisSection";
 import AiSummarySection from "../../components/citizen/ai-analysis/AiSummarySection";
 import ProcessingStatusSection from "../../components/citizen/ai-analysis/ProcessingStatusSection";
-import { useEffect, useState } from "react";
-import { getAiAnalysis } from "../../api/ai";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();
@@ -21,18 +19,6 @@ export default function AiAnalysis() {
   const report = location.state?.report;
 
   const selectedReport = report || fallbackReport;
-  const [detectionData, setDetectionData] = useState(null);
-
-  useEffect(() => {
-    if (!selectedReport?.id) return;
-
-    getAiAnalysis(selectedReport.id)
-      .then((data) => setDetectionData(data))
-      .catch((err) => {
-        console.error('AI 분석 결과를 불러오지 못했습니다.', err);
-        setDetectionData(null);
-      });
-  }, [selectedReport?.id]);
 
   const type = DAMAGE_TYPE_META[selectedReport.type] ?? { label: selectedReport.type ?? '-' };
   const severity = SEVERITY_META[selectedReport.severity];
@@ -42,15 +28,11 @@ export default function AiAnalysis() {
 
   const mockResult = getMockAnalysis(selectedReport);
 
-  // 실제 탐지 결과가 있으면 병합, 없으면(fallback 신고이거나 API 실패 시) mock 그대로
-  const firstAnalysis = detectionData?.[0];
-
   const analysisResult = {
     ...mockResult,
     confidence: selectedReport.aiConfidence != null
       ? Math.round(selectedReport.aiConfidence)
       : mockResult.confidence,
-    resultImageUrl: firstAnalysis?.resultImageUrl ?? null,
   };
 
   return (
@@ -88,7 +70,6 @@ export default function AiAnalysis() {
           <AiVisionSection
             typeLabel={type.label}
             confidence={analysisResult.confidence}
-            resultImageUrl={analysisResult.resultImageUrl}
           />
           <AiResultSection type={type} severity={severity} confidence={analysisResult.confidence} />
         </section>
