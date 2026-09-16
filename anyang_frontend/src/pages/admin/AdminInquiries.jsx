@@ -9,14 +9,14 @@ import AdminInquiriesToolbar from '../../components/admin/inquiries/AdminInquiri
 import AdminInquiriesFilterPanel from '../../components/admin/inquiries/AdminInquiriesFilterPanel';
 import AdminInquiriesTable from '../../components/admin/inquiries/AdminInquiriesTable';
 import InquiryDetailModal from '../../components/admin/inquiries/InquiryDetailModal';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchInquiries, submitInquiryAnswer } from '../../mocks/admin/api';
+import { fetchInquiries, submitInquiryAnswer } from '../../mocks/admin/mockData';
 
 export default function AdminInquiries() {
   const navigate = useNavigate();
 
-  const { data: inquiries, setData: setInquiries } = useAdminListQuery(fetchInquiries);
+  const { data: inquiries, setData: setInquiries } = useListQuery(fetchInquiries);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');

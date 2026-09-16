@@ -9,7 +9,7 @@ import Badge from '../../components/admin/Badge';
 import { TONE_CLASSES } from '../../components/admin/toneClasses';
 import AdminPriorityFilters from '../../components/admin/priority/AdminPriorityFilters';
 import AdminPriorityTable from '../../components/admin/priority/AdminPriorityTable';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
@@ -41,8 +41,8 @@ const GRADE_STAT_META = Object.entries(PRIORITY_GRADE_META).map(([key, meta]) =>
 
 export default function AdminPriority() {
   const navigate = useNavigate();
-  const { data: roads, error: roadsError } = useAdminListQuery(fetchPriorityClusters);
-  const { data: unclassifiedReports, error: unclassifiedError } = useAdminListQuery(fetchUnclassifiedReports);
+  const { data: roads, error: roadsError } = useListQuery(fetchPriorityClusters);
+  const { data: unclassifiedReports, error: unclassifiedError } = useListQuery(fetchUnclassifiedReports);
   const [riskFilter, setRiskFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
 

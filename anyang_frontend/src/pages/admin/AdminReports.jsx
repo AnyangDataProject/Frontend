@@ -5,14 +5,14 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import AdminReportsFilters from '../../components/admin/reports/AdminReportsFilters';
 import AdminReportsTable from '../../components/admin/reports/AdminReportsTable';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchAllReports, updateReportStatusAdmin } from '../../api/report';
 import { STATUS_TO_UI } from '../../api/enumMapping';
 
 export default function AdminReports() {
   const navigate = useNavigate();
-  const { data: reports, setData: setReports, error } = useAdminListQuery(fetchAllReports);
+  const { data: reports, setData: setReports, error } = useListQuery(fetchAllReports);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
