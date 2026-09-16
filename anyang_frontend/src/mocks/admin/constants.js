@@ -58,6 +58,29 @@ export const CONGESTION_META = {
   jam: { label: '정체', tone: 'danger' },
 };
 
+// 아래 세 개는 실제 백엔드 연동(클러스터 기반 점검 우선순위, 신고 UI 3단계) 이후
+// 여러 관리자 페이지에서 반복 정의되던 것을 여기로 모았다. 위의 SEVERITY_META,
+// REPORT_STATUS_META(4단계)는 목데이터 시절 값이라 스케일이 달라 이름을 분리했다.
+
+export const PRIORITY_GRADE_META = {
+  최우선: { label: '최우선', tone: 'danger' },
+  우선: { label: '우선', tone: 'warning' },
+  관심: { label: '관심', tone: 'info' },
+  일반: { label: '일반', tone: 'success' },
+};
+
+export const SEVERITY_UI_META = {
+  low: { label: '낮음', tone: 'success' },
+  mid: { label: '보통', tone: 'warning' },
+  high: { label: '높음', tone: 'danger' },
+};
+
+export const REPORT_STATUS_UI_META = {
+  received: { label: '접수됨', tone: 'info' },
+  progress: { label: '처리중', tone: 'warning' },
+  done: { label: '처리완료', tone: 'success' },
+};
+
 export const MEMBER_STATUS_META = {
   active: { label: '정상', tone: 'success' },
   restricted: { label: '이용 제한', tone: 'danger' },

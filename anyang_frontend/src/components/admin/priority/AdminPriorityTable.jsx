@@ -3,13 +3,7 @@ import Badge from '../Badge';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import { TONE_DOT_CLASSES } from '../toneClasses';
-
-const PRIORITY_GRADE_META = {
-  최우선: { label: '최우선', tone: 'danger' },
-  우선: { label: '우선', tone: 'warning' },
-  관심: { label: '관심', tone: 'info' },
-  일반: { label: '일반', tone: 'success' },
-};
+import { PRIORITY_GRADE_META } from '../../../mocks/admin/constants';
 
 function formatNumber(value) {
   return value == null ? '-' : Number(value).toFixed(2);

@@ -18,20 +18,8 @@ import EmptyState from '../../components/admin/EmptyState';
 import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
-import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
+import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
 import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
-
-const SEVERITY_META = {
-  low: { label: '낮음', tone: 'success' },
-  mid: { label: '보통', tone: 'warning' },
-  high: { label: '높음', tone: 'danger' },
-};
-
-const REPORT_STATUS_META = {
-  received: { label: '접수됨', tone: 'info' },
-  progress: { label: '처리중', tone: 'warning' },
-  done: { label: '처리완료', tone: 'success' },
-};
 
 const NEXT_STATUS = {
   received: { key: 'CONFIRMED', label: '처리중' },
@@ -94,7 +82,7 @@ export default function AdminReportDetail() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-semibold text-slate-900">신고 #{report.id}</h1>
-            <Badge tone={REPORT_STATUS_META[uiStatus].tone}>{REPORT_STATUS_META[uiStatus].label}</Badge>
+            <Badge tone={REPORT_STATUS_UI_META[uiStatus].tone}>{REPORT_STATUS_UI_META[uiStatus].label}</Badge>
           </div>
           <p className="mt-1 text-sm text-slate-500">{damageType.label} 신고 상세 및 AI 검수</p>
         </div>
@@ -185,8 +173,8 @@ export default function AdminReportDetail() {
               </div>
               <div>
                 <p className="text-xs text-slate-400">파손 정도 (AI)</p>
-                <Badge tone={SEVERITY_META[uiSeverity].tone} className="mt-1">
-                  {SEVERITY_META[uiSeverity].label}
+                <Badge tone={SEVERITY_UI_META[uiSeverity].tone} className="mt-1">
+                  {SEVERITY_UI_META[uiSeverity].label}
                 </Badge>
               </div>
               <div>

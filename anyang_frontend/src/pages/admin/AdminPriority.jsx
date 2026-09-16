@@ -13,7 +13,7 @@ import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
-import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
+import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
 import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
 
 const GRADE_STAT_META = [
@@ -22,18 +22,6 @@ const GRADE_STAT_META = [
   { key: '관심', label: '관심 구간', icon: Eye, tone: 'info' },
   { key: '일반', label: '일반 구간', icon: CheckCircle2, tone: 'success' },
 ];
-
-const SEVERITY_META = {
-  low: { label: '낮음', tone: 'success' },
-  mid: { label: '보통', tone: 'warning' },
-  high: { label: '높음', tone: 'danger' },
-};
-
-const REPORT_STATUS_META = {
-  received: { label: '접수됨', tone: 'info' },
-  progress: { label: '처리중', tone: 'warning' },
-  done: { label: '처리완료', tone: 'success' },
-};
 
 export default function AdminPriority() {
   const navigate = useNavigate();
@@ -138,11 +126,11 @@ export default function AdminPriority() {
                         <span className="truncate text-sm font-medium text-slate-800">
                           {report.address || '주소 정보 없음'}
                         </span>
-                        <Badge tone={SEVERITY_META[uiSeverity].tone}>{SEVERITY_META[uiSeverity].label}</Badge>
+                        <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>{SEVERITY_UI_META[uiSeverity].label}</Badge>
                       </div>
                       <p className="mt-0.5 truncate text-xs text-slate-400">
                         신고 유형: {damageType.label} · 신고자: {report.userName ?? '알 수 없음'} · 상태:{' '}
-                        {REPORT_STATUS_META[uiStatus].label}
+                        {REPORT_STATUS_UI_META[uiStatus].label}
                       </p>
                     </div>
 

@@ -3,7 +3,7 @@ import Badge from '../Badge';
 import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import Pagination from '../Pagination';
-import { DAMAGE_TYPE_META } from '../../../mocks/admin/constants';
+import { DAMAGE_TYPE_META, SEVERITY_UI_META } from '../../../mocks/admin/constants';
 import { SEVERITY_TO_UI } from '../../../api/enumMapping';
 
 const STATUS_TABS = [
@@ -12,12 +12,6 @@ const STATUS_TABS = [
   { key: 'progress', label: '처리중' },
   { key: 'done', label: '처리완료' },
 ];
-
-const SEVERITY_META = {
-  low: { label: '낮음', tone: 'success' },
-  mid: { label: '보통', tone: 'warning' },
-  high: { label: '높음', tone: 'danger' },
-};
 
 // 관리자가 다음 단계로 진행시킬 때 보낼 백엔드 enum 옵션
 const NEXT_STATUS_OPTIONS = {
@@ -119,7 +113,7 @@ export default function AdminReportsTable({
                       </td>
                       <td className="py-3">
                         <div className="flex items-center gap-1.5">
-                          <Badge tone={SEVERITY_META[uiSeverity].tone}>{SEVERITY_META[uiSeverity].label}</Badge>
+                          <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>{SEVERITY_UI_META[uiSeverity].label}</Badge>
                           <span className="text-xs text-slate-400">
                             {r.aiConfidence != null ? `${Math.round(r.aiConfidence)}%` : '-'}
                           </span>

@@ -11,13 +11,7 @@ import EmptyState from '../../components/admin/EmptyState';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { fetchDashboardSummary } from '../../mocks/admin/api';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
-
-const PRIORITY_GRADE_META = {
-  최우선: { label: '최우선', tone: 'danger' },
-  우선: { label: '우선', tone: 'warning' },
-  관심: { label: '관심', tone: 'info' },
-  일반: { label: '일반', tone: 'success' },
-};
+import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
 
 function formatScore(value) {
   return value == null ? '-' : Number(value).toFixed(2);
