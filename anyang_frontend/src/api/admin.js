@@ -24,7 +24,7 @@ function mapMember(dto) {
     name: dto.name,
     email: dto.email,
     phone: dto.phone,
-    role: dto.role,
+    role: String(dto.role ?? '').toLowerCase(),
     joinedAt: formatDate(dto.createdAt),
     lastLogin: formatDate(dto.lastLogin),
     status: mapStatus(dto.status),
