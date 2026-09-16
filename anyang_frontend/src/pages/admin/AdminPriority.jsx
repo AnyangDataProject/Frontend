@@ -1,16 +1,20 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AlertOctagon, Clock3, Eye, CheckCircle2 } from 'lucide-react';
+import { AlertOctagon, ChevronRight, Clock3, Eye, CheckCircle2 } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
 import StatCard from '../../components/admin/StatCard';
+import Badge from '../../components/admin/Badge';
+import { TONE_CLASSES } from '../../components/admin/toneClasses';
 import AdminPriorityFilters from '../../components/admin/priority/AdminPriorityFilters';
 import AdminPriorityTable from '../../components/admin/priority/AdminPriorityTable';
 import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
+import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
+import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
 
 const GRADE_STAT_META = [
   { key: '최우선', label: '최우선 점검', icon: AlertOctagon, tone: 'danger' },
@@ -18,6 +22,18 @@ const GRADE_STAT_META = [
   { key: '관심', label: '관심 구간', icon: Eye, tone: 'info' },
   { key: '일반', label: '일반 구간', icon: CheckCircle2, tone: 'success' },
 ];
+
+const SEVERITY_META = {
+  low: { label: '낮음', tone: 'success' },
+  mid: { label: '보통', tone: 'warning' },
+  high: { label: '높음', tone: 'danger' },
+};
+
+const REPORT_STATUS_META = {
+  received: { label: '접수됨', tone: 'info' },
+  progress: { label: '처리중', tone: 'warning' },
+  done: { label: '처리완료', tone: 'success' },
+};
 
 export default function AdminPriority() {
   const navigate = useNavigate();
@@ -99,21 +115,44 @@ export default function AdminPriority() {
         ) : unclassifiedReports.length === 0 ? (
           <p className="py-6 text-center text-sm text-slate-400">미분류 신고가 없습니다.</p>
         ) : (
-          <ul className="flex flex-col divide-y divide-slate-100">
-            {unclassifiedReports.map((report) => (
-              <li key={report.id}>
-                <button
-                  onClick={() => navigate(`/admin/reports/${report.id}`)}
-                  className="flex w-full items-center justify-between gap-3 py-3 text-left text-sm hover:bg-slate-50"
-                >
-                  <span className="font-medium text-slate-700">#{report.id}</span>
-                  <span className="flex-1 truncate text-slate-500">
-                    {report.address || '주소 정보 없음'}
-                  </span>
-                  <span className="text-xs text-slate-400">{report.userName ?? '-'}</span>
-                </button>
-              </li>
-            ))}
+          <ul className="flex flex-col gap-2.5">
+            {unclassifiedReports.map((report) => {
+              const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
+              const DamageIcon = damageType.icon;
+              const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
+              const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
+
+              return (
+                <li key={report.id}>
+                  <button
+                    onClick={() => navigate(`/admin/reports/${report.id}`)}
+                    className="flex w-full items-center gap-3 rounded-xl border border-slate-200 p-3 text-left transition-colors hover:bg-slate-50"
+                  >
+                    <div
+                      className={`flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-lg text-[11px] font-medium ${TONE_CLASSES.neutral}`}
+                    >
+                      {DamageIcon && <DamageIcon size={16} />}
+                      <span className="mt-0.5 leading-none">{damageType.label}</span>
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-sm font-medium text-slate-800">
+                          {report.address || '주소 정보 없음'}
+                        </span>
+                        <Badge tone={SEVERITY_META[uiSeverity].tone}>{SEVERITY_META[uiSeverity].label}</Badge>
+                      </div>
+                      <p className="mt-0.5 truncate text-xs text-slate-400">
+                        신고 유형: {damageType.label} · 신고자: {report.userName ?? '알 수 없음'} · 상태:{' '}
+                        {REPORT_STATUS_META[uiStatus].label}
+                      </p>
+                    </div>
+
+                    <ChevronRight size={16} className="shrink-0 text-slate-300" />
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         )}
       </Card>

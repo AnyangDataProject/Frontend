@@ -1,6 +1,8 @@
 // 관리자 화면 전역에서 재사용하는 상태값 정의
 // tone은 공용 Badge 컴포넌트가 색상을 결정할 때 사용합니다.
 
+import { CircleDot, Construction, TrendingDown, CircleAlert, Signpost, Minus } from 'lucide-react';
+
 export const ANYANG_BOUNDS = {
   minLat: 37.352,
   maxLat: 37.452,
@@ -23,12 +25,12 @@ export const REPORT_STATUS_META = {
 };
 
 export const DAMAGE_TYPE_META = {
-  pothole: { label: '포트홀' },
-  crack: { label: '노면 균열' },
-  subsidence: { label: '도로 침하' },
-  manhole: { label: '맨홀 파손' },
-  sign: { label: '표지판 파손' },
-  lane: { label: '차선 마모' },
+  pothole: { label: '포트홀', icon: CircleDot },
+  crack: { label: '노면 균열', icon: Construction },
+  subsidence: { label: '도로 침하', icon: TrendingDown },
+  manhole: { label: '맨홀 파손', icon: CircleAlert },
+  sign: { label: '표지판 파손', icon: Signpost },
+  lane: { label: '차선 마모', icon: Minus },
 };
 
 export const SEVERITY_META = {
