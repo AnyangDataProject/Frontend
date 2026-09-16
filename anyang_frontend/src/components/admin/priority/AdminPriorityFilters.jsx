@@ -1,11 +1,9 @@
 import { Search } from 'lucide-react';
+import { PRIORITY_GRADE_META } from '../../../mocks/admin/constants';
 
 const RISK_TABS = [
   { key: 'all', label: '전체' },
-  { key: '최우선', label: '최우선' },
-  { key: '우선', label: '우선' },
-  { key: '관심', label: '관심' },
-  { key: '일반', label: '일반' },
+  ...Object.entries(PRIORITY_GRADE_META).map(([key, meta]) => ({ key, label: meta.label })),
 ];
 
 export default function AdminPriorityFilters({ keyword, onKeywordChange, riskFilter, onRiskFilterChange }) {

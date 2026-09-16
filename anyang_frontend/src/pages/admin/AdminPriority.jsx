@@ -13,15 +13,31 @@ import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
-import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
+import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META, PRIORITY_GRADE_META } from '../../mocks/admin/constants';
 import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
 
-const GRADE_STAT_META = [
-  { key: '최우선', label: '최우선 점검', icon: AlertOctagon, tone: 'danger' },
-  { key: '우선', label: '우선 점검', icon: Clock3, tone: 'warning' },
-  { key: '관심', label: '관심 구간', icon: Eye, tone: 'info' },
-  { key: '일반', label: '일반 구간', icon: CheckCircle2, tone: 'success' },
-];
+// PRIORITY_GRADE_META에는 아이콘/카드 문구 같은 페이지 전용 표시 정보가 없어서
+// 여기서만 보강한다. 등급 종류·label·tone 자체는 PRIORITY_GRADE_META가 기준.
+const GRADE_STAT_ICON = {
+  최우선: AlertOctagon,
+  우선: Clock3,
+  관심: Eye,
+  일반: CheckCircle2,
+};
+
+const GRADE_STAT_LABEL_SUFFIX = {
+  최우선: '점검',
+  우선: '점검',
+  관심: '구간',
+  일반: '구간',
+};
+
+const GRADE_STAT_META = Object.entries(PRIORITY_GRADE_META).map(([key, meta]) => ({
+  key,
+  label: `${meta.label} ${GRADE_STAT_LABEL_SUFFIX[key]}`,
+  icon: GRADE_STAT_ICON[key],
+  tone: meta.tone,
+}));
 
 export default function AdminPriority() {
   const navigate = useNavigate();
@@ -31,7 +47,7 @@ export default function AdminPriority() {
   const [keyword, setKeyword] = useState('');
 
   const gradeCounts = useMemo(() => {
-    const counts = { 최우선: 0, 우선: 0, 관심: 0, 일반: 0 };
+    const counts = Object.fromEntries(Object.keys(PRIORITY_GRADE_META).map((key) => [key, 0]));
     (roads ?? []).forEach((road) => {
       if (counts[road.priorityGrade] != null) counts[road.priorityGrade] += 1;
     });
