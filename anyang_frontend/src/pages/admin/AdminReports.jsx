@@ -8,24 +8,33 @@ import AdminReportsTable from '../../components/admin/reports/AdminReportsTable'
 import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchAllReports, updateReportStatusAdmin } from '../../api/report';
-import { STATUS_TO_UI } from '../../api/enumMapping';
+import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
+import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
 
 export default function AdminReports() {
   const navigate = useNavigate();
   const { data: reports, setData: setReports, error } = useListQuery(fetchAllReports);
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [severityFilter, setSeverityFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
   const [page, setPage] = useState(1);
 
   const filtered = useListFilter(reports, (r) => {
     const kw = keyword.trim().toLowerCase();
     const uiStatus = STATUS_TO_UI[r.status] ?? 'received';
+    const uiSeverity = SEVERITY_TO_UI[r.severity] ?? 'low';
     const matchesStatus = statusFilter === 'all' || uiStatus === statusFilter;
     const matchesType = typeFilter === 'all' || r.type === typeFilter;
+    const matchesSeverity = severityFilter === 'all' || uiSeverity === severityFilter;
+    const damageLabel = DAMAGE_TYPE_META[r.type]?.label ?? '';
     const matchesKeyword =
-      !kw || String(r.id).includes(kw) || (r.address ?? '').toLowerCase().includes(kw);
-    return matchesStatus && matchesType && matchesKeyword;
+      !kw ||
+      String(r.id).includes(kw) ||
+      (r.address ?? '').toLowerCase().includes(kw) ||
+      (r.userName ?? '').toLowerCase().includes(kw) ||
+      damageLabel.toLowerCase().includes(kw);
+    return matchesStatus && matchesType && matchesSeverity && matchesKeyword;
   });
 
   const setStatusFilterAndResetPage = (value) => {
@@ -36,8 +45,19 @@ export default function AdminReports() {
     setTypeFilter(value);
     setPage(1);
   };
+  const setSeverityFilterAndResetPage = (value) => {
+    setSeverityFilter(value);
+    setPage(1);
+  };
   const setKeywordAndResetPage = (value) => {
     setKeyword(value);
+    setPage(1);
+  };
+  const handleResetFilters = () => {
+    setStatusFilter('all');
+    setTypeFilter('all');
+    setSeverityFilter('all');
+    setKeyword('');
     setPage(1);
   };
 
@@ -62,6 +82,9 @@ export default function AdminReports() {
             onKeywordChange={setKeywordAndResetPage}
             typeFilter={typeFilter}
             onTypeFilterChange={setTypeFilterAndResetPage}
+            severityFilter={severityFilter}
+            onSeverityFilterChange={setSeverityFilterAndResetPage}
+            onReset={handleResetFilters}
           />
         }
       >
