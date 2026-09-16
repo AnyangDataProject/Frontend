@@ -2,9 +2,10 @@ import { Search } from 'lucide-react';
 
 const RISK_TABS = [
   { key: 'all', label: '전체' },
-  { key: 'high', label: 'HIGH' },
-  { key: 'mid', label: 'MID' },
-  { key: 'low', label: 'LOW' },
+  { key: '최우선', label: '최우선' },
+  { key: '우선', label: '우선' },
+  { key: '관심', label: '관심' },
+  { key: '일반', label: '일반' },
 ];
 
 export default function AdminPriorityFilters({ keyword, onKeywordChange, riskFilter, onRiskFilterChange }) {
