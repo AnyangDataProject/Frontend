@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Gauge, TrafficCone, FileWarning, Wrench } from 'lucide-react';
+import { ArrowLeft, Gauge, TrafficCone, FileWarning, Route, Wrench } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
@@ -127,6 +127,12 @@ export default function AdminRoadDetail() {
 
         <Card title="현재 상태 요약">
           <dl className="flex h-full flex-col justify-between gap-4">
+            <div className="flex items-center justify-between">
+              <dt className="flex items-center gap-1.5 text-sm text-slate-500">
+                <Route size={15} /> 분석 구간 수
+              </dt>
+              <dd className="text-sm font-semibold text-slate-900">{formatInteger(road.linkCount)}개</dd>
+            </div>
             <div className="flex items-center justify-between">
               <dt className="flex items-center gap-1.5 text-sm text-slate-500">
                 <FileWarning size={15} /> 시민 신고 건수
