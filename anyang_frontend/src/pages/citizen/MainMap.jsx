@@ -26,8 +26,6 @@ export default function MainMap() {
   const navigate = useNavigate();
   const [listOpen, setListOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [selectedRisk, setSelectedRisk] = useState(null);
-  const [layer, setLayer] = useState("current"); // current | prediction
   const [statusFilter, setStatusFilter] = useState("all"); // all | open | done
   const [typeFilter, setTypeFilter] = useState("all");
   const [center, setCenter] = useState(DEFAULT_CENTER);
@@ -76,12 +74,6 @@ export default function MainMap() {
     });
   };
 
-  const handleLayerChange = (v) => {
-    setLayer(v);
-    setSelected(null);
-    setSelectedRisk(null);
-  };
-
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-white pt-[72px] max-[768px]:pt-16">
       <style>{`
@@ -97,8 +89,6 @@ export default function MainMap() {
             onSearchTextChange={setSearchText}
             onSearchSubmit={handleSearch}
             searchError={searchError}
-            layer={layer}
-            onLayerChange={handleLayerChange}
             onReport={() => navigate("/report")}
           />
 
@@ -106,19 +96,9 @@ export default function MainMap() {
             center={center}
             style={{ width: "100%", height: "100%" }}
             level={7}
-            onClick={() => {
-              setSelected(null);
-              setSelectedRisk(null);
-            }}
+            onClick={() => setSelected(null)}
           >
-            <MainMapOverlays
-              layer={layer}
-              pins={filteredPins}
-              selectedPin={selected}
-              onSelectPin={setSelected}
-              selectedRisk={selectedRisk}
-              onSelectRisk={setSelectedRisk}
-            />
+            <MainMapOverlays pins={filteredPins} selectedPin={selected} onSelectPin={setSelected} />
           </Map>
 
           <button
@@ -129,7 +109,7 @@ export default function MainMap() {
             <LocateFixed size={16} />
           </button>
 
-          <MainMapLegend layer={layer} />
+          <MainMapLegend />
         </div>
 
         <MainMapListPanel

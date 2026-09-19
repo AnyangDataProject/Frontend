@@ -51,7 +51,7 @@ export const DAMAGE_TYPE_META = {
 // 파손 신고하기 폼에서 선택 가능한 유형 (AI가 실제로 인식하는 4종으로 한정)
 export const REPORTABLE_DAMAGE_TYPES = ["longitudinal_crack", "transverse_crack", "alligator_crack", "pothole"];
 
-// 신고 건별 심각도 (도로 구간 위험도 예측인 ROAD_RISK_META와는 별개의 값)
+// 신고 건별 위험도
 export const SEVERITY_META = {
   low: {
     label: "낮음",
@@ -90,11 +90,4 @@ export const REPORT_STATUS_META = {
   received: { label: "접수됨", icon: Clock, color: "#2563eb", textClass: "text-blue-600" },
   progress: { label: "처리중", icon: Wrench, color: "#d97706", textClass: "text-amber-600" },
   done: { label: "처리완료", icon: CheckCircle2, color: "#059669", textClass: "text-emerald-600" },
-};
-
-// 도로 구간 위험도 예측 (MainMap 예측 레이어 전용, 신고 심각도 SEVERITY_META와는 별개)
-export const ROAD_RISK_META = {
-  low: { label: "LOW", color: "#10b981" },
-  mid: { label: "MID", color: "#f59e0b" },
-  high: { label: "HIGH", color: "#ef4444" },
 };
