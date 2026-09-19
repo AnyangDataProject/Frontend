@@ -33,3 +33,28 @@ export const INQUIRY_TYPE_TO_BACKEND = {
   service: "SERVICE",
   other: "ETC",
 };
+
+// 관리자가 신고 처리 상태를 다음 단계로 진행시킬 때 쓰는 표.
+// 각 배열의 [0]은 현재 상태(표시용), [1]은 다음으로 보낼 수 있는 상태.
+// AdminReportsTable(드롭다운)과 AdminReportDetail(다음 단계로 진행 버튼)이
+// 각자 이 표를 따로 들고 있다가 어긋났던 적이 있어 한 곳으로 모음.
+export const NEXT_STATUS_OPTIONS = {
+  RECEIVED: [
+    { value: "RECEIVED", label: "접수됨" },
+    { value: "CONFIRMED", label: "확인됨" },
+  ],
+  AI_ANALYZED: [
+    { value: "AI_ANALYZED", label: "AI 분석 완료" },
+    { value: "CONFIRMED", label: "확인됨" },
+  ],
+  CONFIRMED: [
+    { value: "CONFIRMED", label: "확인됨" },
+    { value: "IN_PROGRESS", label: "처리중" },
+  ],
+  IN_PROGRESS: [
+    { value: "IN_PROGRESS", label: "처리중" },
+    { value: "COMPLETED", label: "처리완료" },
+  ],
+  COMPLETED: [{ value: "COMPLETED", label: "처리완료" }],
+  REJECTED: [{ value: "REJECTED", label: "반려" }],
+};

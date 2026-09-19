@@ -1,5 +1,5 @@
 import { RotateCcw, Search } from 'lucide-react';
-import { DAMAGE_TYPE_META, SEVERITY_UI_META } from '../../../mocks/admin/constants';
+import { DAMAGE_TYPE_META, REPORTABLE_DAMAGE_TYPES, SEVERITY_UI_META } from '../../../mocks/admin/constants';
 
 export default function AdminReportsFilters({
   keyword,
@@ -18,7 +18,7 @@ export default function AdminReportsFilters({
           value={keyword}
           onChange={(e) => onKeywordChange(e.target.value)}
           placeholder="신고번호, 주소, 신고자, 유형 검색"
-          className="w-48 text-sm text-slate-700 outline-none placeholder:text-slate-400"
+          className="w-64 text-sm text-slate-700 outline-none placeholder:text-slate-400"
         />
       </div>
       <select
@@ -27,9 +27,9 @@ export default function AdminReportsFilters({
         className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-600 outline-none"
       >
         <option value="all">전체 유형</option>
-        {Object.entries(DAMAGE_TYPE_META).map(([key, meta]) => (
+        {REPORTABLE_DAMAGE_TYPES.map((key) => (
           <option key={key} value={key}>
-            {meta.label}
+            {DAMAGE_TYPE_META[key].label}
           </option>
         ))}
       </select>

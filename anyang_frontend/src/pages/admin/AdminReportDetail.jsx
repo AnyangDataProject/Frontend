@@ -22,12 +22,7 @@ import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
-import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
-
-const NEXT_STATUS = {
-  received: { key: 'CONFIRMED', label: '처리중' },
-  progress: { key: 'COMPLETED', label: '처리완료' },
-};
+import { SEVERITY_TO_UI, STATUS_TO_UI, NEXT_STATUS_OPTIONS } from '../../api/enumMapping';
 
 export default function AdminReportDetail() {
   const { id } = useParams();
@@ -67,14 +62,16 @@ export default function AdminReportDetail() {
   const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
   const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
   const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
-  const nextStep = NEXT_STATUS[uiStatus];
+  const rawStatus = (report.status ?? 'received').toUpperCase();
+  const statusOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+  const nextStep = statusOptions[1];
 
   const handleAdvance = async () => {
     if (!nextStep) return;
     setAdvancing(true);
     try {
-      await updateReportStatusAdmin(report.id, nextStep.key);
-      setReport({ ...report, status: nextStep.key.toLowerCase() });
+      await updateReportStatusAdmin(report.id, nextStep.value);
+      setReport({ ...report, status: nextStep.value.toLowerCase() });
     } catch (err) {
       alert(err.message || '신고 상태 변경에 실패했습니다.');
     } finally {
@@ -144,7 +141,7 @@ export default function AdminReportDetail() {
               <InfoRow icon={AlertTriangle} label="파손 유형">
                 {damageType.label}
               </InfoRow>
-              <InfoRow icon={Gauge} label="파손 정도">
+              <InfoRow icon={Gauge} label="위험도">
                 <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>{SEVERITY_UI_META[uiSeverity].label}</Badge>
               </InfoRow>
               {report.description && (

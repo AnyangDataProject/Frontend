@@ -10,6 +10,8 @@ export const ANYANG_BOUNDS = {
   maxLng: 127.008,
 };
 
+// crack/subsidence/manhole/sign/lane은 AI가 지원하기 전 과거 데이터 표시용으로만 남겨둠
+// (신규 선택/필터 옵션에는 REPORTABLE_DAMAGE_TYPES만 사용)
 export const DAMAGE_TYPE_META = {
   longitudinal_crack: { label: '종방향 균열', icon: Construction },
   transverse_crack: { label: '횡방향 균열', icon: Construction },
@@ -21,6 +23,9 @@ export const DAMAGE_TYPE_META = {
   sign: { label: '표지판 파손', icon: Signpost },
   lane: { label: '차선 마모', icon: Minus },
 };
+
+// AI가 실제로 인식하는 4종 (신고 폼 선택지, 관리자 유형 필터에서 사용)
+export const REPORTABLE_DAMAGE_TYPES = ['longitudinal_crack', 'transverse_crack', 'alligator_crack', 'pothole'];
 
 export const TRAFFIC_LEVEL_META = {
   high: { label: '높음' },
