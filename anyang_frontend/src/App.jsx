@@ -17,6 +17,7 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminInquiries from './pages/admin/AdminInquiries';
 import AdminRoadDetail from './pages/admin/AdminRoadDetail';
 import RequireAdmin from './components/auth/RequireAdmin';
+import RequireAuth from './components/auth/RequireAuth';
 import RedirectAdminHome from './components/auth/RedirectAdminHome';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
 
@@ -31,18 +32,20 @@ function App() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route element={<RedirectAdminHome />}>
-          <Route path="/" element={<MainMap />} />
-        </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-        <Route path="/report" element={<Report />} />
-        <Route path="/my-reports" element={<MyReports />} />
-        <Route path="/inquiry" element={<Inquiry />} />
         <Route path="/find-id" element={<FindId />} />
         <Route path="/find-password" element={<FindPassword />} />
 
+        <Route element={<RequireAuth />}>
+          <Route element={<RedirectAdminHome />}>
+            <Route path="/" element={<MainMap />} />
+          </Route>
+          <Route path="/report" element={<Report />} />
+          <Route path="/my-reports" element={<MyReports />} />
+          <Route path="/inquiry" element={<Inquiry />} />
+        </Route>
 
         <Route element={<RequireAdmin />}>
           <Route path="/admin" element={<AdminDashboard />} />
