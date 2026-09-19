@@ -24,7 +24,7 @@ export default function MainMapDetailModal({ pin, onClose }) {
           <div className="text-sm text-slate-500 mb-3.5">{pin.address}</div>
 
           <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
-            <span className="text-slate-500">심각도</span>
+            <span className="text-slate-500">위험도</span>
             <span style={{ color: SEVERITY_META[pin.severity].dotColor, fontWeight: 700 }}>
               {SEVERITY_META[pin.severity].label}
             </span>

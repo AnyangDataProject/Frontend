@@ -91,7 +91,7 @@ export default function Report() {
       return;
     }
     if (!severity) {
-      showError("파손 심각도를 선택해주세요.");
+      showError("위험도를 선택해주세요.");
       return;
     }
     if (!agree) {

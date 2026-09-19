@@ -39,6 +39,7 @@ export default function ReportDamageTypeStep({ value, onChange }) {
         </div>
         <p className="m-0 text-slate-500 text-xs leading-[1.6] text-left">
           선택한 유형은 참고용입니다. 신고 사진은 AI가 별도로 분석하여 파손 유형을 판별합니다.
+          <br />
           현재 AI는 위 4가지 도로 노면 파손 유형만 인식할 수 있어, 그 외 시설물 파손은 아직 자동 분석 결과가 제공되지 않을 수 있습니다.
         </p>
       </div>
