@@ -27,6 +27,11 @@ export const STATUS_TO_UI = {
   rejected: "done",
 };
 
+// 관리자 화면의 상태 라벨/배지용 키. 필터 탭·집계는 반려를 처리완료(done)로 묶지만
+// 라벨은 "처리완료"가 아니라 "반려"로 보여줘야 해서 별도 키를 씀.
+export const toStatusLabelKey = (status) =>
+  status === "rejected" ? "rejected" : (STATUS_TO_UI[status] ?? "received");
+
 export const INQUIRY_TYPE_TO_BACKEND = {
   report: "REPORT",
   result: "RESULT",

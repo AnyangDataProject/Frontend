@@ -60,6 +60,7 @@ export const REPORT_STATUS_UI_META = {
   received: { label: '접수됨', tone: 'info' },
   progress: { label: '처리중', tone: 'warning' },
   done: { label: '처리완료', tone: 'success' },
+  rejected: { label: '반려', tone: 'danger' },
 };
 
 export const MEMBER_STATUS_META = {

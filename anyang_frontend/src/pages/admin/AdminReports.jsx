@@ -9,7 +9,7 @@ import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchAllReports, updateReportStatusAdmin } from '../../api/report';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { SEVERITY_TO_UI, STATUS_TO_UI, REJECT_OPTION } from '../../api/enumMapping';
+import { SEVERITY_TO_UI, toStatusLabelKey, REJECT_OPTION } from '../../api/enumMapping';
 import { DAMAGE_TYPE_META } from '../../mocks/admin/constants';
 
 export default function AdminReports() {
@@ -25,7 +25,7 @@ export default function AdminReports() {
 
   const filtered = useListFilter(reports, (r) => {
     const kw = keyword.trim().toLowerCase();
-    const uiStatus = STATUS_TO_UI[r.status] ?? 'received';
+    const uiStatus = toStatusLabelKey(r.status);
     const uiSeverity = SEVERITY_TO_UI[r.severity] ?? 'low';
     const matchesStatus = statusFilter === 'all' || uiStatus === statusFilter;
     const matchesType = typeFilter === 'all' || r.type === typeFilter;

@@ -14,7 +14,7 @@ import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META, PRIORITY_GRADE_META } from '../../mocks/admin/constants';
-import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
+import { SEVERITY_TO_UI, toStatusLabelKey } from '../../api/enumMapping';
 
 // PRIORITY_GRADE_META에는 아이콘/카드 문구 같은 페이지 전용 표시 정보가 없어서
 // 여기서만 보강한다. 등급 종류·label·tone 자체는 PRIORITY_GRADE_META가 기준.
@@ -126,7 +126,7 @@ export default function AdminPriority() {
               const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
               const DamageIcon = damageType.icon;
               const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
-              const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
+              const uiStatus = toStatusLabelKey(report.status);
 
               return (
                 <li key={report.id}>

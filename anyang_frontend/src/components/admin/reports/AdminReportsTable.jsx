@@ -11,6 +11,7 @@ const STATUS_TABS = [
   { key: 'received', label: '접수됨' },
   { key: 'progress', label: '처리중' },
   { key: 'done', label: '처리완료' },
+  { key: 'rejected', label: '반려' },
 ];
 
 const PAGE_SIZE = 15;

@@ -23,7 +23,7 @@ import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
 import ConfirmModal from '../../components/common/ConfirmModal';
-import { SEVERITY_TO_UI, STATUS_TO_UI, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../api/enumMapping';
+import { SEVERITY_TO_UI, toStatusLabelKey, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../api/enumMapping';
 
 export default function AdminReportDetail() {
   const { id } = useParams();
@@ -62,7 +62,7 @@ export default function AdminReportDetail() {
   }
 
   const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
-  const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
+  const uiStatus = toStatusLabelKey(report.status);
   const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
   const rawStatus = (report.status ?? 'received').toUpperCase();
   const statusOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
