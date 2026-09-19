@@ -4,7 +4,7 @@ import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import Pagination from '../Pagination';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META } from '../../../mocks/admin/constants';
-import { SEVERITY_TO_UI, NEXT_STATUS_OPTIONS } from '../../../api/enumMapping';
+import { SEVERITY_TO_UI, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../../api/enumMapping';
 
 const STATUS_TABS = [
   { key: 'all', label: '전체' },
@@ -72,7 +72,8 @@ export default function AdminReportsTable({
                 {paged.map((r) => {
                   const uiSeverity = SEVERITY_TO_UI[r.severity] ?? 'low';
                   const rawStatus = (r.status ?? 'received').toUpperCase();
-                  const options = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+                  const nextOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+                  const options = canReject(rawStatus) ? [...nextOptions, REJECT_OPTION] : nextOptions;
                   const damageType = DAMAGE_TYPE_META[r.type] ?? { label: r.type ?? '-' };
 
                   return (

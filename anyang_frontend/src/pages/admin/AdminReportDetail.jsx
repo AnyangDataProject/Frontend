@@ -22,7 +22,8 @@ import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
 import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
-import { SEVERITY_TO_UI, STATUS_TO_UI, NEXT_STATUS_OPTIONS } from '../../api/enumMapping';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import { SEVERITY_TO_UI, STATUS_TO_UI, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../api/enumMapping';
 
 export default function AdminReportDetail() {
   const { id } = useParams();
@@ -30,6 +31,7 @@ export default function AdminReportDetail() {
 
   const { data: report, setData: setReport, notFound, error } = useAdminDetailQuery(fetchReportById, id);
   const [advancing, setAdvancing] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
 
   if (notFound) {
     return (
@@ -66,16 +68,16 @@ export default function AdminReportDetail() {
   const statusOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
   const nextStep = statusOptions[1];
 
-  const handleAdvance = async () => {
-    if (!nextStep) return;
+  const changeStatus = async (value) => {
     setAdvancing(true);
     try {
-      await updateReportStatusAdmin(report.id, nextStep.value);
-      setReport({ ...report, status: nextStep.value.toLowerCase() });
+      await updateReportStatusAdmin(report.id, value);
+      setReport({ ...report, status: value.toLowerCase() });
     } catch (err) {
       alert(err.message || '신고 상태 변경에 실패했습니다.');
     } finally {
       setAdvancing(false);
+      setRejectOpen(false);
     }
   };
 
@@ -96,16 +98,27 @@ export default function AdminReportDetail() {
           </div>
           <p className="mt-1 text-sm text-slate-500">{damageType.label} 신고 상세 및 AI 검수</p>
         </div>
-        {nextStep && (
-          <button
-            onClick={handleAdvance}
-            disabled={advancing}
-            className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
-          >
-            {advancing ? '처리 중...' : `${nextStep.label}(으)로 진행`}
-            <ChevronRight size={15} />
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          {canReject(rawStatus) && (
+            <button
+              onClick={() => setRejectOpen(true)}
+              disabled={advancing}
+              className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-60"
+            >
+              {REJECT_OPTION.label}
+            </button>
+          )}
+          {nextStep && (
+            <button
+              onClick={() => changeStatus(nextStep.value)}
+              disabled={advancing}
+              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
+            >
+              {advancing ? '처리 중...' : `${nextStep.label}(으)로 진행`}
+              <ChevronRight size={15} />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
@@ -191,6 +204,17 @@ export default function AdminReportDetail() {
           </Card>
         </div>
       </div>
+
+      <ConfirmModal
+        open={rejectOpen}
+        title={`신고 #${report.id}을(를) 반려하시겠습니까?`}
+        description="반려한 신고는 화면에서 다시 다른 상태로 변경할 수 없습니다."
+        confirmLabel="반려"
+        tone="danger"
+        loading={advancing}
+        onConfirm={() => changeStatus(REJECT_OPTION.value)}
+        onCancel={() => setRejectOpen(false)}
+      />
     </AdminLayout>
   );
 }

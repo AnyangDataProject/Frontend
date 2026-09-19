@@ -58,3 +58,8 @@ export const NEXT_STATUS_OPTIONS = {
   COMPLETED: [{ value: "COMPLETED", label: "처리완료" }],
   REJECTED: [{ value: "REJECTED", label: "반려" }],
 };
+
+export const REJECT_OPTION = { value: "REJECTED", label: "반려" };
+
+// 처리완료/반려는 최종 상태라 반려로 보낼 수 없음
+export const canReject = (rawStatus) => rawStatus !== "COMPLETED" && rawStatus !== "REJECTED";
