@@ -46,6 +46,14 @@ export default function MainMapListPanel({
         >
           처리완료 <b className="font-extrabold ml-1">{counts.done}</b>
         </button>
+        <button
+          className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+            statusFilter === "rejected" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
+          }`}
+          onClick={() => onStatusFilterChange("rejected")}
+        >
+          반려 <b className="font-extrabold ml-1">{counts.rejected}</b>
+        </button>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto px-4 py-3 border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

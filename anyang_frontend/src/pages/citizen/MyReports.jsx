@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Camera, CheckCircle2, Clock, Wrench, FileText } from "lucide-react";
+import { Camera, CheckCircle2, Clock, Wrench, FileText, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/citizen/BackButton";
 import PageHeader from "../../components/citizen/PageHeader";
@@ -15,6 +15,7 @@ const STATUS_FILTER_TABS = [
   { value: "received", label: "접수됨" },
   { value: "progress", label: "처리중" },
   { value: "done", label: "완료" },
+  { value: "rejected", label: "반려" },
 ];
 
 function MyReports() {
@@ -31,6 +32,7 @@ function MyReports() {
       received: reports.filter((r) => r.status === "received").length,
       progress: reports.filter((r) => r.status === "progress").length,
       done: reports.filter((r) => r.status === "done").length,
+      rejected: reports.filter((r) => r.status === "rejected").length,
     };
   }, [reports]);
 
@@ -68,7 +70,7 @@ function MyReports() {
           }
         />
 
-        <section className="mb-9 grid grid-cols-4 gap-3 max-[800px]:grid-cols-2">
+        <section className="mb-9 grid grid-cols-5 gap-3 max-[800px]:grid-cols-2">
           <StatFilterCard
             icon={FileText}
             iconClass="bg-slate-100 text-slate-600"
@@ -103,6 +105,15 @@ function MyReports() {
             count={counts.done}
             active={statusFilter === "done"}
             onClick={() => setStatusFilter("done")}
+          />
+
+          <StatFilterCard
+            icon={XCircle}
+            iconClass="bg-red-50 text-red-600"
+            label="반려"
+            count={counts.rejected}
+            active={statusFilter === "rejected"}
+            onClick={() => setStatusFilter("rejected")}
           />
         </section>
 

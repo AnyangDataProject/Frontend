@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Clock, Wrench, CheckCircle2 } from "lucide-react";
+import { Clock, Wrench, CheckCircle2, XCircle } from "lucide-react";
 
 const STEPS = [
   { key: "received", icon: Clock, label: "접수", isActive: (status) => ["received", "progress", "done"].includes(status) },
@@ -8,6 +8,15 @@ const STEPS = [
 ];
 
 export default function ReportStatusSteps({ status }) {
+  if (status === "rejected") {
+    return (
+      <div className="mb-7 flex items-center justify-center gap-2 rounded-xl bg-red-50 px-5 py-4 text-sm font-medium text-red-600 max-[520px]:p-3">
+        <XCircle size={16} />
+        반려된 신고입니다
+      </div>
+    );
+  }
+
   return (
     <div className="mb-7 flex items-center justify-between rounded-xl bg-slate-50 px-5 py-4 max-[520px]:p-3">
       {STEPS.map((step, index) => {

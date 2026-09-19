@@ -1,4 +1,4 @@
-import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2 } from "lucide-react";
+import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2, XCircle } from "lucide-react";
 
 // 파손 유형 (Report/MainMap/MyReports 공통)
 // AI가 실제로 지원하는 4종(longitudinal_crack/transverse_crack/alligator_crack/pothole) 외에
@@ -90,4 +90,5 @@ export const REPORT_STATUS_META = {
   received: { label: "접수됨", icon: Clock, color: "#2563eb", textClass: "text-blue-600" },
   progress: { label: "처리중", icon: Wrench, color: "#d97706", textClass: "text-amber-600" },
   done: { label: "처리완료", icon: CheckCircle2, color: "#059669", textClass: "text-emerald-600" },
+  rejected: { label: "반려", icon: XCircle, color: "#dc2626", textClass: "text-red-600" },
 };

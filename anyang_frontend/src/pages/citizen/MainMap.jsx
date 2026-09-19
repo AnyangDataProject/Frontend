@@ -26,7 +26,7 @@ export default function MainMap() {
   const navigate = useNavigate();
   const [listOpen, setListOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [statusFilter, setStatusFilter] = useState("all"); // all | open | done
+  const [statusFilter, setStatusFilter] = useState("all"); // all | open | done | rejected
   const [typeFilter, setTypeFilter] = useState("all");
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
@@ -35,16 +35,18 @@ export default function MainMap() {
   const counts = useMemo(
     () => ({
       all: pins.length,
-      open: pins.filter((p) => p.status !== "done").length,
+      open: pins.filter((p) => p.status === "received" || p.status === "progress").length,
       done: pins.filter((p) => p.status === "done").length,
+      rejected: pins.filter((p) => p.status === "rejected").length,
     }),
     [pins]
   );
 
   const filteredPins = useMemo(() => {
     let list = pins;
-    if (statusFilter === "open") list = list.filter((p) => p.status !== "done");
+    if (statusFilter === "open") list = list.filter((p) => p.status === "received" || p.status === "progress");
     if (statusFilter === "done") list = list.filter((p) => p.status === "done");
+    if (statusFilter === "rejected") list = list.filter((p) => p.status === "rejected");
     if (typeFilter !== "all") list = list.filter((p) => p.type === typeFilter);
     return list;
   }, [statusFilter, typeFilter, pins]);

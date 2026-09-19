@@ -1,4 +1,4 @@
-import { SEVERITY_TO_UI, STATUS_TO_UI } from '../api/enumMapping';
+import { SEVERITY_TO_UI, toStatusLabelKey } from '../api/enumMapping';
 
 // 신고 상세 DTO(api/report.js에서 casing이 이미 정규화된 값)를 화면에서 쓰는
 // 공통 뷰모델로 변환. MainMap(지도 핀)과 MyReports(내 신고현황)가 각자
@@ -9,7 +9,7 @@ export function toReportViewModel(dto) {
     id: dto.id,
     type: dto.type,
     severity: SEVERITY_TO_UI[dto.severity] ?? 'low',
-    status: STATUS_TO_UI[dto.status] ?? 'received',
+    status: toStatusLabelKey(dto.status),
     address: dto.address,
     description: dto.description,
     reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : '',
