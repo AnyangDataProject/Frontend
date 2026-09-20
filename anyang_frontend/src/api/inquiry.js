@@ -51,12 +51,22 @@ export async function fetchInquiryDetail(id) {
   return dto ? mapInquiryDetail(dto) : null;
 }
 
+// 수정/답변 요청이 이미 성공한 뒤의 재조회는 실패해도 전체를 실패로 보이게 하면 안 된다
+// (사용자가 실패로 오해하고 재시도함). 재조회 실패는 null로 돌려주고, 호출부가 화면에 직접 반영한다.
+async function refetchInquiryDetail(id) {
+  try {
+    return await fetchInquiryDetail(id);
+  } catch {
+    return null;
+  }
+}
+
 export async function updateInquiry(id, { title, content }) {
   await apiRequest(`/inquiries/${id}`, {
     method: 'PUT',
     body: { title: title.trim(), content: content.trim() },
   });
-  return fetchInquiryDetail(id);
+  return refetchInquiryDetail(id);
 }
 
 export async function deleteInquiry(id) {
@@ -68,7 +78,7 @@ export async function submitInquiryAnswer(id, answerText) {
     method: 'PUT',
     body: { answer: answerText.trim() },
   });
-  return fetchInquiryDetail(id);
+  return refetchInquiryDetail(id);
 }
 
 export async function submitInquiry({ inquiryType, title, content, email, files }) {

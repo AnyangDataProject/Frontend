@@ -70,11 +70,15 @@ export default function AdminInquiries() {
   const handleAnswerSubmit = async () => {
     if (!answer.trim()) return;
     setSubmitting(true);
+    const id = selectedInquiry.id;
     try {
-      const updated = await submitInquiryAnswer(selectedInquiry.id, answer);
-      if (!updated) throw new Error('답변은 등록되었지만 최신 내용을 불러오지 못했습니다. 새로고침해주세요.');
-      setSelectedInquiry(updated);
-      setInquiries((prev) => prev.map((i) => (i.id === updated.id ? { ...i, status: updated.status } : i)));
+      // 재조회에 실패해도(null) 답변 자체는 등록된 것이라 입력한 답변을 그대로 화면에 반영한다
+      const updated =
+        (await submitInquiryAnswer(id, answer)) ??
+        { ...selectedInquiry, status: 'answered', answer: answer.trim() };
+      // 응답을 기다리는 사이 모달이 닫혔거나 다른 문의가 열렸다면 덮어쓰지 않는다
+      setSelectedInquiry((prev) => (prev?.id === id ? updated : prev));
+      setInquiries((prev) => prev.map((i) => (i.id === id ? { ...i, status: updated.status } : i)));
     } catch (err) {
       alert(err.message || '답변 등록에 실패했습니다.');
     } finally {
