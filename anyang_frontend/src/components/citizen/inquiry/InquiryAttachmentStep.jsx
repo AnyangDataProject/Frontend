@@ -12,7 +12,17 @@ export default function InquiryAttachmentStep({ files, onChange, onRemove }) {
       description="문의 내용을 설명하는 사진이나 파일을 첨부할 수 있습니다."
       card={false}
     >
-      <input ref={fileInputRef} type="file" multiple hidden onChange={onChange} />
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        hidden
+        onChange={(e) => {
+          onChange(e);
+          // 같은 파일을 지웠다가 다시 고를 수 있도록 선택값을 비움
+          e.target.value = "";
+        }}
+      />
 
       <button
         type="button"
