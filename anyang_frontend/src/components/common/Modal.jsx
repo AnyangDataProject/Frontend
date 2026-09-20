@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-export default function Modal({ open, onClose, children, className = "", closeDisabled = false }) {
+export default function Modal({ open, onClose, children, className = "", closeDisabled = false, zIndexClass = "z-50" }) {
   if (!open) return null;
 
   const handleBackdropClick = () => {
@@ -9,7 +9,7 @@ export default function Modal({ open, onClose, children, className = "", closeDi
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-5 animate-[modalFadeIn_0.2s_ease] max-[480px]:p-0 max-[480px]:items-end"
+      className={`fixed inset-0 ${zIndexClass} bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-5 animate-[modalFadeIn_0.2s_ease] max-[480px]:p-0 max-[480px]:items-end`}
       onClick={handleBackdropClick}
     >
       <div

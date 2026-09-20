@@ -22,6 +22,7 @@ export default function ConfirmModal({
   cancelLabel = '취소',
   tone = 'default',
   loading = false,
+  zIndexClass,
   onConfirm,
   onCancel,
 }) {
@@ -30,7 +31,7 @@ export default function ConfirmModal({
   const { icon: Icon, iconClass, buttonClass } = VARIANTS[tone];
 
   return (
-    <Modal open={open} onClose={onCancel} closeDisabled={loading} className="px-6 pt-9 pb-6 text-center">
+    <Modal open={open} onClose={onCancel} closeDisabled={loading} zIndexClass={zIndexClass} className="px-6 pt-9 pb-6 text-center">
       <div className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full ${iconClass}`}>
         <Icon size={26} />
       </div>
