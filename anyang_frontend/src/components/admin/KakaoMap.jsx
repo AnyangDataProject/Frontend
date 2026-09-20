@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Map, CustomOverlayMap } from 'react-kakao-maps-sdk';
 import { ANYANG_BOUNDS } from '../../mocks/admin/constants';
 import { TONE_DOT_CLASSES } from './toneClasses';
@@ -44,7 +44,8 @@ export default function KakaoMap({
   showLegend = true,
 }) {
   const [hoveredId, setHoveredId] = useState(null);
-  const mapRef = useRef(null);
+  // ref는 SDK가 지도를 만들기 전(첫 effect 실행 시점)에는 비어 있어서, onCreate로 받아 상태로 들고 있는다
+  const [map, setMap] = useState(null);
 
   // 좌표가 없거나 숫자가 아닌 포인트가 하나 섞여 있어도 전체 지도가 깨지지 않도록 걸러낸다
   // (좌표가 아직 지오코딩되지 않은 실제 API 데이터가 들어올 가능성을 대비).
@@ -60,15 +61,15 @@ export default function KakaoMap({
   // 포인트가 여러 개면 지정된 level 대신 모든 마커가 화면 안에 들어오도록 자동으로 맞춘다.
   // (포인트가 1개뿐인 도로 상세 페이지 등에서는 호출부가 지정한 level을 그대로 존중한다.)
   useEffect(() => {
-    if (!mapRef.current || validPoints.length < 2 || !window.kakao?.maps) return;
+    if (!map || validPoints.length < 2 || !window.kakao?.maps) return;
     const bounds = new window.kakao.maps.LatLngBounds();
     validPoints.forEach((p) => bounds.extend(new window.kakao.maps.LatLng(p.lat, p.lng)));
-    mapRef.current.setBounds(bounds);
-  }, [validPoints]);
+    map.setBounds(bounds);
+  }, [map, validPoints]);
 
   return (
     <div className="relative w-full overflow-hidden rounded-lg border border-slate-200" style={{ height }}>
-      <Map ref={mapRef} center={center} level={level} style={{ width: '100%', height: '100%' }}>
+      <Map onCreate={setMap} center={center} level={level} style={{ width: '100%', height: '100%' }}>
         {validPoints.map((point) => {
           const isActive = selectedId === point.id;
           const isHovered = hoveredId === point.id;
