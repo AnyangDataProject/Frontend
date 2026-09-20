@@ -11,6 +11,7 @@ import KakaoMap from '../../components/admin/KakaoMap';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
 import { fetchClusterDetail, fetchMonthlyDamage } from '../../api/inspectionClusters';
+import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
 import { formatDecimal } from '../../utils/number';
 import { clusterToMapPoint } from '../../utils/clusterMapPoint';
@@ -23,32 +24,24 @@ export default function AdminRoadDetail() {
   const { id: cluster } = useParams();
   const navigate = useNavigate();
 
-  const [road, setRoad] = useState(null);
+  // 구간 조회 실패(서버/네트워크 오류)를 "존재하지 않음"으로 오표시하지 않도록
+  // 신고 상세와 같은 공용 훅으로 notFound/error를 구분한다.
+  const { data: road, notFound, error } = useAdminDetailQuery(fetchClusterDetail, cluster);
   const [monthlyDamage, setMonthlyDamage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [monthlyError, setMonthlyError] = useState(false);
 
   useEffect(() => {
     if (!cluster) return;
     let active = true;
 
-    fetchClusterDetail(cluster)
-      .then((data) => {
-        if (active) setRoad(data);
-      })
-      .catch(() => {
-        if (active) setNotFound(true);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
     fetchMonthlyDamage(cluster, new Date().getFullYear())
       .then((data) => {
-        if (active) setMonthlyDamage(data);
+        if (!active) return;
+        setMonthlyError(false);
+        setMonthlyDamage(data ?? []);
       })
       .catch(() => {
-        if (active) setMonthlyDamage([]);
+        if (active) setMonthlyError(true);
       });
 
     return () => {
@@ -71,7 +64,17 @@ export default function AdminRoadDetail() {
     );
   }
 
-  if (loading || !road) {
+  if (error) {
+    return (
+      <AdminLayout title="도로 상세 분석">
+        <Card>
+          <EmptyState title="구간 정보를 불러오지 못했습니다" description={error.message} />
+        </Card>
+      </AdminLayout>
+    );
+  }
+
+  if (!road) {
     return (
       <AdminLayout title="도로 상세 분석">
         <LoadingState />
@@ -184,7 +187,9 @@ export default function AdminRoadDetail() {
         title="월별 도로 파손 현황"
         description="해당 분석 구간 반경 150m 이내 시민 신고 기준"
       >
-        {!monthlyDamage ? (
+        {monthlyError ? (
+          <EmptyState title="월별 파손 이력을 불러오지 못했습니다" />
+        ) : !monthlyDamage ? (
           <LoadingState />
         ) : monthlyDamage.length === 0 ? (
           <EmptyState title="월별 파손 이력이 없습니다" />
