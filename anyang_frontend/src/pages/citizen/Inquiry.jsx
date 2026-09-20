@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { MessageSquarePlus, MessageSquareText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../../components/citizen/BackButton";
@@ -17,7 +17,8 @@ const STATUS_FILTER_TABS = [
   { value: "answered", label: "답변 완료" },
 ];
 
-// 상세 모달(z-[1000]) 위에 떠야 하는 확인/오류 모달용
+// 헤더가 z-[1000]이라 상세 모달도 그 위에 떠야 하고, 삭제 확인/오류 모달은 다시 상세 모달 위에 떠야 한다
+const DETAIL_MODAL_Z = "z-[1000]";
 const ABOVE_DETAIL_MODAL = "z-[1100]";
 
 function Inquiry() {
@@ -28,6 +29,8 @@ function Inquiry() {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const { modal, showError, close: closeModal } = useMessageModal();
+  // 카드를 연달아 누르면 상세 조회가 겹치므로, 가장 마지막에 누른 요청의 응답만 반영한다
+  const openRequestRef = useRef(0);
 
   const filteredInquiries = useMemo(() => {
     if (!inquiries) return [];
@@ -36,11 +39,14 @@ function Inquiry() {
 
   // 목록 응답에는 내용/답변이 없어서 카드를 열 때 상세를 따로 조회한다
   const openInquiry = async (inquiry) => {
+    const requestId = ++openRequestRef.current;
     try {
       const detail = await fetchInquiryDetail(inquiry.id);
+      if (requestId !== openRequestRef.current) return;
       if (!detail) throw new Error("문의 내용을 찾을 수 없습니다.");
       setSelectedInquiry(detail);
     } catch (err) {
+      if (requestId !== openRequestRef.current) return;
       showError(err.message || "문의 상세를 불러오지 못했습니다.");
     }
   };
@@ -153,6 +159,7 @@ function Inquiry() {
       {selectedInquiry && (
         <InquiryDetailModal
           inquiry={selectedInquiry}
+          zIndexClass={DETAIL_MODAL_Z}
           onClose={() => setSelectedInquiry(null)}
           onUpdate={handleUpdate}
           onDelete={() => setDeleteConfirmOpen(true)}

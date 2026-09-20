@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-export default function Modal({ open, onClose, children, className = "", closeDisabled = false, zIndexClass = "z-50" }) {
+export default function Modal({ open, onClose, children, className = "", closeDisabled = false, zIndexClass = "z-50", widthClass = "max-w-[420px]" }) {
   if (!open) return null;
 
   const handleBackdropClick = () => {
@@ -13,7 +13,7 @@ export default function Modal({ open, onClose, children, className = "", closeDi
       onClick={handleBackdropClick}
     >
       <div
-        className={`relative w-full max-w-[420px] bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-[modalScaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)] max-[480px]:max-w-full max-[480px]:rounded-b-none ${className}`}
+        className={`relative w-full ${widthClass} bg-white rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-[modalScaleUp_0.25s_cubic-bezier(0.16,1,0.3,1)] max-[480px]:max-w-full max-[480px]:rounded-b-none ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         <button
