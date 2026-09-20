@@ -5,6 +5,14 @@ const TYPE_FILTER_OPTIONS = [
   ...REPORTABLE_DAMAGE_TYPES.map((value) => ({ value, label: DAMAGE_TYPE_META[value].label })),
 ];
 
+// value는 MainMap의 statusFilter/counts 키와 같다
+const STATUS_FILTER_OPTIONS = [
+  { value: "all", label: "전체 신고" },
+  { value: "open", label: "미처리" },
+  { value: "done", label: "처리완료" },
+  { value: "rejected", label: "반려" },
+];
+
 export default function MainMapListPanel({
   open,
   counts,
@@ -22,38 +30,19 @@ export default function MainMapListPanel({
       }`}
     >
       <div className="flex gap-1.5 px-4 pt-4">
-        <button
-          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
-            statusFilter === "all" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
-          }`}
-          onClick={() => onStatusFilterChange("all")}
-        >
-          전체 신고 <b className="font-extrabold ml-1">{counts.all}</b>
-        </button>
-        <button
-          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
-            statusFilter === "open" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
-          }`}
-          onClick={() => onStatusFilterChange("open")}
-        >
-          미처리 <b className="font-extrabold ml-1">{counts.open}</b>
-        </button>
-        <button
-          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
-            statusFilter === "done" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
-          }`}
-          onClick={() => onStatusFilterChange("done")}
-        >
-          처리완료 <b className="font-extrabold ml-1">{counts.done}</b>
-        </button>
-        <button
-          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
-            statusFilter === "rejected" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
-          }`}
-          onClick={() => onStatusFilterChange("rejected")}
-        >
-          반려 <b className="font-extrabold ml-1">{counts.rejected}</b>
-        </button>
+        {STATUS_FILTER_OPTIONS.map((opt) => (
+          <button
+            key={opt.value}
+            className={`flex-1 whitespace-nowrap border px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+              statusFilter === opt.value
+                ? "border-blue-600 bg-blue-50 text-blue-600"
+                : "border-transparent bg-slate-50 text-slate-500"
+            }`}
+            onClick={() => onStatusFilterChange(opt.value)}
+          >
+            {opt.label} <b className="font-extrabold ml-1">{counts[opt.value]}</b>
+          </button>
+        ))}
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto px-4 py-3 border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

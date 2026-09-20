@@ -12,7 +12,7 @@ export default function SegmentedToggle({ options, value, onChange, size = "md" 
             key={option.value}
             type="button"
             className={`flex items-center gap-1.5 border-none rounded-full font-semibold cursor-pointer whitespace-nowrap transition-all duration-200 ${sizeClass} ${
-              active ? "bg-slate-900 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
+              active ? "bg-blue-600 text-white" : "bg-transparent text-slate-500 hover:text-slate-900"
             }`}
             onClick={() => onChange(option.value)}
           >
