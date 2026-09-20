@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { LocateFixed } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Map } from "react-kakao-maps-sdk";
@@ -10,45 +10,23 @@ import MainMapDetailModal from "../../components/citizen/main-map/MainMapDetailM
 import { useKakaoGeocoder } from "../../hooks/citizen/useKakaoGeocoder";
 import { useCurrentLocation } from "../../hooks/citizen/useCurrentLocation";
 import { getMyReports } from "../../api/report";
-import { SEVERITY_TO_UI, STATUS_TO_UI } from "../../api/enumMapping";
-
-function toMapPin(dto) {
-  return {
-    id: dto.id,
-    lat: Number(dto.latitude),
-    lng: Number(dto.longitude),
-    type: dto.type,
-    severity: SEVERITY_TO_UI[dto.severity] ?? "low",
-    status: STATUS_TO_UI[dto.status] ?? "received",
-    address: dto.address,
-    description: dto.description,
-    aiConfidence: dto.aiConfidence, 
-    reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",   
-    reporter: dto.userName,
-    photoUrl: dto.images?.[0]?.imageUrl ?? "",
-  };
-}
+import { toReportViewModel } from "../../utils/reportViewModel";
+import { useListQuery } from "../../hooks/useListQuery";
 
 const DEFAULT_CENTER = { lat: 37.3943, lng: 126.9568 };
 
 export default function MainMap() {
-const [pins, setPins] = useState([]);
+  const { data: rawPins, error: pinsError } = useListQuery(getMyReports);
+  const pins = useMemo(() => (rawPins ?? []).map(toReportViewModel), [rawPins]);
 
-useEffect(() => {
-  getMyReports()
-    .then((data) => setPins(data.map(toMapPin)))
-    .catch((err) => {
-      console.error('신고 마커를 불러오지 못했습니다.', err);
-      setPins([]);
-    });
-}, []);
+  useEffect(() => {
+    if (pinsError) console.error('신고 마커를 불러오지 못했습니다.', pinsError);
+  }, [pinsError]);
 
   const navigate = useNavigate();
   const [listOpen, setListOpen] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [selectedRisk, setSelectedRisk] = useState(null);
-  const [layer, setLayer] = useState("current"); // current | prediction
-  const [statusFilter, setStatusFilter] = useState("all"); // all | open | done
+  const [statusFilter, setStatusFilter] = useState("all"); // all | open | done | rejected
   const [typeFilter, setTypeFilter] = useState("all");
   const [center, setCenter] = useState(DEFAULT_CENTER);
   const [searchText, setSearchText] = useState("");
@@ -57,16 +35,18 @@ useEffect(() => {
   const counts = useMemo(
     () => ({
       all: pins.length,
-      open: pins.filter((p) => p.status !== "done").length,
+      open: pins.filter((p) => p.status === "received" || p.status === "progress").length,
       done: pins.filter((p) => p.status === "done").length,
+      rejected: pins.filter((p) => p.status === "rejected").length,
     }),
     [pins]
   );
 
   const filteredPins = useMemo(() => {
     let list = pins;
-    if (statusFilter === "open") list = list.filter((p) => p.status !== "done");
+    if (statusFilter === "open") list = list.filter((p) => p.status === "received" || p.status === "progress");
     if (statusFilter === "done") list = list.filter((p) => p.status === "done");
+    if (statusFilter === "rejected") list = list.filter((p) => p.status === "rejected");
     if (typeFilter !== "all") list = list.filter((p) => p.type === typeFilter);
     return list;
   }, [statusFilter, typeFilter, pins]);
@@ -96,12 +76,6 @@ useEffect(() => {
     });
   };
 
-  const handleLayerChange = (v) => {
-    setLayer(v);
-    setSelected(null);
-    setSelectedRisk(null);
-  };
-
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-white pt-[72px] max-[768px]:pt-16">
       <style>{`
@@ -117,8 +91,6 @@ useEffect(() => {
             onSearchTextChange={setSearchText}
             onSearchSubmit={handleSearch}
             searchError={searchError}
-            layer={layer}
-            onLayerChange={handleLayerChange}
             onReport={() => navigate("/report")}
           />
 
@@ -126,19 +98,9 @@ useEffect(() => {
             center={center}
             style={{ width: "100%", height: "100%" }}
             level={7}
-            onClick={() => {
-              setSelected(null);
-              setSelectedRisk(null);
-            }}
+            onClick={() => setSelected(null)}
           >
-            <MainMapOverlays
-              layer={layer}
-              pins={filteredPins}
-              selectedPin={selected}
-              onSelectPin={setSelected}
-              selectedRisk={selectedRisk}
-              onSelectRisk={setSelectedRisk}
-            />
+            <MainMapOverlays pins={filteredPins} selectedPin={selected} onSelectPin={setSelected} />
           </Map>
 
           <button
@@ -149,7 +111,7 @@ useEffect(() => {
             <LocateFixed size={16} />
           </button>
 
-          <MainMapLegend layer={layer} />
+          <MainMapLegend />
         </div>
 
         <MainMapListPanel
@@ -164,11 +126,7 @@ useEffect(() => {
         />
       </div>
 
-      <MainMapDetailModal
-        pin={selected}
-        onClose={() => setSelected(null)}
-        onViewAnalysis={(pin) => navigate("/ai-analysis", { state: { report: pin } })}
-      />
+      <MainMapDetailModal pin={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

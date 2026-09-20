@@ -5,12 +5,12 @@ import Card from '../../components/admin/Card';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import AdminMembersFilters from '../../components/admin/members/AdminMembersFilters';
 import AdminMembersTable from '../../components/admin/members/AdminMembersTable';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchMembers, updateMemberStatus } from '../../api/admin';
 
 export default function AdminMembers() {
-  const { data: members, setData: setMembers, error } = useAdminListQuery(fetchMembers);
+  const { data: members, setData: setMembers, error } = useListQuery(fetchMembers);
   const [keyword, setKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [pendingId, setPendingId] = useState(null);

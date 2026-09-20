@@ -1,7 +1,27 @@
-import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2 } from "lucide-react";
+import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2, XCircle } from "lucide-react";
 
-// 파손 유형 (Report/MainMap/MyReports/AiAnalysis 공통)
+// 파손 유형 (Report/MainMap/MyReports 공통)
+// AI가 실제로 지원하는 4종(longitudinal_crack/transverse_crack/alligator_crack/pothole) 외에
+// crack/sign/manhole은 과거에 신고된 데이터를 화면에 표시하기 위해 남겨둔 값
 export const DAMAGE_TYPE_META = {
+  longitudinal_crack: {
+    label: "종방향 균열",
+    icon: Construction,
+    description: "도로 진행 방향과 나란한 균열",
+    analysisDescription: "도로 진행 방향과 나란하게 균열이 발생한 상태입니다.",
+  },
+  transverse_crack: {
+    label: "횡방향 균열",
+    icon: Construction,
+    description: "도로 진행 방향과 수직인 균열",
+    analysisDescription: "도로 진행 방향과 수직으로 균열이 발생한 상태입니다.",
+  },
+  alligator_crack: {
+    label: "거북등 균열",
+    icon: Construction,
+    description: "거북이 등딱지 모양의 균열",
+    analysisDescription: "노면이 여러 갈래로 갈라져 거북등 형태를 띠는 파손입니다.",
+  },
   pothole: {
     label: "포트홀",
     icon: CircleDot,
@@ -28,7 +48,10 @@ export const DAMAGE_TYPE_META = {
   },
 };
 
-// 신고 건별 심각도 (도로 구간 위험도 예측인 ROAD_RISK_META와는 별개의 값)
+// 파손 신고하기 폼에서 선택 가능한 유형 (AI가 실제로 인식하는 4종으로 한정)
+export const REPORTABLE_DAMAGE_TYPES = ["longitudinal_crack", "transverse_crack", "alligator_crack", "pothole"];
+
+// 신고 건별 위험도
 export const SEVERITY_META = {
   low: {
     label: "낮음",
@@ -67,11 +90,5 @@ export const REPORT_STATUS_META = {
   received: { label: "접수됨", icon: Clock, color: "#2563eb", textClass: "text-blue-600" },
   progress: { label: "처리중", icon: Wrench, color: "#d97706", textClass: "text-amber-600" },
   done: { label: "처리완료", icon: CheckCircle2, color: "#059669", textClass: "text-emerald-600" },
-};
-
-// 도로 구간 위험도 예측 (MainMap 예측 레이어 전용, 신고 심각도 SEVERITY_META와는 별개)
-export const ROAD_RISK_META = {
-  low: { label: "LOW", color: "#10b981" },
-  mid: { label: "MID", color: "#f59e0b" },
-  high: { label: "HIGH", color: "#ef4444" },
+  rejected: { label: "반려", icon: XCircle, color: "#dc2626", textClass: "text-red-600" },
 };

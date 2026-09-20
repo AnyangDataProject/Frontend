@@ -8,8 +8,6 @@ export default function MainMapSearchHeader({
   onSearchTextChange,
   onSearchSubmit,
   searchError,
-  layer,
-  onLayerChange,
   onReport,
 }) {
   return (
@@ -39,18 +37,6 @@ export default function MainMapSearchHeader({
             aria-label="도로명 주소 검색"
           />
         </form>
-
-        <div className="pointer-events-auto shrink-0">
-          <SegmentedToggle
-            options={[
-              { value: "current", label: "현재" },
-              { value: "prediction", label: "예측" },
-            ]}
-            value={layer}
-            onChange={onLayerChange}
-            size="sm"
-          />
-        </div>
 
         <button
           className="pointer-events-auto ml-auto flex items-center gap-1.5 bg-blue-600 text-white border-none px-[18px] py-[9px] rounded-full text-sm font-semibold cursor-pointer shadow-[0_4px_14px_rgba(37,99,235,0.3)] shrink-0 whitespace-nowrap transition-all duration-200 hover:bg-blue-700 hover:-translate-y-px hover:shadow-[0_6px_18px_rgba(37,99,235,0.38)]"

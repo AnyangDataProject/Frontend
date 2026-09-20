@@ -10,21 +10,12 @@ export const ANYANG_BOUNDS = {
   maxLng: 127.008,
 };
 
-export const REPORT_STATUS_STEPS = [
-  { key: 'received', label: '신고접수' },
-  { key: 'assigned', label: '담당부서확인' },
-  { key: 'inspecting', label: '현장점검' },
-  { key: 'done', label: '처리완료' },
-];
-
-export const REPORT_STATUS_META = {
-  received: { label: '신고접수', tone: 'info' },
-  assigned: { label: '담당부서확인', tone: 'warning' },
-  inspecting: { label: '현장점검', tone: 'warning' },
-  done: { label: '처리완료', tone: 'success' },
-};
-
+// crack/subsidence/manhole/sign/lane은 AI가 지원하기 전 과거 데이터 표시용으로만 남겨둠
+// (신규 선택/필터 옵션에는 REPORTABLE_DAMAGE_TYPES만 사용)
 export const DAMAGE_TYPE_META = {
+  longitudinal_crack: { label: '종방향 균열', icon: Construction },
+  transverse_crack: { label: '횡방향 균열', icon: Construction },
+  alligator_crack: { label: '거북등 균열', icon: Construction },
   pothole: { label: '포트홀', icon: CircleDot },
   crack: { label: '노면 균열', icon: Construction },
   subsidence: { label: '도로 침하', icon: TrendingDown },
@@ -33,11 +24,8 @@ export const DAMAGE_TYPE_META = {
   lane: { label: '차선 마모', icon: Minus },
 };
 
-export const SEVERITY_META = {
-  minor: { label: '경미', tone: 'success' },
-  moderate: { label: '보통', tone: 'warning' },
-  severe: { label: '심각', tone: 'danger' },
-};
+// AI가 실제로 인식하는 4종 (신고 폼 선택지, 관리자 유형 필터에서 사용)
+export const REPORTABLE_DAMAGE_TYPES = ['longitudinal_crack', 'transverse_crack', 'alligator_crack', 'pothole'];
 
 export const TRAFFIC_LEVEL_META = {
   high: { label: '높음' },
@@ -53,8 +41,7 @@ export const CONGESTION_META = {
 };
 
 // 아래 세 개는 실제 백엔드 연동(클러스터 기반 점검 우선순위, 신고 UI 3단계) 이후
-// 여러 관리자 페이지에서 반복 정의되던 것을 여기로 모았다. 위의 SEVERITY_META,
-// REPORT_STATUS_META(4단계)는 목데이터 시절 값이라 스케일이 달라 이름을 분리했다.
+// 여러 관리자 페이지에서 반복 정의되던 것을 여기로 모았다.
 
 export const PRIORITY_GRADE_META = {
   최우선: { label: '최우선', tone: 'danger' },
@@ -73,6 +60,7 @@ export const REPORT_STATUS_UI_META = {
   received: { label: '접수됨', tone: 'info' },
   progress: { label: '처리중', tone: 'warning' },
   done: { label: '처리완료', tone: 'success' },
+  rejected: { label: '반려', tone: 'danger' },
 };
 
 export const MEMBER_STATUS_META = {

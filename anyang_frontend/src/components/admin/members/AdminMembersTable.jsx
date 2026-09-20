@@ -24,6 +24,7 @@ export default function AdminMembersTable({ loading, error, members, pendingId, 
           <tr className="border-b border-slate-100 text-left text-xs text-slate-400">
             <th className="w-24 py-3 pl-5 font-medium">아이디</th>
             <th className="py-3 font-medium">이름 / 이메일</th>
+            <th className="w-20 py-3 font-medium">구분</th>
             <th className="w-28 py-3 font-medium">가입일</th>
             <th className="w-24 py-3 font-medium">신고 횟수</th>
             <th className="w-44 py-3 font-medium">계정 상태</th>
@@ -38,6 +39,11 @@ export default function AdminMembersTable({ loading, error, members, pendingId, 
                 <div className="font-medium text-slate-800">{m.name}</div>
                 <div className="text-xs text-slate-400">{m.email}</div>
               </td>
+              <td className="py-3">
+                <Badge tone={m.role === 'admin' ? 'info' : 'neutral'}>
+                  {m.role === 'admin' ? '관리자' : '시민'}
+                </Badge>
+              </td>
               <td className="py-3 text-slate-500">{m.joinedAt}</td>
               <td className="py-3 text-slate-600">{m.reportCount}건</td>
               <td className="py-3">
@@ -49,25 +55,29 @@ export default function AdminMembersTable({ loading, error, members, pendingId, 
                 )}
               </td>
               <td className="py-3 pr-5">
-                <button
-                  onClick={() => onToggleStatus(m)}
-                  disabled={pendingId === m.id}
-                  className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
-                    m.status === 'active'
-                      ? 'border-red-200 text-red-600 hover:bg-red-50'
-                      : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  {m.status === 'active' ? (
-                    <>
-                      <ShieldOff size={13} /> 이용 제한
-                    </>
-                  ) : (
-                    <>
-                      <ShieldCheck size={13} /> 제한 해제
-                    </>
-                  )}
-                </button>
+                {m.role === 'admin' ? (
+                  <span className="text-xs text-slate-400">관리자 계정</span>
+                ) : (
+                  <button
+                    onClick={() => onToggleStatus(m)}
+                    disabled={pendingId === m.id}
+                    className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50 ${
+                      m.status === 'active'
+                        ? 'border-red-200 text-red-600 hover:bg-red-50'
+                        : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+                    }`}
+                  >
+                    {m.status === 'active' ? (
+                      <>
+                        <ShieldOff size={13} /> 이용 제한
+                      </>
+                    ) : (
+                      <>
+                        <ShieldCheck size={13} /> 제한 해제
+                      </>
+                    )}
+                  </button>
+                )}
               </td>
             </tr>
           ))}

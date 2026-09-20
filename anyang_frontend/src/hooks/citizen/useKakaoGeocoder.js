@@ -26,9 +26,13 @@ export function useKakaoGeocoder() {
     const geocoder = new window.kakao.maps.services.Geocoder();
     geocoder.coord2Address(lng, lat, (result, status) => {
       if (status === window.kakao.maps.services.Status.OK) {
-        const road = result[0].road_address?.address_name;
-        const jibun = result[0].address?.address_name;
-        onSuccess?.(road || jibun || "주소를 찾을 수 없습니다.");
+        const road = result[0]?.road_address?.address_name;
+        const jibun = result[0]?.address?.address_name;
+        if (road || jibun) {
+          onSuccess?.(road || jibun);
+        } else {
+          onError?.("주소를 찾을 수 없습니다. 직접 입력해주세요.");
+        }
       } else {
         onError?.("주소를 찾을 수 없습니다. 직접 입력해주세요.");
       }

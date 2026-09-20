@@ -50,7 +50,7 @@ function Login() {
       const data = await login(form);
 
       setAuthUser(data, { rememberMe });
-      navigate(data?.role === 'ADMIN' ? '/admin' : '/');
+      navigate(data?.role === 'ADMIN' ? '/admin' : location.state?.from ?? '/');
     } catch (err) {
       showError(err.message || '로그인에 실패했습니다.');
     }

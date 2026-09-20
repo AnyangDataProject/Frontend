@@ -4,36 +4,15 @@ import LoadingState from '../LoadingState';
 import EmptyState from '../EmptyState';
 import Pagination from '../Pagination';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META } from '../../../mocks/admin/constants';
-import { SEVERITY_TO_UI } from '../../../api/enumMapping';
+import { SEVERITY_TO_UI, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../../api/enumMapping';
 
 const STATUS_TABS = [
   { key: 'all', label: '전체' },
   { key: 'received', label: '접수됨' },
   { key: 'progress', label: '처리중' },
   { key: 'done', label: '처리완료' },
+  { key: 'rejected', label: '반려' },
 ];
-
-// 관리자가 다음 단계로 진행시킬 때 보낼 백엔드 enum 옵션
-const NEXT_STATUS_OPTIONS = {
-  RECEIVED: [
-    { value: 'RECEIVED', label: '접수됨' },
-    { value: 'CONFIRMED', label: '확인됨' },
-  ],
-  AI_ANALYZED: [
-    { value: 'AI_ANALYZED', label: 'AI 분석 완료' },
-    { value: 'CONFIRMED', label: '확인됨' },
-  ],
-  CONFIRMED: [
-    { value: 'CONFIRMED', label: '확인됨' },
-    { value: 'IN_PROGRESS', label: '처리중' },
-  ],
-  IN_PROGRESS: [
-    { value: 'IN_PROGRESS', label: '처리중' },
-    { value: 'COMPLETED', label: '처리완료' },
-  ],
-  COMPLETED: [{ value: 'COMPLETED', label: '처리완료' }],
-  REJECTED: [{ value: 'REJECTED', label: '반려' }],
-};
 
 const PAGE_SIZE = 15;
 
@@ -85,7 +64,7 @@ export default function AdminReportsTable({
                   <th className="w-24 py-3 pl-5 font-medium">신고번호</th>
                   <th className="w-28 py-3 font-medium">파손유형</th>
                   <th className="py-3 font-medium">위치</th>
-                  <th className="w-40 py-3 font-medium">AI 판단 결과</th>
+                  <th className="w-40 py-3 font-medium">위험도</th>
                   <th className="w-24 py-3 font-medium">등록일</th>
                   <th className="w-44 py-3 pr-5 font-medium">처리상태</th>
                 </tr>
@@ -94,7 +73,8 @@ export default function AdminReportsTable({
                 {paged.map((r) => {
                   const uiSeverity = SEVERITY_TO_UI[r.severity] ?? 'low';
                   const rawStatus = (r.status ?? 'received').toUpperCase();
-                  const options = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+                  const nextOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+                  const options = canReject(rawStatus) ? [...nextOptions, REJECT_OPTION] : nextOptions;
                   const damageType = DAMAGE_TYPE_META[r.type] ?? { label: r.type ?? '-' };
 
                   return (

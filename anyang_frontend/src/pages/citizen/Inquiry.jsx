@@ -25,6 +25,7 @@ function Inquiry() {
   const [agree, setAgree] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [attachmentFailed, setAttachmentFailed] = useState(false);
   const { modal, showError, showInfo, close: closeModal } = useMessageModal();
   const { items: files, addFiles, removeItem: removeFile, clear: clearFiles } = useFileAttachments({ max: 5 });
 
@@ -61,13 +62,14 @@ function Inquiry() {
 
     setSubmitting(true);
     try {
-      await submitInquiry({
+      const { attachmentError } = await submitInquiry({
         inquiryType: INQUIRY_TYPE_TO_BACKEND[inquiryType],
         title,
         content,
         email,
         files,
       });
+      setAttachmentFailed(!!attachmentError);
       setSubmitted(true);
     } catch (err) {
       showError(err.message || "문의 접수 중 오류가 발생했습니다.");
@@ -83,12 +85,13 @@ function Inquiry() {
     setEmail("");
     setAgree(false);
     clearFiles();
+    setAttachmentFailed(false);
     setSubmitted(false);
   };
 
   if (submitted) {
     return (
-      <InquirySubmittedView email={email} onGoToMap={() => navigate("/")} onReset={resetForm} />
+      <InquirySubmittedView email={email} attachmentFailed={attachmentFailed} onGoToMap={() => navigate("/")} onReset={resetForm} />
     );
   }
 

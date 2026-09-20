@@ -35,7 +35,17 @@ export default function ReportPhotoStep({ images, onChange, onRemove }) {
 
         {images.length < 3 && (
           <label className="aspect-[1.4/1] max-[430px]:aspect-[1.15/1] rounded-lg overflow-hidden border-[1.5px] border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center cursor-pointer text-center transition-colors hover:border-blue-600 hover:bg-blue-50">
-            <input type="file" accept="image/*" multiple onChange={onChange} className="hidden" />
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                onChange(e);
+                // 같은 파일을 지웠다가 다시 고를 수 있도록 선택값을 비움
+                e.target.value = "";
+              }}
+              className="hidden"
+            />
             <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
               <Upload size={22} />
             </div>

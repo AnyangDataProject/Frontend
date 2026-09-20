@@ -9,32 +9,30 @@ import KakaoMap from '../../components/admin/KakaoMap';
 import Badge from '../../components/admin/Badge';
 import LoadingState from '../../components/admin/LoadingState';
 import EmptyState from '../../components/admin/EmptyState';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { fetchAllReports } from '../../api/report';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
-import { STATUS_TO_UI } from '../../api/enumMapping';
 import { formatDecimal } from '../../utils/number';
-
-// 전 구간이 "경기도 안양시"라 반복돼서, 좁은 목록에서는 구/도로명만 보여준다.
-function shortenRoadAddress(address) {
-  return address?.replace(/^경기도\s*안양시\s*/, '') ?? '';
-}
+import { shortenRoadAddress, clusterToMapPoint } from '../../utils/clusterMapPoint';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { data: reports, error: reportsError } = useAdminListQuery(fetchAllReports);
-  const { data: priorityClusters, error: priorityError } = useAdminListQuery(fetchPriorityClusters);
+  const { data: reports, error: reportsError } = useListQuery(fetchAllReports);
+  const { data: priorityClusters, error: priorityError } = useListQuery(fetchPriorityClusters);
   const topPriorityClusters = priorityClusters?.slice(0, 5) ?? [];
   const [selectedClusterId, setSelectedClusterId] = useState(null);
 
   const reportStats = useMemo(() => {
     if (!reports) return null;
-    const doneCount = reports.filter((r) => STATUS_TO_UI[r.status] === 'done').length;
+    const doneCount = reports.filter((r) => r.status === 'completed').length;
+    const rejectedCount = reports.filter((r) => r.status === 'rejected').length;
+    // 반려는 처리 대상이 아니므로 미처리·처리율 계산에서 제외
+    const handleable = reports.length - rejectedCount;
     return {
       total: reports.length,
-      unresolved: reports.length - doneCount,
-      resolutionRate: reports.length === 0 ? 0 : Math.round((doneCount / reports.length) * 100),
+      unresolved: handleable - doneCount,
+      resolutionRate: handleable === 0 ? 0 : Math.round((doneCount / handleable) * 100),
     };
   }, [reports]);
 
@@ -42,13 +40,7 @@ export default function AdminDashboard() {
 
   const mapPoints = useMemo(() => {
     if (!priorityClusters) return [];
-    return priorityClusters.map((c) => ({
-      id: c.cluster,
-      lat: c.latitude,
-      lng: c.longitude,
-      label: shortenRoadAddress(c.roadAddress),
-      tone: (PRIORITY_GRADE_META[c.priorityGrade] ?? PRIORITY_GRADE_META.일반).tone,
-    }));
+    return priorityClusters.map(clusterToMapPoint);
   }, [priorityClusters]);
 
   return (

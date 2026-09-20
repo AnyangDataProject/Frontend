@@ -2,7 +2,7 @@ import { Mail, Clock3 } from "lucide-react";
 import BackButton from "../BackButton";
 import SuccessScreen from "../SuccessScreen";
 
-export default function InquirySubmittedView({ email, onGoToMap, onReset }) {
+export default function InquirySubmittedView({ email, attachmentFailed = false, onGoToMap, onReset }) {
   return (
     <div className="min-h-screen bg-slate-50 pt-[72px]">
       <main className="min-h-[calc(100vh-72px)] flex items-center justify-center px-5 pb-20">
@@ -25,6 +25,13 @@ export default function InquirySubmittedView({ email, onGoToMap, onReset }) {
                 보내주신 내용을 담당자가 확인한 후 답변드리겠습니다.
                 <br />
                 답변은 입력하신 이메일로 전달됩니다.
+                {attachmentFailed && (
+                  <span className="mt-3 block text-amber-600">
+                    다만 첨부파일 업로드에 실패해 파일 없이 접수되었습니다.
+                    <br />
+                    파일이 필요하시면 새 문의로 파일과 함께 다시 접수해주세요.
+                  </span>
+                )}
               </>
             }
             summary={

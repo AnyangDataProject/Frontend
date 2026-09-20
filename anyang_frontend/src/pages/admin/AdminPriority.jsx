@@ -9,12 +9,12 @@ import Badge from '../../components/admin/Badge';
 import { TONE_CLASSES } from '../../components/admin/toneClasses';
 import AdminPriorityFilters from '../../components/admin/priority/AdminPriorityFilters';
 import AdminPriorityTable from '../../components/admin/priority/AdminPriorityTable';
-import { useAdminListQuery } from '../../hooks/admin/useAdminListQuery';
+import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { fetchUnclassifiedReports } from '../../api/report';
 import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META, PRIORITY_GRADE_META } from '../../mocks/admin/constants';
-import { SEVERITY_TO_UI, STATUS_TO_UI } from '../../api/enumMapping';
+import { SEVERITY_TO_UI, toStatusLabelKey } from '../../api/enumMapping';
 
 // PRIORITY_GRADE_META에는 아이콘/카드 문구 같은 페이지 전용 표시 정보가 없어서
 // 여기서만 보강한다. 등급 종류·label·tone 자체는 PRIORITY_GRADE_META가 기준.
@@ -41,9 +41,10 @@ const GRADE_STAT_META = Object.entries(PRIORITY_GRADE_META).map(([key, meta]) =>
 
 export default function AdminPriority() {
   const navigate = useNavigate();
-  const { data: roads, error: roadsError } = useAdminListQuery(fetchPriorityClusters);
-  const { data: unclassifiedReports, error: unclassifiedError } = useAdminListQuery(fetchUnclassifiedReports);
+  const { data: roads, error: roadsError } = useListQuery(fetchPriorityClusters);
+  const { data: unclassifiedReports, error: unclassifiedError } = useListQuery(fetchUnclassifiedReports);
   const [riskFilter, setRiskFilter] = useState('all');
+  const [districtFilter, setDistrictFilter] = useState('all');
   const [keyword, setKeyword] = useState('');
 
   const gradeCounts = useMemo(() => {
@@ -57,8 +58,9 @@ export default function AdminPriority() {
   const filtered = useListFilter(roads, (road) => {
     const kw = keyword.trim().toLowerCase();
     const matchesRisk = riskFilter === 'all' || road.priorityGrade === riskFilter;
+    const matchesDistrict = districtFilter === 'all' || (road.roadAddress ?? '').includes(districtFilter);
     const matchesKeyword = !kw || (road.roadAddress ?? '').toLowerCase().includes(kw);
-    return matchesRisk && matchesKeyword;
+    return matchesRisk && matchesDistrict && matchesKeyword;
   });
 
   return (
@@ -88,6 +90,8 @@ export default function AdminPriority() {
             onKeywordChange={setKeyword}
             riskFilter={riskFilter}
             onRiskFilterChange={setRiskFilter}
+            districtFilter={districtFilter}
+            onDistrictFilterChange={setDistrictFilter}
           />
         }
       >
@@ -122,7 +126,7 @@ export default function AdminPriority() {
               const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
               const DamageIcon = damageType.icon;
               const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
-              const uiStatus = STATUS_TO_UI[report.status] ?? 'received';
+              const uiStatus = toStatusLabelKey(report.status);
 
               return (
                 <li key={report.id}>

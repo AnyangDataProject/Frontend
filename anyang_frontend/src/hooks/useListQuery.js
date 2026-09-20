@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-// 관리자 목록 페이지 공통 fetch-on-mount 패턴.
+// 목록 페이지 공통 fetch-on-mount 패턴 (관리자/시민 공용).
 // 컴포넌트 언마운트/재요청 이후 도착하는 응답이 최신 상태를 덮어쓰지 않도록
 // active 플래그로 경합 상태를 방지한다.
-export function useAdminListQuery(fetchFn) {
+export function useListQuery(fetchFn) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 

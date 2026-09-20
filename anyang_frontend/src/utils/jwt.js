@@ -23,7 +23,8 @@ export function getTokenExpiryMs(token) {
 export function isTokenExpired(token) {
   const expiryMs = getTokenExpiryMs(token);
 
-  if (!expiryMs) return false;
+  // 디코딩에 실패했거나 exp 클레임이 없는 토큰은 신뢰할 수 없으므로 만료된 것으로 취급
+  if (!expiryMs) return true;
 
   return Date.now() >= expiryMs;
 }

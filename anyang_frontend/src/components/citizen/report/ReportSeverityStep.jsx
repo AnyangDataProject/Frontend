@@ -6,7 +6,7 @@ const SEVERITY_OPTIONS = Object.entries(SEVERITY_META).map(([value, meta]) => ({
 
 export default function ReportSeverityStep({ value, onChange }) {
   return (
-    <StepSection number="04" title="파손 심각도" description="현재 도로 이용에 미치는 영향을 선택해주세요.">
+    <StepSection number="04" title="위험도" description="현재 도로 이용에 미치는 영향을 선택해주세요.">
       <div className="grid grid-cols-3 gap-[9px] max-[700px]:grid-cols-1">
         {SEVERITY_OPTIONS.map((option) => (
           <SelectableCard
