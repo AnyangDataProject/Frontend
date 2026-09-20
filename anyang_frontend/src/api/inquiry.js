@@ -31,8 +31,9 @@ function mapInquiryDetail(dto) {
   };
 }
 
-// 관리자 문의 목록. 서버가 페이지 단위로만 내려주므로 마지막 페이지까지 모아서 반환한다.
-// (목록 응답에는 내용/이메일이 없어서 필요할 때 fetchInquiryDetail로 따로 조회)
+// 문의 목록. 관리자/시민 화면이 같이 쓰며, 어떤 문의를 내려줄지는 서버가 로그인 사용자 기준으로 결정한다
+// (시민 계정은 본인이 작성한 문의만 내려옴). 페이지 단위로만 내려주므로 마지막 페이지까지 모아서 반환한다.
+// (목록 응답에는 내용/이메일/답변이 없어서 필요할 때 fetchInquiryDetail로 따로 조회)
 export async function fetchInquiries() {
   const all = [];
 
