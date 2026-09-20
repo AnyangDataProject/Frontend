@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { AuthContext } from './authContext';
 import { getTokenExpiryMs, isTokenExpired } from '../utils/jwt';
 import { getStoredToken } from '../utils/authStorage';
+import { setUnauthorizedHandler } from '../api/client';
 
 const MAX_TIMEOUT_MS = 2_147_483_647; // setTimeout이 안전하게 지원하는 최대 지연(약 24.8일)
 
@@ -64,6 +65,11 @@ export function AuthProvider({ children }) {
 
     setState({ user: userInfo, sessionExpired: false });
   }, []);
+
+  useEffect(() => {
+    setUnauthorizedHandler(expireSession);
+    return () => setUnauthorizedHandler(null);
+  }, [expireSession]);
 
   useEffect(() => {
     if (!user) return;
