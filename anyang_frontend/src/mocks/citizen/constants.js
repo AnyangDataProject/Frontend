@@ -85,6 +85,12 @@ export const SEVERITY_META = {
   },
 };
 
+// 문의 답변 상태
+export const INQUIRY_STATUS_META = {
+  waiting: { label: "답변 대기", icon: Clock, color: "#d97706" },
+  answered: { label: "답변 완료", icon: CheckCircle2, color: "#059669" },
+};
+
 // 신고 처리 상태
 export const REPORT_STATUS_META = {
   received: { label: "접수됨", icon: Clock, color: "#2563eb", textClass: "text-blue-600" },
