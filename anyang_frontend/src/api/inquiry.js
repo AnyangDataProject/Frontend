@@ -31,8 +31,9 @@ function mapInquiryDetail(dto) {
   };
 }
 
-// 관리자 문의 목록. 서버가 페이지 단위로만 내려주므로 마지막 페이지까지 모아서 반환한다.
-// (목록 응답에는 내용/이메일이 없어서 필요할 때 fetchInquiryDetail로 따로 조회)
+// 문의 목록. 관리자/시민 화면이 같이 쓰며, 어떤 문의를 내려줄지는 서버가 로그인 사용자 기준으로 결정한다
+// (시민 계정은 본인이 작성한 문의만 내려옴). 페이지 단위로만 내려주므로 마지막 페이지까지 모아서 반환한다.
+// (목록 응답에는 내용/이메일/답변이 없어서 필요할 때 fetchInquiryDetail로 따로 조회)
 export async function fetchInquiries() {
   const all = [];
 
@@ -50,12 +51,34 @@ export async function fetchInquiryDetail(id) {
   return dto ? mapInquiryDetail(dto) : null;
 }
 
+// 수정/답변 요청이 이미 성공한 뒤의 재조회는 실패해도 전체를 실패로 보이게 하면 안 된다
+// (사용자가 실패로 오해하고 재시도함). 재조회 실패는 null로 돌려주고, 호출부가 화면에 직접 반영한다.
+async function refetchInquiryDetail(id) {
+  try {
+    return await fetchInquiryDetail(id);
+  } catch {
+    return null;
+  }
+}
+
+export async function updateInquiry(id, { title, content }) {
+  await apiRequest(`/inquiries/${id}`, {
+    method: 'PUT',
+    body: { title: title.trim(), content: content.trim() },
+  });
+  return refetchInquiryDetail(id);
+}
+
+export async function deleteInquiry(id) {
+  await apiRequest(`/inquiries/${id}`, { method: 'DELETE' });
+}
+
 export async function submitInquiryAnswer(id, answerText) {
   await apiRequest(`/inquiries/${id}/answer`, {
     method: 'PUT',
     body: { answer: answerText.trim() },
   });
-  return fetchInquiryDetail(id);
+  return refetchInquiryDetail(id);
 }
 
 export async function submitInquiry({ inquiryType, title, content, email, files }) {

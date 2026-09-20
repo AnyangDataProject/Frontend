@@ -1,4 +1,5 @@
 import { CircleDot, Construction, Signpost, AlertTriangle, Clock, Wrench, CheckCircle2, XCircle } from "lucide-react";
+import { INQUIRY_STATUS_LABEL } from "../../api/enumMapping";
 
 // 파손 유형 (Report/MainMap/MyReports 공통)
 // AI가 실제로 지원하는 4종(longitudinal_crack/transverse_crack/alligator_crack/pothole) 외에
@@ -83,6 +84,12 @@ export const SEVERITY_META = {
     bgClass: "bg-red-50",
     borderClass: "border-red-500",
   },
+};
+
+// 문의 답변 상태
+export const INQUIRY_STATUS_META = {
+  waiting: { label: INQUIRY_STATUS_LABEL.waiting, icon: Clock, color: "#d97706" },
+  answered: { label: INQUIRY_STATUS_LABEL.answered, icon: CheckCircle2, color: "#059669" },
 };
 
 // 신고 처리 상태

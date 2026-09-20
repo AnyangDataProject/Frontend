@@ -7,8 +7,7 @@ import OAuthCallback from './pages/auth/OAuthCallback';
 import Report from "./pages/citizen/Report";
 import MyReports from "./pages/citizen/MyReports";
 import Inquiry from "./pages/citizen/Inquiry";
-import FindId from './pages/auth/FindId';
-import FindPassword from './pages/auth/FindPassword';
+import InquiryNew from "./pages/citizen/InquiryNew";
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminPriority from './pages/admin/AdminPriority';
 import AdminReportDetail from './pages/admin/AdminReportDetail';
@@ -35,8 +34,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-        <Route path="/find-id" element={<FindId />} />
-        <Route path="/find-password" element={<FindPassword />} />
 
         <Route element={<RequireAuth />}>
           <Route element={<RedirectAdminHome />}>
@@ -45,6 +42,7 @@ function App() {
           <Route path="/report" element={<Report />} />
           <Route path="/my-reports" element={<MyReports />} />
           <Route path="/inquiry" element={<Inquiry />} />
+          <Route path="/inquiry/new" element={<InquiryNew />} />
         </Route>
 
         <Route element={<RequireAdmin />}>

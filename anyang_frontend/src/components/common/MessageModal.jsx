@@ -21,11 +21,12 @@ export default function MessageModal({
   title,
   message,
   confirmLabel = "확인",
+  zIndexClass,
 }) {
   const { icon: Icon, iconClass, buttonClass } = VARIANTS[variant];
 
   return (
-    <Modal open={open} onClose={onClose} className="px-6 pt-9 pb-6 text-center">
+    <Modal open={open} onClose={onClose} zIndexClass={zIndexClass} className="px-6 pt-9 pb-6 text-center">
       <div className={`w-14 h-14 mx-auto mb-4 rounded-full flex items-center justify-center ${iconClass}`}>
         <Icon size={26} />
       </div>

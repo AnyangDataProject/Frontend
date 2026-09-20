@@ -1,4 +1,4 @@
-import { MessageSquare, X, FileText, Send, Paperclip } from 'lucide-react';
+import { MessageSquare, X, FileText, Send, Paperclip, Trash2 } from 'lucide-react';
 import Badge from '../Badge';
 import { INQUIRY_STATUS_META, INQUIRY_TYPE_META } from '../../../mocks/admin/constants';
 
@@ -9,6 +9,7 @@ export default function InquiryDetailModal({
   onClose,
   onSubmit,
   submitting,
+  onDelete,
 }) {
   const answered = inquiry.status === 'answered';
 
@@ -62,7 +63,7 @@ export default function InquiryDetailModal({
             <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
               <MessageSquare size={13} /> 문의 내용
             </p>
-            <p className="rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
+            <p className="whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
               {inquiry.content}
             </p>
           </div>
@@ -105,7 +106,14 @@ export default function InquiryDetailModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
+        <div className="flex items-center gap-2 border-t border-slate-100 px-5 py-3">
+          <button
+            onClick={onDelete}
+            disabled={submitting}
+            className="mr-auto flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+          >
+            <Trash2 size={14} /> 삭제
+          </button>
           <button onClick={onClose} className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50">
             닫기
           </button>

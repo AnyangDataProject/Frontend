@@ -11,7 +11,13 @@ import AdminInquiriesTable from '../../components/admin/inquiries/AdminInquiries
 import InquiryDetailModal from '../../components/admin/inquiries/InquiryDetailModal';
 import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchInquiries, fetchInquiryDetail, submitInquiryAnswer } from '../../api/inquiry';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import {
+  fetchInquiries,
+  fetchInquiryDetail,
+  submitInquiryAnswer,
+  deleteInquiry,
+} from '../../api/inquiry';
 
 export default function AdminInquiries() {
   const { data: inquiries, setData: setInquiries, error } = useListQuery(fetchInquiries);
@@ -22,6 +28,8 @@ export default function AdminInquiries() {
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [answer, setAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const stats = useMemo(() => {
     if (!inquiries) return { total: 0, waiting: 0, answered: 0 };
@@ -62,15 +70,33 @@ export default function AdminInquiries() {
   const handleAnswerSubmit = async () => {
     if (!answer.trim()) return;
     setSubmitting(true);
+    const id = selectedInquiry.id;
     try {
-      const updated = await submitInquiryAnswer(selectedInquiry.id, answer);
-      if (!updated) throw new Error('답변은 등록되었지만 최신 내용을 불러오지 못했습니다. 새로고침해주세요.');
-      setSelectedInquiry(updated);
-      setInquiries((prev) => prev.map((i) => (i.id === updated.id ? { ...i, status: updated.status } : i)));
+      // 재조회에 실패해도(null) 답변 자체는 등록된 것이라 입력한 답변을 그대로 화면에 반영한다
+      const updated =
+        (await submitInquiryAnswer(id, answer)) ??
+        { ...selectedInquiry, status: 'answered', answer: answer.trim() };
+      // 응답을 기다리는 사이 모달이 닫혔거나 다른 문의가 열렸다면 덮어쓰지 않는다
+      setSelectedInquiry((prev) => (prev?.id === id ? updated : prev));
+      setInquiries((prev) => prev.map((i) => (i.id === id ? { ...i, status: updated.status } : i)));
     } catch (err) {
       alert(err.message || '답변 등록에 실패했습니다.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteInquiry(selectedInquiry.id);
+      setInquiries((prev) => prev.filter((i) => i.id !== selectedInquiry.id));
+      setDeleteConfirmOpen(false);
+      closeInquiry();
+    } catch (err) {
+      alert(err.message || '문의 삭제에 실패했습니다.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -126,8 +152,20 @@ export default function AdminInquiries() {
           onClose={closeInquiry}
           onSubmit={handleAnswerSubmit}
           submitting={submitting}
+          onDelete={() => setDeleteConfirmOpen(true)}
         />
       )}
+
+      <ConfirmModal
+        open={deleteConfirmOpen}
+        title={`문의 #${String(selectedInquiry?.id ?? '').padStart(4, '0')}을(를) 삭제하시겠습니까?`}
+        description="삭제한 문의는 복구할 수 없습니다."
+        confirmLabel="삭제"
+        tone="danger"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteConfirmOpen(false)}
+      />
     </AdminLayout>
   );
 }

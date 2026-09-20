@@ -43,6 +43,21 @@ export const INQUIRY_TYPE_FROM_BACKEND = Object.fromEntries(
   Object.entries(INQUIRY_TYPE_TO_BACKEND).map(([ui, backend]) => [backend, ui])
 );
 
+// 문의 유형/상태의 화면 표기. 관리자·시민 화면이 각자 라벨을 들고 있다가 어긋나지 않도록 한 곳에서 관리
+export const INQUIRY_TYPE_LABEL = {
+  report: "신고 관련 문의",
+  result: "처리 결과 문의",
+  service: "서비스 이용 문의",
+  other: "기타 민원",
+};
+
+export const INQUIRY_STATUS_LABEL = {
+  waiting: "답변 대기",
+  answered: "답변 완료",
+};
+
+export const getInquiryTypeLabel = (type) => INQUIRY_TYPE_LABEL[type] ?? INQUIRY_TYPE_LABEL.other;
+
 // 관리자가 신고 처리 상태를 다음 단계로 진행시킬 때 쓰는 표.
 // 각 배열의 [0]은 현재 상태(표시용), [1]은 다음으로 보낼 수 있는 상태.
 // AdminReportsTable(드롭다운)과 AdminReportDetail(다음 단계로 진행 버튼)이
