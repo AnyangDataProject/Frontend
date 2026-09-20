@@ -8,8 +8,6 @@ import Report from "./pages/citizen/Report";
 import MyReports from "./pages/citizen/MyReports";
 import Inquiry from "./pages/citizen/Inquiry";
 import InquiryNew from "./pages/citizen/InquiryNew";
-import FindId from './pages/auth/FindId';
-import FindPassword from './pages/auth/FindPassword';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminPriority from './pages/admin/AdminPriority';
 import AdminReportDetail from './pages/admin/AdminReportDetail';
@@ -36,8 +34,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/oauth/callback" element={<OAuthCallback />} />
-        <Route path="/find-id" element={<FindId />} />
-        <Route path="/find-password" element={<FindPassword />} />
 
         <Route element={<RequireAuth />}>
           <Route element={<RedirectAdminHome />}>

@@ -137,8 +137,6 @@ function Login() {
       {/* 하단 메뉴 */}
       <AuthLinksRow
         links={[
-          { label: '아이디 찾기', to: '/find-id' },
-          { label: '비밀번호 찾기', to: '/find-password' },
           { label: '회원가입', to: '/signup' },
         ]}
       />
