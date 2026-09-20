@@ -5,6 +5,13 @@ const TYPE_FILTER_OPTIONS = [
   ...REPORTABLE_DAMAGE_TYPES.map((value) => ({ value, label: DAMAGE_TYPE_META[value].label })),
 ];
 
+// 상태 칩과 유형 칩이 같은 모양(알약형, 같은 여백)이 되도록 공통 클래스 사용.
+// 패널 폭: 넓은 화면(560px)에서는 유형 칩이 한 줄에 다 들어가고, 좁아지면 줄바꿈된다(가로 스크롤 없음)
+const CHIP_BASE =
+  "shrink-0 whitespace-nowrap border px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200";
+const CHIP_ACTIVE = "border-blue-600 bg-blue-50 text-blue-600";
+const CHIP_INACTIVE = "border-slate-200 bg-white text-slate-500 hover:border-slate-500";
+
 // value는 MainMap의 statusFilter/counts 키와 같다
 const STATUS_FILTER_OPTIONS = [
   { value: "all", label: "전체 신고" },
@@ -25,19 +32,15 @@ export default function MainMapListPanel({
 }) {
   return (
     <div
-      className={`shrink-0 overflow-hidden bg-white border-l border-slate-200 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col *:w-[380px] max-[480px]:*:w-full max-[480px]:absolute max-[480px]:inset-0 max-[480px]:z-[15] ${
-        open ? "w-[380px]" : "w-0"
+      className={`shrink-0 overflow-hidden bg-white border-l border-slate-200 transition-[width] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col *:w-[560px] max-[1200px]:*:w-[440px] max-[900px]:*:w-[380px] max-[480px]:*:w-full max-[480px]:absolute max-[480px]:inset-0 max-[480px]:z-[15] ${
+        open ? "w-[560px] max-[1200px]:w-[440px] max-[900px]:w-[380px] max-[480px]:w-full" : "w-0"
       }`}
     >
-      <div className="flex gap-1.5 px-4 pt-4">
+      <div className="flex flex-wrap gap-1.5 px-4 pt-4">
         {STATUS_FILTER_OPTIONS.map((opt) => (
           <button
             key={opt.value}
-            className={`flex-1 whitespace-nowrap border px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
-              statusFilter === opt.value
-                ? "border-blue-600 bg-blue-50 text-blue-600"
-                : "border-transparent bg-slate-50 text-slate-500"
-            }`}
+            className={`${CHIP_BASE} ${statusFilter === opt.value ? CHIP_ACTIVE : CHIP_INACTIVE}`}
             onClick={() => onStatusFilterChange(opt.value)}
           >
             {opt.label} <b className="font-extrabold ml-1">{counts[opt.value]}</b>
@@ -45,15 +48,11 @@ export default function MainMapListPanel({
         ))}
       </div>
 
-      <div className="flex gap-1.5 overflow-x-auto px-4 py-3 border-b border-slate-200 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex flex-wrap gap-1.5 px-4 py-3 border-b border-slate-200">
         {TYPE_FILTER_OPTIONS.map((opt) => (
           <button
             key={opt.value}
-            className={`shrink-0 border px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all duration-200 ${
-              typeFilter === opt.value
-                ? "border-blue-600 bg-blue-50 text-blue-600"
-                : "border-slate-200 bg-white text-slate-500 hover:border-slate-500"
-            }`}
+            className={`${CHIP_BASE} ${typeFilter === opt.value ? CHIP_ACTIVE : CHIP_INACTIVE}`}
             onClick={() => onTypeFilterChange(opt.value)}
           >
             {opt.label}
