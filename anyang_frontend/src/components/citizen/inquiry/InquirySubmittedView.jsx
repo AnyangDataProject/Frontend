@@ -2,13 +2,13 @@ import { Mail, Clock3 } from "lucide-react";
 import BackButton from "../BackButton";
 import SuccessScreen from "../SuccessScreen";
 
-export default function InquirySubmittedView({ email, attachmentFailed = false, onGoToMap, onReset }) {
+export default function InquirySubmittedView({ email, attachmentFailed = false, onGoToList, onReset }) {
   return (
     <div className="min-h-screen bg-slate-50 pt-[72px]">
       <main className="min-h-[calc(100vh-72px)] flex items-center justify-center px-5 pb-20">
         <div className="relative w-[min(580px,100%)] rounded-xl border border-slate-200 bg-white p-9 max-[650px]:px-5 max-[650px]:py-[38px] text-center shadow-sm">
           <div className="absolute left-[22px] top-[22px]">
-            <BackButton to="/" />
+            <BackButton to="/inquiry" label="내 문의로 돌아가기" />
           </div>
 
           <SuccessScreen
@@ -56,9 +56,9 @@ export default function InquirySubmittedView({ email, attachmentFailed = false, 
             secondaryAction={
               <button
                 className="h-[45px] flex-1 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
-                onClick={onGoToMap}
+                onClick={onGoToList}
               >
-                지도 돌아가기
+                내 문의 보기
               </button>
             }
             primaryAction={

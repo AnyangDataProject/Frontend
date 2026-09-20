@@ -16,7 +16,7 @@ import { useFileAttachments } from "../../hooks/citizen/useFileAttachments";
 import { submitInquiry } from "../../api/inquiry";
 import { INQUIRY_TYPE_TO_BACKEND } from "../../api/enumMapping";
 
-function Inquiry() {
+function InquiryNew() {
   const navigate = useNavigate();
   const [inquiryType, setInquiryType] = useState("");
   const [title, setTitle] = useState("");
@@ -91,7 +91,7 @@ function Inquiry() {
 
   if (submitted) {
     return (
-      <InquirySubmittedView email={email} attachmentFailed={attachmentFailed} onGoToMap={() => navigate("/")} onReset={resetForm} />
+      <InquirySubmittedView email={email} attachmentFailed={attachmentFailed} onGoToList={() => navigate("/inquiry")} onReset={resetForm} />
     );
   }
 
@@ -99,7 +99,7 @@ function Inquiry() {
     <div className="min-h-screen bg-slate-50 pt-[72px]">
       <main className="mx-auto max-w-[1440px] px-6 py-8 lg:px-10">
         <div className="mb-6">
-          <BackButton to="/" />
+          <BackButton to="/inquiry" label="내 문의로 돌아가기" />
         </div>
 
         <PageHeader
@@ -131,7 +131,7 @@ function Inquiry() {
                 <button
                   type="button"
                   className="flex h-12 items-center justify-center gap-[7px] rounded-lg border border-slate-200 bg-white px-[22px] max-[650px]:flex-1 max-[650px]:px-2.5 font-[inherit] text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/inquiry")}
                 >
                   취소
                 </button>
@@ -160,4 +160,4 @@ function Inquiry() {
   );
 }
 
-export default Inquiry;
+export default InquiryNew;
