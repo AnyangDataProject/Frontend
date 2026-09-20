@@ -1,4 +1,5 @@
-import { MessageSquare, X, FileText, Send, Paperclip } from 'lucide-react';
+import { useState } from 'react';
+import { MessageSquare, X, FileText, Send, Paperclip, Pencil, Trash2 } from 'lucide-react';
 import Badge from '../Badge';
 import { INQUIRY_STATUS_META, INQUIRY_TYPE_META } from '../../../mocks/admin/constants';
 
@@ -9,8 +10,27 @@ export default function InquiryDetailModal({
   onClose,
   onSubmit,
   submitting,
+  onUpdate,
+  onDelete,
 }) {
   const answered = inquiry.status === 'answered';
+  const [editing, setEditing] = useState(false);
+  const [draftTitle, setDraftTitle] = useState('');
+  const [draftContent, setDraftContent] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const startEdit = () => {
+    setDraftTitle(inquiry.title);
+    setDraftContent(inquiry.content);
+    setEditing(true);
+  };
+
+  const saveEdit = async () => {
+    setSaving(true);
+    const ok = await onUpdate({ title: draftTitle, content: draftContent });
+    setSaving(false);
+    if (ok) setEditing(false);
+  };
 
   return (
     <div
@@ -59,12 +79,56 @@ export default function InquiryDetailModal({
           </div>
 
           <div className="mb-4">
-            <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
-              <MessageSquare size={13} /> 문의 내용
-            </p>
-            <p className="rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
-              {inquiry.content}
-            </p>
+            <div className="mb-2 flex items-center justify-between">
+              <p className="flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                <MessageSquare size={13} /> 문의 내용
+              </p>
+              {!editing && (
+                <button
+                  onClick={startEdit}
+                  className="flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-blue-600"
+                >
+                  <Pencil size={12} /> 수정
+                </button>
+              )}
+            </div>
+            {editing ? (
+              <div className="flex flex-col gap-2">
+                <input
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  placeholder="제목"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500"
+                />
+                <textarea
+                  value={draftContent}
+                  onChange={(e) => setDraftContent(e.target.value)}
+                  placeholder="문의 내용"
+                  rows={5}
+                  className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500"
+                />
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={() => setEditing(false)}
+                    disabled={saving}
+                    className="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    취소
+                  </button>
+                  <button
+                    onClick={saveEdit}
+                    disabled={saving || !draftTitle.trim() || !draftContent.trim()}
+                    className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {saving ? '저장 중...' : '저장'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="whitespace-pre-line rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">
+                {inquiry.content}
+              </p>
+            )}
           </div>
 
           {inquiry.fileUrls?.length > 0 && (
@@ -105,7 +169,13 @@ export default function InquiryDetailModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
+        <div className="flex items-center gap-2 border-t border-slate-100 px-5 py-3">
+          <button
+            onClick={onDelete}
+            className="mr-auto flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
+          >
+            <Trash2 size={14} /> 삭제
+          </button>
           <button onClick={onClose} className="rounded-lg px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-50">
             닫기
           </button>
