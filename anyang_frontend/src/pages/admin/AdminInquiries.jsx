@@ -16,7 +16,6 @@ import {
   fetchInquiries,
   fetchInquiryDetail,
   submitInquiryAnswer,
-  updateInquiry,
   deleteInquiry,
 } from '../../api/inquiry';
 
@@ -80,20 +79,6 @@ export default function AdminInquiries() {
       alert(err.message || '답변 등록에 실패했습니다.');
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  // 수정 성공 여부를 반환한다 (모달이 성공했을 때만 편집 모드를 닫도록)
-  const handleUpdate = async (draft) => {
-    try {
-      const updated = await updateInquiry(selectedInquiry.id, draft);
-      if (!updated) throw new Error('수정은 완료되었지만 최신 내용을 불러오지 못했습니다. 새로고침해주세요.');
-      setSelectedInquiry(updated);
-      setInquiries((prev) => prev.map((i) => (i.id === updated.id ? { ...i, title: updated.title } : i)));
-      return true;
-    } catch (err) {
-      alert(err.message || '문의 수정에 실패했습니다.');
-      return false;
     }
   };
 
@@ -163,7 +148,6 @@ export default function AdminInquiries() {
           onClose={closeInquiry}
           onSubmit={handleAnswerSubmit}
           submitting={submitting}
-          onUpdate={handleUpdate}
           onDelete={() => setDeleteConfirmOpen(true)}
         />
       )}
