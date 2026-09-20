@@ -1,4 +1,4 @@
-import { FileWarning, MessageSquare, X, FileText, Send, ChevronRight } from 'lucide-react';
+import { MessageSquare, X, FileText, Send, Paperclip } from 'lucide-react';
 import Badge from '../Badge';
 import { INQUIRY_STATUS_META, INQUIRY_TYPE_META } from '../../../mocks/admin/constants';
 
@@ -9,7 +9,6 @@ export default function InquiryDetailModal({
   onClose,
   onSubmit,
   submitting,
-  onViewReport,
 }) {
   const answered = inquiry.status === 'answered';
 
@@ -49,10 +48,6 @@ export default function InquiryDetailModal({
                 </Badge>
               </div>
               <div>
-                <p className="text-xs text-slate-400">문의자</p>
-                <p className="font-medium text-slate-800">{inquiry.reporter}</p>
-              </div>
-              <div>
                 <p className="text-xs text-slate-400">이메일</p>
                 <p className="font-medium text-slate-800">{inquiry.email}</p>
               </div>
@@ -63,19 +58,6 @@ export default function InquiryDetailModal({
             </div>
           </div>
 
-          {inquiry.reportId && (
-            <button
-              onClick={() => onViewReport(inquiry.reportId)}
-              className="mb-4 flex w-full items-center gap-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2.5 text-left hover:bg-blue-100"
-            >
-              <FileWarning size={16} className="shrink-0 text-blue-600" />
-              <span className="flex-1 text-sm font-medium text-blue-700">
-                관련 신고 #{inquiry.reportId} 보기
-              </span>
-              <ChevronRight size={15} className="text-blue-400" />
-            </button>
-          )}
-
           <div className="mb-4">
             <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
               <MessageSquare size={13} /> 문의 내용
@@ -84,6 +66,23 @@ export default function InquiryDetailModal({
               {inquiry.content}
             </p>
           </div>
+
+          {inquiry.fileUrls?.length > 0 && (
+            <div className="mb-4">
+              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
+                <Paperclip size={13} /> 첨부파일
+              </p>
+              <ul className="flex flex-col gap-1 rounded-lg bg-slate-50 p-3 text-sm">
+                {inquiry.fileUrls.map((url, index) => (
+                  <li key={url}>
+                    <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                      첨부파일 {index + 1}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           <div>
             <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-slate-500">
@@ -97,7 +96,12 @@ export default function InquiryDetailModal({
               rows={4}
               className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 outline-none focus:border-blue-500 disabled:bg-slate-50 disabled:text-slate-400"
             />
-            {answered && <p className="mt-1 text-xs text-slate-400">이미 답변이 등록된 문의입니다.</p>}
+            {answered && (
+              <p className="mt-1 text-xs text-slate-400">
+                이미 답변이 등록된 문의입니다.
+                {inquiry.answeredByName && ` (답변자: ${inquiry.answeredByName}${inquiry.answeredAt ? `, ${inquiry.answeredAt}` : ''})`}
+              </p>
+            )}
           </div>
         </div>
 

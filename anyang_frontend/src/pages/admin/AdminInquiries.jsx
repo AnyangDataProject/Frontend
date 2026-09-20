@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { MessageSquare, Clock3, Send } from 'lucide-react';
 
 import AdminLayout from '../../components/admin/AdminLayout';
 import Card from '../../components/admin/Card';
+import EmptyState from '../../components/admin/EmptyState';
 import StatCard from '../../components/admin/StatCard';
 import AdminInquiriesToolbar from '../../components/admin/inquiries/AdminInquiriesToolbar';
 import AdminInquiriesFilterPanel from '../../components/admin/inquiries/AdminInquiriesFilterPanel';
@@ -11,17 +11,15 @@ import AdminInquiriesTable from '../../components/admin/inquiries/AdminInquiries
 import InquiryDetailModal from '../../components/admin/inquiries/InquiryDetailModal';
 import { useListQuery } from '../../hooks/useListQuery';
 import { useListFilter } from '../../hooks/admin/useListFilter';
-import { fetchInquiries, submitInquiryAnswer } from '../../mocks/admin/mockData';
+import { fetchInquiries, fetchInquiryDetail, submitInquiryAnswer } from '../../api/inquiry';
 
 export default function AdminInquiries() {
-  const navigate = useNavigate();
-
-  const { data: inquiries, setData: setInquiries } = useListQuery(fetchInquiries);
+  const { data: inquiries, setData: setInquiries, error } = useListQuery(fetchInquiries);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [answer, setAnswer] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -38,33 +36,42 @@ export default function AdminInquiries() {
     const keyword = searchKeyword.trim().toLowerCase();
     const matchesSearch =
       !keyword ||
-      String(inquiry.id).includes(keyword) ||
-      inquiry.title.toLowerCase().includes(keyword) ||
-      inquiry.content.toLowerCase().includes(keyword) ||
-      inquiry.reporter.toLowerCase().includes(keyword);
+      String(inquiry.id).includes(keyword) || inquiry.title.toLowerCase().includes(keyword);
     const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter;
     const matchesType = typeFilter === 'all' || inquiry.type === typeFilter;
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const selectedInquiry = inquiries?.find((i) => i.id === selectedId) ?? null;
-
-  const openInquiry = (inquiry) => {
-    setSelectedId(inquiry.id);
-    setAnswer(inquiry.answer || '');
+  // 목록 응답에는 내용/이메일이 없어서 행을 열 때 상세를 따로 조회한다
+  const openInquiry = async (inquiry) => {
+    try {
+      const detail = await fetchInquiryDetail(inquiry.id);
+      if (!detail) throw new Error('문의 내용을 찾을 수 없습니다.');
+      setSelectedInquiry(detail);
+      setAnswer(detail.answer || '');
+    } catch (err) {
+      alert(err.message || '문의 상세를 불러오지 못했습니다.');
+    }
   };
 
   const closeInquiry = () => {
-    setSelectedId(null);
+    setSelectedInquiry(null);
     setAnswer('');
   };
 
   const handleAnswerSubmit = async () => {
     if (!answer.trim()) return;
     setSubmitting(true);
-    const updated = await submitInquiryAnswer(selectedInquiry.id, answer);
-    setInquiries((prev) => prev.map((i) => (i.id === updated.id ? updated : i)));
-    setSubmitting(false);
+    try {
+      const updated = await submitInquiryAnswer(selectedInquiry.id, answer);
+      if (!updated) throw new Error('답변은 등록되었지만 최신 내용을 불러오지 못했습니다. 새로고침해주세요.');
+      setSelectedInquiry(updated);
+      setInquiries((prev) => prev.map((i) => (i.id === updated.id ? { ...i, status: updated.status } : i)));
+    } catch (err) {
+      alert(err.message || '답변 등록에 실패했습니다.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const resetFilters = () => {
@@ -104,7 +111,11 @@ export default function AdminInquiries() {
           />
         )}
 
-        <AdminInquiriesTable loading={!inquiries} inquiries={filtered} onRowClick={openInquiry} />
+        {error ? (
+          <EmptyState title="문의 내역을 불러오지 못했습니다" description={error.message} />
+        ) : (
+          <AdminInquiriesTable loading={!inquiries} inquiries={filtered} onRowClick={openInquiry} />
+        )}
       </Card>
 
       {selectedInquiry && (
@@ -115,7 +126,6 @@ export default function AdminInquiries() {
           onClose={closeInquiry}
           onSubmit={handleAnswerSubmit}
           submitting={submitting}
-          onViewReport={(reportId) => navigate(`/admin/reports/${reportId}`)}
         />
       )}
     </AdminLayout>

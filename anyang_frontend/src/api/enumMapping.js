@@ -39,6 +39,10 @@ export const INQUIRY_TYPE_TO_BACKEND = {
   other: "ETC",
 };
 
+export const INQUIRY_TYPE_FROM_BACKEND = Object.fromEntries(
+  Object.entries(INQUIRY_TYPE_TO_BACKEND).map(([ui, backend]) => [backend, ui])
+);
+
 // 관리자가 신고 처리 상태를 다음 단계로 진행시킬 때 쓰는 표.
 // 각 배열의 [0]은 현재 상태(표시용), [1]은 다음으로 보낼 수 있는 상태.
 // AdminReportsTable(드롭다운)과 AdminReportDetail(다음 단계로 진행 버튼)이

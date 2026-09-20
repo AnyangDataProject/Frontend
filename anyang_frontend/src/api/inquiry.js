@@ -1,4 +1,62 @@
 import { apiRequest, apiRequestMultipart } from './client';
+import { INQUIRY_TYPE_FROM_BACKEND } from './enumMapping';
+
+const LIST_PAGE_SIZE = 100;
+const MAX_LIST_PAGES = 50;
+
+// '2026-09-09T09:32:11' -> '2026-09-09 09:32'
+function formatDateTime(value) {
+  return value ? value.replace('T', ' ').slice(0, 16) : '';
+}
+
+function mapInquiry(dto) {
+  return {
+    id: dto.id,
+    type: INQUIRY_TYPE_FROM_BACKEND[dto.inquiryType] ?? 'other',
+    title: dto.title ?? '',
+    status: String(dto.status ?? 'WAITING').toLowerCase(),
+    createdAt: formatDateTime(dto.createdAt),
+  };
+}
+
+function mapInquiryDetail(dto) {
+  return {
+    ...mapInquiry(dto),
+    content: dto.content ?? '',
+    email: dto.email ?? '',
+    answer: dto.answer ?? '',
+    answeredByName: dto.answeredByName ?? '',
+    answeredAt: formatDateTime(dto.answeredAt),
+    fileUrls: dto.fileUrls ?? [],
+  };
+}
+
+// 관리자 문의 목록. 서버가 페이지 단위로만 내려주므로 마지막 페이지까지 모아서 반환한다.
+// (목록 응답에는 내용/이메일이 없어서 필요할 때 fetchInquiryDetail로 따로 조회)
+export async function fetchInquiries() {
+  const all = [];
+
+  for (let page = 0; page < MAX_LIST_PAGES; page += 1) {
+    const result = await apiRequest(`/inquiries?page=${page}&size=${LIST_PAGE_SIZE}`);
+    all.push(...(result?.content ?? []));
+    if (!result || result.last !== false) break;
+  }
+
+  return all.map(mapInquiry).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export async function fetchInquiryDetail(id) {
+  const dto = await apiRequest(`/inquiries/${id}`);
+  return dto ? mapInquiryDetail(dto) : null;
+}
+
+export async function submitInquiryAnswer(id, answerText) {
+  await apiRequest(`/inquiries/${id}/answer`, {
+    method: 'PUT',
+    body: { answer: answerText.trim() },
+  });
+  return fetchInquiryDetail(id);
+}
 
 export async function submitInquiry({ inquiryType, title, content, email, files }) {
   const id = await apiRequest('/inquiries', {
