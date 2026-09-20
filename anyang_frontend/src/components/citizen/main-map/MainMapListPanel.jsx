@@ -1,8 +1,8 @@
-import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
+import { DAMAGE_TYPE_META, REPORTABLE_DAMAGE_TYPES, SEVERITY_META, REPORT_STATUS_META } from "../../../mocks/citizen/constants";
 
 const TYPE_FILTER_OPTIONS = [
   { value: "all", label: "전체 유형" },
-  ...Object.entries(DAMAGE_TYPE_META).map(([value, meta]) => ({ value, label: meta.label })),
+  ...REPORTABLE_DAMAGE_TYPES.map((value) => ({ value, label: DAMAGE_TYPE_META[value].label })),
 ];
 
 export default function MainMapListPanel({
@@ -23,7 +23,7 @@ export default function MainMapListPanel({
     >
       <div className="flex gap-1.5 px-4 pt-4">
         <button
-          className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
             statusFilter === "all" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
           }`}
           onClick={() => onStatusFilterChange("all")}
@@ -31,7 +31,7 @@ export default function MainMapListPanel({
           전체 신고 <b className="font-extrabold ml-1">{counts.all}</b>
         </button>
         <button
-          className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
             statusFilter === "open" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
           }`}
           onClick={() => onStatusFilterChange("open")}
@@ -39,7 +39,7 @@ export default function MainMapListPanel({
           미처리 <b className="font-extrabold ml-1">{counts.open}</b>
         </button>
         <button
-          className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
             statusFilter === "done" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
           }`}
           onClick={() => onStatusFilterChange("done")}
@@ -47,7 +47,7 @@ export default function MainMapListPanel({
           처리완료 <b className="font-extrabold ml-1">{counts.done}</b>
         </button>
         <button
-          className={`flex-1 border-none px-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
+          className={`flex-1 whitespace-nowrap border-none px-1 py-2.5 rounded-xl text-xs font-semibold cursor-pointer transition-all duration-200 ${
             statusFilter === "rejected" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-500"
           }`}
           onClick={() => onStatusFilterChange("rejected")}
