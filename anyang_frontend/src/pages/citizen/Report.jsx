@@ -28,6 +28,7 @@ export default function Report() {
   const [damageType, setDamageType] = useState("");
   const [severity, setSeverity] = useState("");
   const [address, setAddress] = useState("");
+  const [addressNotice, setAddressNotice] = useState("");
   const [detail, setDetail] = useState("");
   const [agree, setAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -46,11 +47,23 @@ export default function Report() {
   const { reverseGeocode: kakaoReverseGeocode } = useKakaoGeocoder();
   const { requestLocation } = useCurrentLocation();
 
+  // 안내/오류 문구는 address(제출되는 값)에 섞이지 않도록 별도 상태로 둠
   const reverseGeocode = (lat, lng) => {
     kakaoReverseGeocode(lat, lng, {
-      onSuccess: setAddress,
-      onError: setAddress,
+      onSuccess: (found) => {
+        setAddress(found);
+        setAddressNotice("");
+      },
+      onError: (message) => {
+        setAddress("");
+        setAddressNotice(message);
+      },
     });
+  };
+
+  const handleAddressChange = (value) => {
+    setAddress(value);
+    setAddressNotice("");
   };
 
   const handleMapClick = (_, mouseEvent) => {
@@ -61,15 +74,16 @@ export default function Report() {
   };
 
   const handleCurrentLocation = () => {
-    setAddress("현재 위치를 확인하는 중입니다...");
+    setAddress("");
+    setAddressNotice("현재 위치를 확인하는 중입니다...");
     requestLocation({
       onSuccess: (coords) => {
         setMapCenter({ lat: coords.latitude, lng: coords.longitude });
         setMarkerPos({ lat: coords.latitude, lng: coords.longitude });
         reverseGeocode(coords.latitude, coords.longitude);
       },
-      onUnsupported: () => setAddress("현재 위치를 사용할 수 없습니다."),
-      onError: () => setAddress("현재 위치를 가져오지 못했습니다. 주소를 직접 입력해주세요."),
+      onUnsupported: () => setAddressNotice("현재 위치를 사용할 수 없습니다."),
+      onError: () => setAddressNotice("현재 위치를 가져오지 못했습니다. 주소를 직접 입력해주세요."),
     });
   };
 
@@ -185,7 +199,8 @@ export default function Report() {
 
           <ReportLocationStep
             address={address}
-            onAddressChange={setAddress}
+            addressNotice={addressNotice}
+            onAddressChange={handleAddressChange}
             onCurrentLocation={handleCurrentLocation}
             mapCenter={mapCenter}
             markerPos={markerPos}

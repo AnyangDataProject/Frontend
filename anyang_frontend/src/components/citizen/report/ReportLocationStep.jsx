@@ -4,6 +4,7 @@ import StepSection from "../StepSection";
 
 export default function ReportLocationStep({
   address,
+  addressNotice,
   onAddressChange,
   onCurrentLocation,
   mapCenter,
@@ -30,6 +31,7 @@ export default function ReportLocationStep({
           현재 위치
         </button>
       </div>
+      {addressNotice && <p className="mt-2 mb-0 text-amber-600 text-xs text-left">{addressNotice}</p>}
 
       <div className="relative h-[220px] mt-3 overflow-hidden border border-slate-200 rounded-xl">
         <Map center={mapCenter} style={{ width: "100%", height: "100%" }} level={4} onClick={onMapClick}>
