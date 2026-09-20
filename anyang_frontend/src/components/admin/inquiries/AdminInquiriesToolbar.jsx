@@ -8,7 +8,7 @@ export default function AdminInquiriesToolbar({ keyword, onKeywordChange, filter
         <input
           value={keyword}
           onChange={(e) => onKeywordChange(e.target.value)}
-          placeholder="제목, 내용, 문의자 검색"
+          placeholder="문의번호, 제목 검색"
           className="w-48 text-sm text-slate-700 outline-none placeholder:text-slate-400"
         />
       </div>
