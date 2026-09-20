@@ -50,6 +50,18 @@ export async function fetchInquiryDetail(id) {
   return dto ? mapInquiryDetail(dto) : null;
 }
 
+export async function updateInquiry(id, { title, content }) {
+  await apiRequest(`/inquiries/${id}`, {
+    method: 'PUT',
+    body: { title: title.trim(), content: content.trim() },
+  });
+  return fetchInquiryDetail(id);
+}
+
+export async function deleteInquiry(id) {
+  await apiRequest(`/inquiries/${id}`, { method: 'DELETE' });
+}
+
 export async function submitInquiryAnswer(id, answerText) {
   await apiRequest(`/inquiries/${id}/answer`, {
     method: 'PUT',
