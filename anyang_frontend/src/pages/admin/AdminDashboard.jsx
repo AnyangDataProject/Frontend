@@ -13,7 +13,6 @@ import { useListQuery } from '../../hooks/useListQuery';
 import { fetchAllReports } from '../../api/report';
 import { fetchPriorityClusters } from '../../api/inspectionClusters';
 import { PRIORITY_GRADE_META } from '../../mocks/admin/constants';
-import { STATUS_TO_UI } from '../../api/enumMapping';
 import { formatDecimal } from '../../utils/number';
 import { shortenRoadAddress, clusterToMapPoint } from '../../utils/clusterMapPoint';
 
@@ -26,11 +25,14 @@ export default function AdminDashboard() {
 
   const reportStats = useMemo(() => {
     if (!reports) return null;
-    const doneCount = reports.filter((r) => STATUS_TO_UI[r.status] === 'done').length;
+    const doneCount = reports.filter((r) => r.status === 'completed').length;
+    const rejectedCount = reports.filter((r) => r.status === 'rejected').length;
+    // 반려는 처리 대상이 아니므로 미처리·처리율 계산에서 제외
+    const handleable = reports.length - rejectedCount;
     return {
       total: reports.length,
-      unresolved: reports.length - doneCount,
-      resolutionRate: reports.length === 0 ? 0 : Math.round((doneCount / reports.length) * 100),
+      unresolved: handleable - doneCount,
+      resolutionRate: handleable === 0 ? 0 : Math.round((doneCount / handleable) * 100),
     };
   }, [reports]);
 
