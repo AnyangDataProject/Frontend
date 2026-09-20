@@ -1,9 +1,9 @@
 import { CalendarDays, ChevronRight } from "lucide-react";
 import { INQUIRY_STATUS_META } from "../../../mocks/citizen/constants";
-import { INQUIRY_TYPES } from "../../../mocks/citizen/inquiryData";
+import { getInquiryTypeLabel } from "../../../api/enumMapping";
 
 export default function InquiryCard({ inquiry, onClick }) {
-  const typeLabel = INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? "기타 민원";
+  const typeLabel = getInquiryTypeLabel(inquiry.type);
   const status = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.waiting;
   const StatusIcon = status.icon;
 

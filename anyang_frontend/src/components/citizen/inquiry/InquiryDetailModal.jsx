@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Paperclip, Pencil, Trash2, MessageSquareText } from "lucide-react";
 import Modal from "../../common/Modal";
 import { INQUIRY_STATUS_META } from "../../../mocks/citizen/constants";
-import { INQUIRY_TYPES } from "../../../mocks/citizen/inquiryData";
+import { getInquiryTypeLabel } from "../../../api/enumMapping";
 
 const inputClass =
   "w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 font-[inherit] text-sm text-slate-900 outline-none transition-shadow focus:border-blue-600 focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)]";
@@ -14,7 +14,7 @@ export default function InquiryDetailModal({ inquiry, zIndexClass, onClose, onUp
   const [draftContent, setDraftContent] = useState("");
   const [saving, setSaving] = useState(false);
 
-  const typeLabel = INQUIRY_TYPES.find((t) => t.value === inquiry.type)?.label ?? "기타 민원";
+  const typeLabel = getInquiryTypeLabel(inquiry.type);
   const status = INQUIRY_STATUS_META[inquiry.status] ?? INQUIRY_STATUS_META.waiting;
   const StatusIcon = status.icon;
   const answered = inquiry.status === "answered";

@@ -2,6 +2,7 @@
 // tone은 공용 Badge 컴포넌트가 색상을 결정할 때 사용합니다.
 
 import { CircleDot, Construction, TrendingDown, CircleAlert, Signpost, Minus } from 'lucide-react';
+import { INQUIRY_STATUS_LABEL, INQUIRY_TYPE_LABEL } from '../../api/enumMapping';
 
 export const ANYANG_BOUNDS = {
   minLat: 37.352,
@@ -69,15 +70,15 @@ export const MEMBER_STATUS_META = {
 };
 
 export const INQUIRY_STATUS_META = {
-  waiting: { label: '답변 대기', tone: 'warning' },
-  answered: { label: '답변 완료', tone: 'success' },
+  waiting: { label: INQUIRY_STATUS_LABEL.waiting, tone: 'warning' },
+  answered: { label: INQUIRY_STATUS_LABEL.answered, tone: 'success' },
 };
 
 export const INQUIRY_TYPE_META = {
-  report: { label: '신고 관련 문의' },
-  result: { label: '처리 결과 문의' },
-  service: { label: '서비스 이용 문의' },
-  other: { label: '기타 민원' },
+  report: { label: INQUIRY_TYPE_LABEL.report },
+  result: { label: INQUIRY_TYPE_LABEL.result },
+  service: { label: INQUIRY_TYPE_LABEL.service },
+  other: { label: INQUIRY_TYPE_LABEL.other },
 };
 
 export const CAUSE_FACTOR_LABEL = {
