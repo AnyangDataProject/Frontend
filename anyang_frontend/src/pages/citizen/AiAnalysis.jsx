@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import { BrainCircuit, ChevronRight } from "lucide-react";
+import { BrainCircuit, ChevronRight, AlertCircle } from "lucide-react";
 import { fallbackReport, getMockAnalysis } from "../../mocks/citizen/aiAnalysisData";
 import { DAMAGE_TYPE_META, SEVERITY_META, REPORT_STATUS_META } from "../../mocks/citizen/constants";
 import { SECTION_LABEL_CLASS } from "../../components/citizen/ai-analysis/AnalysisCard";
@@ -10,29 +10,17 @@ import AiResultSection from "../../components/citizen/ai-analysis/AiResultSectio
 import DetailedAnalysisSection from "../../components/citizen/ai-analysis/DetailedAnalysisSection";
 import AiSummarySection from "../../components/citizen/ai-analysis/AiSummarySection";
 import ProcessingStatusSection from "../../components/citizen/ai-analysis/ProcessingStatusSection";
-import { useEffect, useState } from "react";
-import { getAiAnalysis } from "../../api/ai";
 
 export default function AiAnalysis() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // MainMap에서 전달받은 신고 데이터
+  // MainMap에서 전달받은 신고 데이터 (이미 백엔드가 분석 완료해둔 결과 포함)
   const report = location.state?.report;
 
   const selectedReport = report || fallbackReport;
-  const [detectionData, setDetectionData] = useState(null);
 
-  useEffect(() => {
-    if (!selectedReport?.id) return;
-
-    getAiAnalysis(selectedReport.id)
-      .then((data) => setDetectionData(data))
-      .catch((err) => {
-        console.error('AI 분석 결과를 불러오지 못했습니다.', err);
-        setDetectionData(null);
-      });
-  }, [selectedReport?.id]);
+  console.log(selectedReport.aiConfidence)
 
   const type = DAMAGE_TYPE_META[selectedReport.type] ?? { label: selectedReport.type ?? '-' };
   const severity = SEVERITY_META[selectedReport.severity];
@@ -42,15 +30,18 @@ export default function AiAnalysis() {
 
   const mockResult = getMockAnalysis(selectedReport);
 
-  // 실제 탐지 결과가 있으면 병합, 없으면(fallback 신고이거나 API 실패 시) mock 그대로
-  const firstAnalysis = detectionData?.[0];
+  const detections = selectedReport.aiDetections ?? [];
+
+  // AI가 이 신고 유형을 인식하지 못한 경우 (탐지 결과 없음)
+  const noDetection = selectedReport.aiConfidence == null && detections.length === 0;
 
   const analysisResult = {
     ...mockResult,
     confidence: selectedReport.aiConfidence != null
-      ? Math.round(selectedReport.aiConfidence)
-      : mockResult.confidence,
-    resultImageUrl: firstAnalysis?.resultImageUrl ?? null,
+      ? Math.round(selectedReport.aiConfidence * 100)
+      : null,
+    resultImageUrl: selectedReport.resultImageUrl ?? null,
+    detections,
   };
 
   return (
@@ -76,11 +67,24 @@ export default function AiAnalysis() {
             </p>
           </div>
 
-          <div className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium max-[700px]:mt-3">
-            <BrainCircuit size={17} />
-            AI 분석 완료
-          </div>
+          {noDetection ? (
+            <div className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-100 border border-slate-200 text-slate-500 text-xs font-medium max-[700px]:mt-3">
+              <AlertCircle size={17} />
+              AI 분석 결과 없음
+            </div>
+          ) : (
+            <div className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium max-[700px]:mt-3">
+              <BrainCircuit size={17} />
+              AI 분석 완료
+            </div>
+          )}
         </section>
+
+        {noDetection && (
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            현재 AI는 도로 균열(종방향·횡방향·거북등)과 포트홀만 인식할 수 있어요. 이 신고는 해당 유형에 속하지 않아 AI가 별도로 탐지한 내용이 없습니다. 신고 내용은 담당 부서가 직접 확인할 예정입니다.
+          </div>
+        )}
 
         <ReportInfoSection report={selectedReport} status={status} StatusIcon={StatusIcon} />
 
@@ -93,9 +97,12 @@ export default function AiAnalysis() {
           <AiResultSection type={type} severity={severity} confidence={analysisResult.confidence} />
         </section>
 
-        <DetailedAnalysisSection type={type} severity={severity} analysisResult={analysisResult} />
-
-        <AiSummarySection summary={analysisResult.summary} />
+        {!noDetection && (
+          <>
+            <DetailedAnalysisSection type={type} severity={severity} analysisResult={analysisResult} />
+            <AiSummarySection summary={analysisResult.summary} />
+          </>
+        )}
 
         <ProcessingStatusSection
           status={selectedReport.status}

@@ -30,3 +30,15 @@ export const INQUIRY_TYPE_TO_BACKEND = {
   service: "SERVICE",
   other: "ETC",
 };
+
+export const INQUIRY_TYPE_TO_UI = {
+  REPORT: "report",
+  RESULT: "result",
+  SERVICE: "service",
+  ETC: "other",
+};
+
+export const INQUIRY_STATUS_TO_UI = {
+  WAITING: "waiting",
+  ANSWERED: "answered",
+};

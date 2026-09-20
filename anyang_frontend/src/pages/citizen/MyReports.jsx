@@ -28,8 +28,9 @@ function normalizeReport(dto) {
     address: dto.address,
     reportedAt: dto.reportedAt ? dto.reportedAt.slice(0, 10) : "",
     description: dto.description,
-    aiConfidence: dto.aiConfidence != null ? Math.round(dto.aiConfidence) : null,
-    image: dto.images?.[0]?.imageUrl ?? "",
+    aiConfidence: dto.aiConfidence != null ? Math.round(dto.aiConfidence * 100) : null,
+    aiDetections: dto.aiDetections,
+    image: dto.images?.[0]?.resultImageUrl || dto.images?.[0]?.imageUrl || "",
   };
 }
 

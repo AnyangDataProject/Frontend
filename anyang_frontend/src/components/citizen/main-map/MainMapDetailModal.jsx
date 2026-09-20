@@ -7,10 +7,10 @@ export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
       {pin && (
         <>
           <div className="w-full h-40 rounded-xl bg-slate-50 mb-3.5 overflow-hidden flex items-center justify-center border border-slate-200">
-            {pin.photoUrl ? (
+            {pin.resultImageUrl || pin.photoUrl ? (
               <img
                 className="w-full h-full object-cover"
-                src={pin.photoUrl}
+                src={pin.resultImageUrl || pin.photoUrl}
                 alt={`${DAMAGE_TYPE_META[pin.type].label} 현장 사진`}
               />
             ) : (
@@ -37,6 +37,18 @@ export default function MainMapDetailModal({ pin, onClose, onViewAnalysis }) {
             <span className="text-slate-500">신고일</span>
             <span>{pin.reportedAt}</span>
           </div>
+
+          {pin.aiConfidence != null ? (
+            <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+              <span className="text-slate-500">AI 신뢰도</span>
+              <span className="font-bold text-blue-600">{Math.round(pin.aiConfidence * 100)}%</span>
+            </div>
+          ) : (
+            <div className="flex justify-between py-[9px] border-b border-slate-200 text-sm text-slate-900">
+              <span className="text-slate-500">AI 분석</span>
+              <span className="text-slate-400">탐지 결과 없음</span>
+            </div>
+          )}
 
           <button
             className="w-full mt-[18px] bg-blue-600 text-white border-none py-[13px] rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 hover:bg-blue-700"

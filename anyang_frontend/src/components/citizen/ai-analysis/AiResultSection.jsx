@@ -1,7 +1,9 @@
-import { AlertTriangle, BrainCircuit, ShieldAlert } from "lucide-react";
+import { AlertTriangle, BrainCircuit, ShieldAlert, SearchX } from "lucide-react";
 import AnalysisCard from "./AnalysisCard";
 
 export default function AiResultSection({ type, severity, confidence }) {
+  const hasDetection = confidence != null;
+
   return (
     <AnalysisCard
       eyebrow="ANALYSIS RESULT"
@@ -15,7 +17,7 @@ export default function AiResultSection({ type, severity, confidence }) {
         </div>
 
         <div className="flex flex-col gap-0.5">
-          <span className="text-slate-500 text-xs">탐지된 파손 유형</span>
+          <span className="text-slate-500 text-xs">신고된 파손 유형</span>
           <strong className="text-base font-semibold text-slate-900">{type.label}</strong>
         </div>
       </div>
@@ -24,37 +26,44 @@ export default function AiResultSection({ type, severity, confidence }) {
       <div className="mb-[18px]">
         <div className="flex justify-between mb-1.5 text-xs">
           <span className="text-slate-500">AI 분석 신뢰도</span>
-          <strong className="text-blue-600 font-semibold">{confidence}%</strong>
+          <strong className={hasDetection ? "text-blue-600 font-semibold" : "text-slate-400 font-semibold"}>
+            {hasDetection ? `${confidence}%` : "측정 안 됨"}
+          </strong>
         </div>
 
         <div className="h-2 rounded-full bg-slate-50 overflow-hidden border border-slate-200">
           <div
-            className="h-full rounded-full bg-blue-600"
-            style={{ width: `${confidence}%` }}
+            className={`h-full rounded-full ${hasDetection ? "bg-blue-600" : "bg-slate-200"}`}
+            style={{ width: hasDetection ? `${confidence}%` : "0%" }}
           />
         </div>
 
         <p className="mt-1.5 text-slate-400 text-xs">
-          AI 모델이 해당 파손 유형으로 판단할 가능성이
-          {` ${confidence}%`}입니다.
+          {hasDetection
+            ? `AI 모델이 해당 파손 유형으로 판단할 가능성이 ${confidence}%입니다.`
+            : "이 파손 유형은 AI가 아직 학습하지 않은 범위라 신뢰도를 계산할 수 없습니다."}
         </p>
       </div>
 
       {/* Severity */}
       <div className="flex items-start gap-3 p-[13px] rounded-lg border border-slate-200 bg-slate-50">
-        <div className="w-9 h-9 shrink-0 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
-          <ShieldAlert size={22} />
+        <div className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${hasDetection ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-400"}`}>
+          {hasDetection ? <ShieldAlert size={22} /> : <SearchX size={20} />}
         </div>
 
         <div className="flex flex-col gap-0.5">
-          <span className="text-slate-400 text-xs">AI 위험도 평가</span>
+          <span className="text-slate-400 text-xs">
+            {hasDetection ? "AI 위험도 평가" : "신고자 입력 위험도"}
+          </span>
 
           <strong className={`text-sm font-medium ${severity.textClass}`}>
             {severity.label}
           </strong>
 
           <p className="mt-0.5 text-slate-500 text-xs leading-[1.5]">
-            {severity.analysisDescription}
+            {hasDetection
+              ? severity.analysisDescription
+              : "AI 분석이 이루어지지 않아, 신고 시 시민이 직접 선택한 위험도입니다."}
           </p>
         </div>
       </div>

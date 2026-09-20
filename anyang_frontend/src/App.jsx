@@ -20,6 +20,7 @@ import AdminRoadDetail from './pages/admin/AdminRoadDetail';
 import RequireAdmin from './components/auth/RequireAdmin';
 import RedirectAdminHome from './components/auth/RedirectAdminHome';
 import { useKakaoLoader } from 'react-kakao-maps-sdk';
+import MyInquiries from './pages/citizen/MyInquiry';
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
         <Route path="/report" element={<Report />} />
         <Route path="/my-reports" element={<MyReports />} />
         <Route path="/inquiry" element={<Inquiry />} />
+        <Route path="/my-inquiries" element={<MyInquiries />} />
         <Route path="/find-id" element={<FindId />} />
         <Route path="/find-password" element={<FindPassword />} />
 

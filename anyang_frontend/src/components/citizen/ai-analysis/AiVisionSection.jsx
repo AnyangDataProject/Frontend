@@ -1,7 +1,9 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, SearchX } from "lucide-react";
 import AnalysisCard from "./AnalysisCard";
 
 export default function AiVisionSection({ typeLabel, confidence, resultImageUrl }) {
+  const hasDetection = confidence != null;
+
   return (
     <AnalysisCard eyebrow="AI VISION" title="파손 이미지 분석">
       <div className="relative">
@@ -26,24 +28,37 @@ export default function AiVisionSection({ typeLabel, confidence, resultImageUrl 
           )}
 
           <div className="absolute top-2.5 left-2.5 px-2.5 py-1.5 rounded-lg bg-slate-900/85 backdrop-blur-[4px] flex flex-col gap-px">
-            <span className="text-blue-400 text-[9px] font-extrabold">
-              AI DETECTION
-            </span>
-
-            <span className="text-white text-xs font-bold">
-              {typeLabel}
-            </span>
-
-            <span className="text-slate-400 text-[9px]">
-              신뢰도 {confidence}%
-            </span>
+            {hasDetection ? (
+              <>
+                <span className="text-blue-400 text-[9px] font-extrabold">
+                  AI DETECTION
+                </span>
+                <span className="text-white text-xs font-bold">
+                  {typeLabel}
+                </span>
+                <span className="text-slate-400 text-[9px]">
+                  신뢰도 {confidence}%
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-slate-400 text-[9px] font-extrabold flex items-center gap-1">
+                  <SearchX size={11} />
+                  AI 미탐지
+                </span>
+                <span className="text-white text-xs font-bold">
+                  {typeLabel}
+                </span>
+              </>
+            )}
           </div>
         </div>
       </div>
 
       <p className="mt-3 text-slate-500 text-xs leading-[1.5]">
-        AI가 신고 이미지에서 도로파손 영역을 탐지하고
-        파손 유형을 분류했습니다.
+        {hasDetection
+          ? "AI가 신고 이미지에서 도로파손 영역을 탐지하고 파손 유형을 분류했습니다."
+          : "이 파손 유형은 현재 AI 모델이 인식할 수 있는 범위(균열, 포트홀) 밖이라 별도 탐지 결과가 없습니다."}
       </p>
     </AnalysisCard>
   );

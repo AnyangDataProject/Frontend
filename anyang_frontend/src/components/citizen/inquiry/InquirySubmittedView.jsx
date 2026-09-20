@@ -2,7 +2,7 @@ import { Mail, Clock3 } from "lucide-react";
 import BackButton from "../BackButton";
 import SuccessScreen from "../SuccessScreen";
 
-export default function InquirySubmittedView({ email, onGoToMap, onReset }) {
+export default function InquirySubmittedView({ email, onGoToMap, onGoToMyInquiries, onReset }) {
   return (
     <div className="min-h-screen bg-slate-50 pt-[72px]">
       <main className="min-h-[calc(100vh-72px)] flex items-center justify-center px-5 pb-20">
@@ -63,6 +63,13 @@ export default function InquirySubmittedView({ email, onGoToMap, onReset }) {
               </button>
             }
           />
+
+          <button
+            className="mt-4 text-sm font-medium text-blue-600 underline-offset-2 hover:underline"
+            onClick={onGoToMyInquiries}
+          >
+            내 문의 목록으로 가기
+          </button>
         </div>
       </main>
     </div>

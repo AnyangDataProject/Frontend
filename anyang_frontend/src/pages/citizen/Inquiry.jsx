@@ -88,7 +88,12 @@ function Inquiry() {
 
   if (submitted) {
     return (
-      <InquirySubmittedView email={email} onGoToMap={() => navigate("/")} onReset={resetForm} />
+      <InquirySubmittedView
+        email={email}
+        onGoToMap={() => navigate("/")}
+        onGoToMyInquiries={() => navigate("/my-inquiries")}
+        onReset={resetForm}
+      />
     );
   }
 
