@@ -30,6 +30,8 @@
 
 ## 시작하기
 
+> 프로젝트가 `anyang_frontend/` 폴더 안에 있어서, 아래 명령과 `.env`, `src/` 경로는 모두 이 폴더 기준입니다. (`cd anyang_frontend` 후 진행)
+
 ### 1. 설치
 ```bash
 npm install
