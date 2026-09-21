@@ -1,0 +1,89 @@
+// 프론트 내부 표기(mock 시절부터 쓰던 소문자 키) ↔ 백엔드 enum 간 변환
+
+// 신고 등록 시: 프론트 UI 값 → 백엔드로 보낼 enum(대문자)
+export const SEVERITY_TO_BACKEND = {
+  low: "LOW",
+  mid: "MEDIUM",
+  high: "HIGH",
+};
+
+// 조회 시: 백엔드 severity → 프론트 UI 값
+// 백엔드가 내려주는 casing이 종종 바뀌어서(low/high ↔ LOW/HIGH), 이 맵은 항상 소문자
+// 입력만 받는다고 가정한다. api/report.js의 normalizeReport()가 조회 응답을 전부
+// 소문자로 정규화해서 넘겨주므로, 이 파일은 casing을 신경 쓸 필요가 없다.
+export const SEVERITY_TO_UI = {
+  low: "low",
+  medium: "mid",
+  high: "high",
+};
+
+// 조회 시: 백엔드 6단계 상태 → 프론트 UI 3단계로 축약 (역시 소문자 입력 전제)
+export const STATUS_TO_UI = {
+  received: "received",
+  ai_analyzed: "received",
+  confirmed: "progress",
+  in_progress: "progress",
+  completed: "done",
+  rejected: "done",
+};
+
+// 화면에 보여줄 상태 키(received/progress/done/rejected). STATUS_TO_UI는 반려를
+// 처리완료(done)로 묶어서 집계용으로만 남기고, 라벨·필터는 이 함수를 써서 반려를 구분함.
+export const toStatusLabelKey = (status) =>
+  status === "rejected" ? "rejected" : (STATUS_TO_UI[status] ?? "received");
+
+export const INQUIRY_TYPE_TO_BACKEND = {
+  report: "REPORT",
+  result: "RESULT",
+  service: "SERVICE",
+  other: "ETC",
+};
+
+export const INQUIRY_TYPE_FROM_BACKEND = Object.fromEntries(
+  Object.entries(INQUIRY_TYPE_TO_BACKEND).map(([ui, backend]) => [backend, ui])
+);
+
+// 문의 유형/상태의 화면 표기. 관리자·시민 화면이 각자 라벨을 들고 있다가 어긋나지 않도록 한 곳에서 관리
+export const INQUIRY_TYPE_LABEL = {
+  report: "신고 관련 문의",
+  result: "처리 결과 문의",
+  service: "서비스 이용 문의",
+  other: "기타 민원",
+};
+
+export const INQUIRY_STATUS_LABEL = {
+  waiting: "답변 대기",
+  answered: "답변 완료",
+};
+
+export const getInquiryTypeLabel = (type) => INQUIRY_TYPE_LABEL[type] ?? INQUIRY_TYPE_LABEL.other;
+
+// 관리자가 신고 처리 상태를 다음 단계로 진행시킬 때 쓰는 표.
+// 각 배열의 [0]은 현재 상태(표시용), [1]은 다음으로 보낼 수 있는 상태.
+// AdminReportsTable(드롭다운)과 AdminReportDetail(다음 단계로 진행 버튼)이
+// 각자 이 표를 따로 들고 있다가 어긋났던 적이 있어 한 곳으로 모음.
+export const NEXT_STATUS_OPTIONS = {
+  RECEIVED: [
+    { value: "RECEIVED", label: "접수됨" },
+    { value: "CONFIRMED", label: "확인됨" },
+  ],
+  AI_ANALYZED: [
+    { value: "AI_ANALYZED", label: "AI 분석 완료" },
+    { value: "CONFIRMED", label: "확인됨" },
+  ],
+  CONFIRMED: [
+    { value: "CONFIRMED", label: "확인됨" },
+    { value: "IN_PROGRESS", label: "처리중" },
+  ],
+  IN_PROGRESS: [
+    { value: "IN_PROGRESS", label: "처리중" },
+    { value: "COMPLETED", label: "처리완료" },
+  ],
+  COMPLETED: [{ value: "COMPLETED", label: "처리완료" }],
+  REJECTED: [{ value: "REJECTED", label: "반려" }],
+};
+
+export const REJECT_OPTION = { value: "REJECTED", label: "반려" };
+
+// 처리완료/반려는 최종 상태라 반려로 보낼 수 없음
+export const canReject = (rawStatus) => rawStatus !== "COMPLETED" && rawStatus !== "REJECTED";

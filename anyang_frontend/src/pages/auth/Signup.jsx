@@ -1,0 +1,323 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import AuthCardShell from '../../components/auth/AuthCardShell';
+import Checkbox from '../../components/common/Checkbox';
+import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
+import { AUTH_INPUT_CLASS } from '../../components/auth/authInputClass';
+import MessageModal from '../../components/common/MessageModal';
+import { useMessageModal } from '../../hooks/useMessageModal';
+import { useFormFields } from '../../hooks/auth/useFormFields';
+import { signup } from '../../api/auth';
+import { formatPhoneNumber } from '../../utils/phone';
+
+function Signup() {
+  const navigate = useNavigate();
+
+  const [form, handleChange, setForm] = useFormFields({
+    name: '',
+    email: '',
+    password: '',
+    passwordConfirm: '',
+    phone: '',
+  });
+
+  const handlePhoneChange = (e) => {
+    const formatted = formatPhoneNumber(e.target.value);
+    setForm((prev) => ({ ...prev, phone: formatted }));
+  };
+
+  const [agreements, setAgreements] = useState({
+    service: false,
+    privacy: false,
+  });
+  const agreeAll = agreements.service && agreements.privacy;
+
+  const [emailError, setEmailError] = useState('');
+
+  const { modal, showError, close: closeModal } = useMessageModal();
+
+  const handleAgreementChange = (name) => {
+    setAgreements((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+  };
+
+  const handleAgreeAll = (e) => {
+    const checked = e.target.checked;
+
+    setAgreements({
+      service: checked,
+      privacy: checked,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setEmailError('');
+
+    if (!form.name.trim()) {
+      showError('이름을 입력해주세요.');
+      return;
+    }
+
+    if (!form.email.trim()) {
+      showError('이메일을 입력해주세요.');
+      return;
+    }
+
+    if (!form.password) {
+      showError('비밀번호를 입력해주세요.');
+      return;
+    }
+
+    if (form.password !== form.passwordConfirm) {
+      showError('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    if (!form.phone.trim()) {
+      showError('휴대폰 번호를 입력해주세요.');
+      return;
+    }
+
+    if (!agreements.service || !agreements.privacy) {
+      showError('필수 약관에 동의해주세요.');
+      return;
+    }
+
+    try {
+      await signup({
+        email: form.email,
+        password: form.password,
+        name: form.name,
+        phone: form.phone,
+      });
+
+      navigate('/login', { state: { signupSuccess: true } });
+    } catch (err) {
+      const message = err.message || '회원가입에 실패했습니다.';
+
+      if (message === '이미 가입된 이메일입니다.') {
+        setEmailError(message);
+      } else {
+        showError(message);
+      }
+    }
+  };
+
+  return (
+    <AuthCardShell
+      title="회원가입"
+      description={
+        <>
+          안양시 알로드 서비스를 이용하기 위해
+          <br />
+          회원가입을 진행해주세요.
+        </>
+      }
+      maxWidth={480}
+    >
+      <form onSubmit={handleSubmit}>
+
+        {/* 이름 */}
+        <div className="mb-[18px] text-left">
+          <label htmlFor="name" className="block mb-2 text-xs font-medium text-slate-700">
+            이름
+          </label>
+
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="이름을 입력해주세요"
+            autoComplete="name"
+            className={AUTH_INPUT_CLASS}
+          />
+        </div>
+
+        {/* 이메일 */}
+        <div className="mb-[18px] text-left">
+          <label htmlFor="email" className="block mb-2 text-xs font-medium text-slate-700">
+            이메일
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => {
+              handleChange(e);
+              if (emailError) setEmailError('');
+            }}
+            placeholder="이메일을 입력해주세요"
+            autoComplete="email"
+            className={AUTH_INPUT_CLASS}
+          />
+
+          {emailError && (
+            <p className="mt-1.5 mb-0 text-xs text-red-600">{emailError}</p>
+          )}
+        </div>
+
+        {/* 비밀번호 */}
+        <div className="mb-[18px] text-left">
+          <label htmlFor="password" className="block mb-2 text-xs font-medium text-slate-700">
+            비밀번호
+          </label>
+
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="비밀번호를 입력해주세요"
+            autoComplete="new-password"
+            className={AUTH_INPUT_CLASS}
+          />
+        </div>
+
+        {/* 비밀번호 확인 */}
+        <div className="mb-[18px] text-left">
+          <label htmlFor="passwordConfirm" className="block mb-2 text-xs font-medium text-slate-700">
+            비밀번호 확인
+          </label>
+
+          <input
+            id="passwordConfirm"
+            name="passwordConfirm"
+            type="password"
+            value={form.passwordConfirm}
+            onChange={handleChange}
+            placeholder="비밀번호를 다시 입력해주세요"
+            autoComplete="new-password"
+            className={AUTH_INPUT_CLASS}
+          />
+
+          {form.passwordConfirm &&
+            form.password !== form.passwordConfirm && (
+              <p className="mt-1.5 mb-0 text-xs text-red-600">
+                비밀번호가 일치하지 않습니다.
+              </p>
+            )}
+
+          {form.passwordConfirm &&
+            form.password === form.passwordConfirm && (
+              <p className="mt-1.5 mb-0 text-xs text-emerald-600">
+                비밀번호가 일치합니다.
+              </p>
+            )}
+        </div>
+
+        {/* 휴대폰 번호 */}
+        <div className="mb-[18px] text-left">
+          <label htmlFor="phone" className="block mb-2 text-xs font-medium text-slate-700">
+            휴대폰 번호
+          </label>
+
+          <input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={form.phone}
+            onChange={handlePhoneChange}
+            placeholder="010-0000-0000"
+            autoComplete="tel"
+            maxLength={13}
+            className={AUTH_INPUT_CLASS}
+          />
+        </div>
+
+        {/* 약관 */}
+        <div className="mt-6 mb-6 p-[18px] max-[480px]:p-3.5 box-border border border-slate-200 rounded-lg bg-slate-50">
+
+          <Checkbox checked={agreeAll} onChange={handleAgreeAll} label="전체 약관에 동의합니다." emphasized />
+
+          <div className="h-px my-3.5 bg-slate-200" />
+
+          <div className="flex items-center gap-2 mt-0">
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.service}
+                onChange={() => handleAgreementChange('service')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 서비스 이용약관에 동의합니다.
+                  </>
+                }
+              />
+            </div>
+
+            <button
+              type="button"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+            >
+              보기
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 mt-2.5">
+            <div className="min-w-0 flex-1">
+              <Checkbox
+                checked={agreements.privacy}
+                onChange={() => handleAgreementChange('privacy')}
+                label={
+                  <>
+                    <b className="font-semibold text-blue-600">[필수]</b> 개인정보 수집 및 이용에 동의합니다.
+                  </>
+                }
+              />
+            </div>
+
+            <button
+              type="button"
+              className="ml-auto shrink-0 whitespace-nowrap p-0 border-none bg-transparent font-inherit text-xs text-slate-400 cursor-pointer transition-colors hover:text-blue-600 hover:underline"
+            >
+              보기
+            </button>
+          </div>
+
+        </div>
+
+        {/* 가입 버튼 */}
+        <button
+          type="submit"
+          className="w-full h-12 border-none rounded-lg bg-blue-600 text-white font-inherit text-sm font-semibold cursor-pointer transition-[background-color,transform] hover:bg-blue-700 active:translate-y-px"
+        >
+          회원가입
+        </button>
+
+      </form>
+
+      {/* 소셜 회원가입 */}
+      <SocialLoginButtons actionLabel="회원가입" />
+
+      {/* 로그인으로 이동 */}
+      <div className="flex justify-center items-center gap-1.5 mt-[22px] text-sm text-slate-500">
+        <span>이미 회원이신가요?</span>
+
+        <button
+          type="button"
+          onClick={() => navigate('/login')}
+          className="p-0 border-none bg-transparent font-inherit text-sm font-semibold text-blue-600 cursor-pointer hover:underline"
+        >
+          로그인
+        </button>
+      </div>
+
+      <MessageModal
+        open={!!modal}
+        onClose={closeModal}
+        variant={modal?.variant}
+        message={modal?.message}
+      />
+    </AuthCardShell>
+  );
+}
+
+export default Signup;

@@ -1,564 +1,220 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   MapPin,
   CalendarDays,
   User,
-  FileWarning,
-  Brain,
-  ShieldAlert,
-  CheckCircle2,
-  Clock3,
-  Wrench,
-  Image as ImageIcon,
-  Save,
-  Building2,
+  ChevronRight,
+  ExternalLink,
+  AlertTriangle,
+  Gauge,
+  FileText,
 } from 'lucide-react';
 
-import './AdminReportDetail.css';
+import AdminLayout from '../../components/admin/AdminLayout';
+import Card from '../../components/admin/Card';
+import Badge from '../../components/admin/Badge';
+import InfoRow from '../../components/admin/InfoRow';
+import LoadingState from '../../components/admin/LoadingState';
+import EmptyState from '../../components/admin/EmptyState';
+import PhotoPlaceholder from '../../components/admin/PhotoPlaceholder';
+import { useAdminDetailQuery } from '../../hooks/admin/useAdminDetailQuery';
+import { fetchReportById, updateReportStatusAdmin } from '../../api/report';
+import { DAMAGE_TYPE_META, SEVERITY_UI_META, REPORT_STATUS_UI_META } from '../../mocks/admin/constants';
+import ConfirmModal from '../../components/common/ConfirmModal';
+import { SEVERITY_TO_UI, toStatusLabelKey, NEXT_STATUS_OPTIONS, REJECT_OPTION, canReject } from '../../api/enumMapping';
 
-const TYPE_META = {
-  pothole: {
-    label: '포트홀',
-  },
-  crack: {
-    label: '노면 균열',
-  },
-  sign: {
-    label: '표지판 파손',
-  },
-  manhole: {
-    label: '맨홀/시설물',
-  },
-};
-
-const SEVERITY_META = {
-  low: {
-    label: '낮음',
-    className: 'low',
-  },
-  mid: {
-    label: '보통',
-    className: 'mid',
-  },
-  high: {
-    label: '높음',
-    className: 'high',
-  },
-};
-
-const STATUS_META = {
-  received: {
-    label: '접수 대기',
-    icon: Clock3,
-    className: 'received',
-  },
-  progress: {
-    label: '처리 중',
-    icon: Wrench,
-    className: 'progress',
-  },
-  done: {
-    label: '처리 완료',
-    icon: CheckCircle2,
-    className: 'done',
-  },
-};
-
-const DEFAULT_IMAGE =
-  'https://images.unsplash.com/photo-1516972810927-80185027ca84?auto=format&fit=crop&w=1200&q=80';
-
-function AdminReportDetail() {
+export default function AdminReportDetail() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [report, setReport] = useState(location.state?.report || null);
+  const { data: report, setData: setReport, notFound, error } = useAdminDetailQuery(fetchReportById, id);
+  const [advancing, setAdvancing] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
 
-  const [status, setStatus] = useState(
-    location.state?.report?.status || 'received'
-  );
-
-  const [memo, setMemo] = useState(
-    '현장 확인 후 보수 작업이 필요합니다.'
-  );
-
-  useEffect(() => {
-    if (!location.state?.report) {
-      navigate('/admin/reports', { replace: true });
-    }
-  }, [location.state, navigate]);
-
-  if (!report) {
-    return null;
+  if (notFound) {
+    return (
+      <AdminLayout title="신고 상세">
+        <Card>
+          <EmptyState title="존재하지 않는 신고입니다" description={`신고번호 #${id}를 찾을 수 없습니다.`} />
+        </Card>
+      </AdminLayout>
+    );
   }
 
-  const typeInfo =
-    TYPE_META[report.type] || {
-      label: report.typeLabel || '기타',
-    };
+  if (error) {
+    return (
+      <AdminLayout title="신고 상세">
+        <Card>
+          <EmptyState title="신고 정보를 불러오지 못했습니다" description={error.message} />
+        </Card>
+      </AdminLayout>
+    );
+  }
 
-  const severityInfo =
-    SEVERITY_META[report.severity] || {
-      label: report.severityLabel || '미정',
-      className: '',
-    };
+  if (!report || String(report.id) !== String(id)) {
+    return (
+      <AdminLayout title="신고 상세">
+        <LoadingState />
+      </AdminLayout>
+    );
+  }
 
-  const statusInfo =
-    STATUS_META[status] || STATUS_META.received;
+  const uiSeverity = SEVERITY_TO_UI[report.severity] ?? 'low';
+  const uiStatus = toStatusLabelKey(report.status);
+  const damageType = DAMAGE_TYPE_META[report.type] ?? { label: report.type ?? '-' };
+  const rawStatus = (report.status ?? 'received').toUpperCase();
+  const statusOptions = NEXT_STATUS_OPTIONS[rawStatus] ?? NEXT_STATUS_OPTIONS.RECEIVED;
+  const nextStep = statusOptions[1];
 
-  const StatusIcon = statusInfo.icon;
-
-  const handleStatusChange = (nextStatus) => {
-    setStatus(nextStatus);
-
-    setReport((prev) => ({
-      ...prev,
-      status: nextStatus,
-      statusLabel: STATUS_META[nextStatus].label,
-    }));
-  };
-
-  const handleSave = () => {
-    // TODO: 추후 백엔드 API 연결
-    console.log('신고 처리 저장:', {
-      reportId: report.id,
-      status,
-      memo,
-    });
-
-    alert('신고 처리 내용이 저장되었습니다.');
+  const changeStatus = async (value) => {
+    setAdvancing(true);
+    try {
+      await updateReportStatusAdmin(report.id, value);
+      setReport({ ...report, status: value.toLowerCase() });
+    } catch (err) {
+      alert(err.message || '신고 상태 변경에 실패했습니다.');
+    } finally {
+      setAdvancing(false);
+      setRejectOpen(false);
+    }
   };
 
   return (
-    <div className="admin-detail-page">
+    <AdminLayout>
+      <button
+        onClick={() => navigate('/admin/reports')}
+        className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
+      >
+        <ArrowLeft size={15} /> 신고 관리로 돌아가기
+      </button>
 
-      {/* 상단 */}
-      <header className="admin-detail-header">
-        <div className="admin-detail-header-inner">
-
-          <button
-            className="admin-detail-back"
-            onClick={() => navigate('/admin/reports')}
-          >
-            <ArrowLeft size={18} />
-            신고 관리
-          </button>
-
-          <div className="admin-detail-header-title">
-            <span>신고 상세</span>
-            <strong>#{String(report.id).padStart(4, '0')}</strong>
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-semibold text-slate-900">신고 #{report.id}</h1>
+            <Badge tone={REPORT_STATUS_UI_META[uiStatus].tone}>{REPORT_STATUS_UI_META[uiStatus].label}</Badge>
           </div>
-
+          <p className="mt-1 text-sm text-slate-500">{damageType.label} 신고 상세 및 AI 검수</p>
         </div>
-      </header>
+        <div className="flex items-center gap-2">
+          {canReject(rawStatus) && (
+            <button
+              onClick={() => setRejectOpen(true)}
+              disabled={advancing}
+              className="rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-60"
+            >
+              {REJECT_OPTION.label}
+            </button>
+          )}
+          {nextStep && (
+            <button
+              onClick={() => changeStatus(nextStep.value)}
+              disabled={advancing}
+              className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60"
+            >
+              {advancing ? '처리 중...' : `${nextStep.label}(으)로 진행`}
+              <ChevronRight size={15} />
+            </button>
+          )}
+        </div>
+      </div>
 
-
-      <main className="admin-detail-main">
-
-        {/* 페이지 타이틀 */}
-        <section className="admin-detail-page-title">
-
-          <div>
-            <div className="admin-detail-eyebrow">
-              ROAD DAMAGE REPORT
-            </div>
-
-            <h1>신고 상세 정보</h1>
-
-            <p>
-              시민 신고 내용과 AI 분석 결과를 확인하고
-              처리 상태를 관리할 수 있습니다.
-            </p>
-          </div>
-
-          <div
-            className={`admin-detail-current-status ${statusInfo.className}`}
-          >
-            <StatusIcon size={17} />
-            {statusInfo.label}
-          </div>
-
-        </section>
-
-
-        <div className="admin-detail-grid">
-
-          {/* =========================
-              왼쪽
-          ========================== */}
-          <div className="admin-detail-left">
-
-            {/* 신고 이미지 */}
-            <section className="admin-detail-card image-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <ImageIcon size={18} />
-                </div>
-
-                <div>
-                  <h2>신고 이미지</h2>
-                  <p>시민이 신고 당시 첨부한 이미지입니다.</p>
-                </div>
-              </div>
-
-              <div className="admin-report-image">
-                <img
-                  src={report.image || DEFAULT_IMAGE}
-                  alt="신고 이미지"
-                />
-              </div>
-
-            </section>
-
-
-            {/* AI 분석 */}
-            <section className="admin-detail-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon ai">
-                  <Brain size={18} />
-                </div>
-
-                <div>
-                  <h2>AI 분석 결과</h2>
-                  <p>
-                    이미지 분석을 통해 도로 파손 유형과 위험도를
-                    판별한 결과입니다.
-                  </p>
-                </div>
-              </div>
-
-
-              <div className="ai-result-grid">
-
-                <div className="ai-result-item">
-                  <span className="ai-result-label">
-                    감지 유형
-                  </span>
-
-                  <strong>
-                    {typeInfo.label}
-                  </strong>
-                </div>
-
-
-                <div className="ai-result-item">
-                  <span className="ai-result-label">
-                    AI 신뢰도
-                  </span>
-
-                  <strong className="confidence-value">
-                    {report.aiConfidence || 0}%
-                  </strong>
-                </div>
-
-
-                <div className="ai-result-item">
-                  <span className="ai-result-label">
-                    위험도
-                  </span>
-
-                  <span
-                    className={`admin-severity-badge ${severityInfo.className}`}
-                  >
-                    <ShieldAlert size={14} />
-                    {severityInfo.label}
-                  </span>
-                </div>
-
-              </div>
-
-
-              {/* 신뢰도 */}
-              <div className="confidence-section">
-
-                <div className="confidence-header">
-                  <span>AI 분석 신뢰도</span>
-                  <strong>
-                    {report.aiConfidence || 0}%
-                  </strong>
-                </div>
-
-                <div className="confidence-bar">
-                  <div
-                    className="confidence-fill"
-                    style={{
-                      width: `${report.aiConfidence || 0}%`,
-                    }}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+        <div className="flex flex-col gap-4 lg:col-span-2">
+          <Card title="신고 사진">
+            {report.images?.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {report.images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.imageUrl}
+                    alt="신고 사진"
+                    className="w-full rounded-lg border border-slate-200 object-cover"
                   />
-                </div>
-
-                <p>
-                  AI 분석 결과를 참고하여 실제 현장 확인 후
-                  최종 처리 여부를 결정해주세요.
-                </p>
-
+                ))}
               </div>
-
-            </section>
-
-
-            {/* 신고 내용 */}
-            <section className="admin-detail-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <FileWarning size={18} />
-                </div>
-
-                <div>
-                  <h2>신고 내용</h2>
-                  <p>시민이 작성한 신고 상세 내용입니다.</p>
-                </div>
-              </div>
-
-              <div className="report-description">
-                {report.description || '작성된 신고 내용이 없습니다.'}
-              </div>
-
-            </section>
-
-          </div>
-
-
-          {/* =========================
-              오른쪽
-          ========================== */}
-          <div className="admin-detail-right">
-
-            {/* 신고 기본 정보 */}
-            <section className="admin-detail-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <FileWarning size={18} />
-                </div>
-
-                <div>
-                  <h2>신고 기본 정보</h2>
-                  <p>신고 접수 정보를 확인합니다.</p>
-                </div>
-              </div>
-
-
-              <div className="report-info-list">
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <FileWarning size={16} />
-                    신고 번호
-                  </div>
-
-                  <strong>
-                    #{String(report.id).padStart(4, '0')}
-                  </strong>
-                </div>
-
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <FileWarning size={16} />
-                    파손 유형
-                  </div>
-
-                  <strong>
-                    {typeInfo.label}
-                  </strong>
-                </div>
-
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <ShieldAlert size={16} />
-                    위험도
-                  </div>
-
-                  <span
-                    className={`admin-severity-badge ${severityInfo.className}`}
-                  >
-                    {severityInfo.label}
-                  </span>
-                </div>
-
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <MapPin size={16} />
-                    신고 위치
-                  </div>
-
-                  <strong className="address-text">
-                    {report.address}
-                  </strong>
-                </div>
-
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <User size={16} />
-                    신고자
-                  </div>
-
-                  <strong>
-                    {report.reporter}
-                  </strong>
-                </div>
-
-
-                <div className="report-info-row">
-                  <div className="report-info-label">
-                    <CalendarDays size={16} />
-                    신고 일시
-                  </div>
-
-                  <strong>
-                    {report.reportedAt}
-                  </strong>
-                </div>
-
-              </div>
-
-            </section>
-
-
-            {/* 위치 */}
-            <section className="admin-detail-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <MapPin size={18} />
-                </div>
-
-                <div>
-                  <h2>신고 위치</h2>
-                  <p>파손 신고가 접수된 위치입니다.</p>
-                </div>
-              </div>
-
-
-              <div className="admin-map-placeholder">
-
-                <div className="fake-map-grid"></div>
-
-                <div className="map-pin">
-                  <MapPin size={26} />
-                </div>
-
-                <div className="map-address">
-                  <MapPin size={15} />
-                  {report.address}
-                </div>
-
-              </div>
-
-            </section>
-
-
-            {/* 처리 상태 */}
-            <section className="admin-detail-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <Wrench size={18} />
-                </div>
-
-                <div>
-                  <h2>처리 상태 관리</h2>
-                  <p>현재 신고 처리 상태를 변경합니다.</p>
-                </div>
-              </div>
-
-
-              <div className="status-selector">
-
-                {Object.entries(STATUS_META).map(
-                  ([key, value]) => {
-                    const Icon = value.icon;
-
-                    return (
-                      <button
-                        key={key}
-                        className={`status-option ${
-                          status === key ? 'active' : ''
-                        } ${value.className}`}
-                        onClick={() =>
-                          handleStatusChange(key)
-                        }
-                      >
-                        <Icon size={17} />
-
-                        <span>
-                          {value.label}
-                        </span>
-                      </button>
-                    );
-                  }
-                )}
-
-              </div>
-
-
-              <div className="admin-memo">
-
-                <label htmlFor="adminMemo">
-                  관리자 처리 메모
-                </label>
-
-                <textarea
-                  id="adminMemo"
-                  value={memo}
-                  onChange={(e) =>
-                    setMemo(e.target.value)
-                  }
-                  placeholder="현장 확인 내용이나 처리 내용을 입력해주세요."
-                  rows={5}
-                />
-
-              </div>
-
-
-              <button
-                className="admin-save-button"
-                onClick={handleSave}
-              >
-                <Save size={17} />
-                처리 내용 저장
-              </button>
-
-            </section>
-
-
-            {/* 담당 부서 */}
-            <section className="admin-detail-card department-card">
-
-              <div className="admin-card-title">
-                <div className="admin-card-title-icon">
-                  <Building2 size={18} />
-                </div>
-
-                <div>
-                  <h2>담당 부서</h2>
-                  <p>신고 처리를 담당하는 부서입니다.</p>
-                </div>
-              </div>
-
-              <div className="department-box">
-                <strong>안양시 도로관리과</strong>
-                <span>도로시설관리팀</span>
-              </div>
-
-            </section>
-
-          </div>
-
+            ) : (
+              <PhotoPlaceholder seed={Number(report.id)} />
+            )}
+          </Card>
+
+          <Card title="신고 정보">
+            <dl className="flex flex-col gap-3 text-sm">
+              <InfoRow icon={MapPin} label="신고 위치">
+                {report.address}
+              </InfoRow>
+              <InfoRow icon={CalendarDays} label="등록일">
+                {report.reportedAt ? report.reportedAt.slice(0, 10) : '-'}
+              </InfoRow>
+              <InfoRow icon={User} label="신고자">
+                {report.userName ?? '알 수 없음'}
+              </InfoRow>
+              <InfoRow icon={AlertTriangle} label="파손 유형">
+                {damageType.label}
+              </InfoRow>
+              <InfoRow icon={Gauge} label="위험도">
+                <Badge tone={SEVERITY_UI_META[uiSeverity].tone}>{SEVERITY_UI_META[uiSeverity].label}</Badge>
+              </InfoRow>
+              {report.description && (
+                <InfoRow icon={FileText} label="신고 내용">
+                  {report.description}
+                </InfoRow>
+              )}
+              {report.inspectionClusterId && (
+                <button
+                  onClick={() => navigate(`/admin/roads/${report.inspectionClusterId}`)}
+                  className="mt-1 flex items-center gap-1 self-start text-xs font-medium text-blue-600 hover:text-blue-700"
+                >
+                  해당 구간 도로 상세 분석 보기 <ExternalLink size={12} />
+                </button>
+              )}
+            </dl>
+          </Card>
         </div>
 
-      </main>
+        <div className="lg:col-span-3">
+          <Card title="AI 분석 결과" description="AI 기반 자동 판정 결과입니다." className="h-full">
+            {report.images?.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {report.images.map((img) => (
+                  <img
+                    key={img.id}
+                    src={img.resultImageUrl || img.imageUrl}
+                    alt="AI 분석 결과 이미지"
+                    className="w-full rounded-lg border border-slate-200 object-cover"
+                  />
+                ))}
+              </div>
+            ) : (
+              <PhotoPlaceholder seed={Number(report.id)} />
+            )}
 
-    </div>
+            <div className="mt-4">
+              <p className="text-xs text-slate-400">탐지 신뢰도</p>
+              {report.aiConfidence != null ? (
+                <p className="mt-1 font-medium text-slate-900">{Math.round(report.aiConfidence)}%</p>
+              ) : (
+                <p className="mt-1 text-sm text-slate-500">
+                  AI가 파손을 탐지하지 못했습니다. (미지원 파손 유형이거나 탐지된 파손 없음)
+                </p>
+              )}
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <ConfirmModal
+        open={rejectOpen}
+        title={`신고 #${report.id}을(를) 반려하시겠습니까?`}
+        description="반려한 신고는 화면에서 다시 다른 상태로 변경할 수 없습니다."
+        confirmLabel="반려"
+        tone="danger"
+        loading={advancing}
+        onConfirm={() => changeStatus(REJECT_OPTION.value)}
+        onCancel={() => setRejectOpen(false)}
+      />
+    </AdminLayout>
   );
 }
-
-export default AdminReportDetail;

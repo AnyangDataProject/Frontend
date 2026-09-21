@@ -1,3 +1,6 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css");
+@import "tailwindcss";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -17,7 +20,11 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light dark;
+  /* 이 앱은 다크모드 토글/디자인이 없다. color-scheme:dark를 켜두면 OS가 다크모드일 때
+     --text-h/--bg 등 변수가 어두운/밝은 값으로 뒤집혀서, 별도 색상 클래스를 안 준
+     제목 텍스트가 안 보이거나 문서 끝을 넘어가는 영역이 검게 보이는 버그가 생긴다
+     (둘 다 실제로 겪음). 라이트로 고정. */
+  color-scheme: light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -30,82 +37,91 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
 body {
   margin: 0;
 }
 
+/*
+ * 예전에는 MainMap.css에 스코프 없는 `html, body, #root { width:100% }` 규칙이 있어서
+ * 이 페이지가 번들에 포함되는 한(=항상) 사실상 모든 페이지가 전체 너비로 보였다.
+ * Tailwind 전환 과정에서 그 페이지 전용 CSS가 삭제되며 숨어있던 전역 규칙도 함께 사라졌는데,
+ * 그게 사실상 실제로 사용자들이 봐온 레이아웃이었으므로 여기서 정식으로 전체 너비를 기본값으로 둔다.
+ * (로그인/회원가입 등 좁은 카드가 필요한 페이지는 각자 내부에서 자체 max-width로 중앙 정렬한다.)
+ */
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  width: 100%;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+/* 시민 화면용 h1/h2 마진(32px, 24px)은 히어로 타이틀을 위한 값이라
+   관리자 화면 제목에는 불필요한 여백을 만든다. Tailwind 유틸리티로는
+   상쇄되지 않는 속성이라 admin-mode 범위에서만 명시적으로 초기화한다. */
+body.admin-mode h1,
+body.admin-mode h2 {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+/*
+ * Tailwind은 이 규칙들을 cascade layer(@layer)로 감싸서 출력하기 때문에,
+ * 아래 전역 태그 스타일도 같은 layer 안에 둬야 유틸리티 클래스(text-xl 등)로
+ * 정상적으로 덮어쓸 수 있다. (layer 밖 규칙은 명시도와 무관하게 항상 우선 적용됨)
+ */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--heading);
+    font-weight: 500;
+    color: var(--text-h);
+  }
+
+  h1 {
+    font-size: 56px;
+    letter-spacing: -1.68px;
+    margin: 32px 0;
+    @media (max-width: 1024px) {
+      font-size: 36px;
+      margin: 20px 0;
+    }
+  }
+  h2 {
+    font-size: 24px;
+    line-height: 118%;
+    letter-spacing: -0.24px;
+    margin: 0 0 8px;
+    @media (max-width: 1024px) {
+      font-size: 20px;
+    }
+  }
+  p {
+    margin: 0;
+  }
+
+  code,
+  .counter {
+    font-family: var(--mono);
+    display: inline-flex;
+    border-radius: 4px;
+    color: var(--text-h);
+  }
+
+  code {
+    font-size: 15px;
+    line-height: 135%;
+    padding: 4px 8px;
+    background: var(--code-bg);
+  }
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* 공용 Modal 컴포넌트(components/common)용 애니메이션.
+   모달을 열 때마다 <style> 태그로 재선언하지 않도록 전역에 한 번만 둔다. */
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }
